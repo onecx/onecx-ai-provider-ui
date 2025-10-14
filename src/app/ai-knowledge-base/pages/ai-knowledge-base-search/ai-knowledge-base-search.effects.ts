@@ -1,4 +1,4 @@
-import { Injectable, SkipSelf } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { concatLatestFrom } from '@ngrx/operators'
@@ -34,7 +34,7 @@ import { AIKnowledgeBaseCreateUpdateComponent } from './dialogs/aiknowledge-base
 export class AiKnowledgeBaseSearchEffects {
   constructor(
     private actions$: Actions,
-    @SkipSelf() private route: ActivatedRoute,
+    private route: ActivatedRoute,
     private aiKnowledgeBaseService: AiKnowledgeBaseBffService,
     private router: Router,
     private store: Store,
@@ -116,7 +116,7 @@ export class AiKnowledgeBaseSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(AiKnowledgeBaseSearchActions.deleteAiKnowledgeBaseCancelled())
         }
-        if (!itemToDelete) {
+        if (!itemToDelete?.id) {
           throw new Error('Item to delete not found!')
         }
 
@@ -136,6 +136,16 @@ export class AiKnowledgeBaseSearchEffects {
                 error
               })
             )
+          })
+        )
+      }),
+      catchError((error) => {
+        this.messageService.error({
+          summaryKey: 'AI_KNOWLEDGE_BASE_DETAILS.DELETE.ERROR'
+        })
+        return of(
+          AiKnowledgeBaseSearchActions.deleteAiKnowledgeBaseFailed({
+            error
           })
         )
       })
@@ -228,6 +238,9 @@ export class AiKnowledgeBaseSearchEffects {
           throw new Error('DialogResult was not set as expected!')
         }
         const itemToEditId = dialogResult.result.id
+        if (!itemToEditId) {
+          throw new Error('Item ID is required for update!')
+        }
         const itemToEdit = {
           aIKnowledgeDocumentData: dialogResult.result
         } as UpdateAIKnowledgeBaseRequest

@@ -183,7 +183,7 @@ export class AiKnowledgeBaseDetailsEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(AiKnowledgeBaseDetailsActions.deleteAiKnowledgeBaseCancelled())
         }
-        if (!itemToDelete) {
+        if (!itemToDelete?.id) {
           throw new Error('Item to delete not found!')
         }
 
@@ -256,7 +256,7 @@ export class AiKnowledgeBaseDetailsEffects {
         if (!backNavigationPossible) {
           return of(AiKnowledgeBaseDetailsActions.backNavigationFailed())
         }
-        window.history.back()
+        globalThis.history.back()
         return of(AiKnowledgeBaseDetailsActions.backNavigationStarted())
       })
     )
