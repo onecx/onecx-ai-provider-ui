@@ -21,55 +21,36 @@ app:
       enabled: true
       spec:
         permissions:
-          AI_KNOWLEDGE_DOCUMENT:
-            CREATE: Create AIKnowledgeDocument
-            EDIT: Edit AIKnowledgeDocument
-            DELETE: Delete AIKnowledgeDocument
-            SAVE: Update and save AIKnowledgeDocument
-            IMPORT: Import AIKnowledgeDocument
-            EXPORT: Export AIKnowledgeDocument
-            VIEW: View mode for AIKnowledgeDocument
-            SEARCH: Search AIKnowledgeDocument
-          AI_KNOWLEDGE_VECTOR_DB:
-            CREATE: Create AIKnowledgeVectorDb
-            EDIT: Edit AIKnowledgeVectorDb
-            DELETE: Delete AIKnowledgeVectorDb
-            SAVE: Update and save AIKnowledgeVectorDb
-            IMPORT: Import AIKnowledgeVectorDb
-            EXPORT: Export AIKnowledgeVectorDb
-            VIEW: View mode for AIKnowledgeVectorDb
-            SEARCH: Search AIKnowledgeVectorDb
-            BACK: Go Back AIKnowledgeVectorDb
-          AI_PROVIDER:
-            CREATE: Create AIProvider
-            EDIT: Edit AIProvider
-            DELETE: Delete AIProvider
-            SAVE: Update and save AIProvider
-            IMPORT: Import AIProvider
-            EXPORT: Export AIProvider
-            VIEW: View mode for AIProvider
-            SEARCH: Search AIProvider
-            CHANGE_API_KEY: Change ApiKey AIProvider
-          AI_CONTEXT:
-            CREATE: Create aiContext
-            EDIT: Edit aiContext
-            DELETE: Delete aiContext
-            SAVE: Update and save aiContext
-            IMPORT: Import aiContext
-            EXPORT: Export aiContext
-            VIEW: View mode for aiContext
-            SEARCH: Search aiContext
-            BACK: Back to aiContext
-          AI_KNOWLEDGE_BASE:
-            CREATE: Create AIKnowledgeBase
-            EDIT: Edit AIKnowledgeBase
-            DELETE: Delete AIKnowledgeBase
-            SAVE: Update and save AIKnowledgeBase
-            IMPORT: Import AIKnowledgeBase
-            EXPORT: Export AIKnowledgeBase
-            VIEW: View mode for AIKnowledgeBase
-            SEARCH: Search AIKnowledgeBase
-            BACK: Back to AIKnowledgeBase
+          PROVIDER:
+            CREATE: Create Provider
+            EDIT: Edit Provider
+            DELETE: Delete Provider
+            SAVE: Update and save Provider
+            IMPORT: Import Provider
+            EXPORT: Export Provider
+            VIEW: View mode for Provider
+            SEARCH: Search Provider
+            CHANGE_API_KEY: Change ApiKey Provider
+          CONFIGURATION:
+            CREATE: Create configuration
+            EDIT: Edit configuration
+            DELETE: Delete configuration
+            SAVE: Update and save configuration
+            IMPORT: Import configuration
+            EXPORT: Export configuration
+            VIEW: View mode for configuration
+            SEARCH: Search configuration
+            BACK: Back to configuration
+          MCPSERVER:
+            CREATE: Create mcpserver
+            EDIT: Edit mcpserver
+            DELETE: Delete mcpserver
+            SAVE: Update and save mcpserver
+            IMPORT: Import mcpserver
+            EXPORT: Export mcpserver
+            VIEW: View mode for mcpserver
+            SEARCH: Search mcpserver
+            BACK: Navigate back in details of mcpserver
     keycloak:
       client:
         enabled: true

@@ -11,8 +11,8 @@ import { provideStoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools'
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core'
 import { KeycloakAuthModule } from '@onecx/keycloak-auth'
 import {
-  AppStateService,
   APP_CONFIG,
+  AppStateService,
   ConfigurationService,
   createTranslateLoader,
   PortalCoreModule,
@@ -25,7 +25,7 @@ import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { metaReducers, reducers } from './app.reducers'
 
-import { Configuration } from './shared/generated'
+import { APIConfiguration } from './shared/generated'
 import { apiConfigProvider } from './shared/utils/apiConfigProvider.utils'
 
 export const commonImports = [CommonModule]
@@ -65,7 +65,7 @@ export const commonImports = [CommonModule]
     provideHttpClient(withInterceptorsFromDi()),
     { provide: APP_CONFIG, useValue: environment },
     {
-      provide: Configuration,
+      provide: APIConfiguration,
       useFactory: apiConfigProvider,
       deps: [ConfigurationService, AppStateService]
     },
@@ -87,4 +87,4 @@ export const commonImports = [CommonModule]
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

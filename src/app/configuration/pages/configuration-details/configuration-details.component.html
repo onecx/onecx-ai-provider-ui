@@ -1,0 +1,95 @@
+<ocx-portal-page
+  permission="CONFIGURATION#VIEW"
+  [helpArticleId]="'CONFIGURATION_DETAILS.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-loading-indicator *ngIf="vm.detailsLoadingIndicator"> </ocx-loading-indicator>
+  <ocx-data-loading-error *ngIf="!vm.detailsLoaded && !vm.detailsLoadingIndicator"> </ocx-data-loading-error>
+  <div *ngIf="vm.detailsLoaded && !vm.detailsLoadingIndicator">
+    <ocx-page-header
+      [header]="'CONFIGURATION_DETAILS.HEADER' | translate"
+      [subheader]="'CONFIGURATION_DETAILS.SUB_HEADER' | translate"
+      [objectDetails]="(headerLabels$ | async) ?? []"
+      [actions]="(headerActions$ | async) ?? []"
+      [disableDefaultActions]="true"
+      [manualBreadcrumbs]="true"
+    >
+    </ocx-page-header>
+    <ocx-page-content>
+      <div class="surface-section mt-3 mb-1 mx-3">
+        <form [formGroup]="formGroup" errorTailor>
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="configuration_detail_name"
+                class="w-full pt-3 pb-2 text-responsive"
+                formControlName="name"
+              />
+              <label class="ocx-required-label" for="configuration_detail_name">
+                {{ 'CONFIGURATION_DETAILS.FORM.NAME' | translate }}
+              </label>
+            </span>
+          </div>
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="configuration_detail_description"
+                styleClass="w-full"
+                class="w-full pt-3 pb-2 text-responsive"
+                formControlName="description"
+              />
+              <label class="ocx-required-label" for="configuration_detail_description">
+                {{ 'CONFIGURATION_DETAILS.FORM.DESCRIPTION' | translate }}
+              </label>
+            </span>
+          </div>
+          
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1 p-fluid" controlErrorAnchor>
+              <p-autoComplete
+                id="configuration_detail_mcpServer"
+                formControlName="mcpServers"
+                [suggestions]="(filteredMCPServers$ | async) ?? []"
+                (completeMethod)="searchMCPServers($event)"
+                [dropdown]="true"
+                [multiple]="true"
+                [optionLabel]="getMCPName"
+                [forceSelection]="true"
+                styleClass="w-full"                
+              >
+                <ng-template let-item pTemplate="item"> {{ item.name }} </ng-template>
+              </p-autoComplete>
+              <label class="ocx-required-label" for="configuration_detail_mcpServer">
+                {{ 'CONFIGURATION_DETAILS.FORM.MCP_SERVER' | translate }}
+              </label>
+            </span>
+          </div>
+
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <p-autoComplete
+                id="configuration_detail_llmProvider"
+                formControlName="llmProvider"
+                [suggestions]="(filteredProviders$ | async) ?? []"
+                (completeMethod)="searchProviders($event)"
+                [dropdown]="true"
+                [field]="'name'"
+                [forceSelection]="true"
+                styleClass="w-full"                
+              >
+                <ng-template let-item pTemplate="item"> {{ item.name }} </ng-template>
+              </p-autoComplete>
+              <label class="ocx-required-label" for="configuration_detail_llmProvider">
+                {{ 'CONFIGURATION_DETAILS.FORM.PROVIDER' | translate }}
+              </label>
+            </span>
+          </div>
+        </form>
+      </div>
+    </ocx-page-content>
+  </div>
+</ocx-portal-page>

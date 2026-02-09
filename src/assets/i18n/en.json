@@ -1,125 +1,9 @@
 {
-  "AI_KNOWLEDGE_BASE_DETAILS": {
+  "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
-    "HEADER": "AiKnowledgeBase Details",
-    "SUB_HEADER": "Display of AiKnowledgeBase Details",
-    "ERROR_MESSAGES": {
-      "DETAILS_LOADING_FAILED": "Loading details failed.",
-      "CONTEXTS_LOADING_FAILED": "Loading contexts failed."
-    },
-    "GENERAL": {
-      "BACK": "Back",
-      "MORE": "More",
-      "EDIT": " Edit",
-      "DELETE": "Delete",
-      "CANCEL": "Cancel",
-      "SAVE": "Save"
-    },
-    "FORM": {
-      "ID": "ID",
-      "NAME": "NAME",
-      "DESCRIPTION": "DESCRIPTION",
-      "CONTEXTS": "CONTEXTS"
-    },
-    "CANCEL": {
-      "HEADER": "Confirm cancel",
-      "MESSAGE": "Please confirm that you want to cancel editing and reset changes.",
-      "CONFIRM": "Confirm"
-    },
-    "UPDATE": {
-      "SUCCESS": "Update successful",
-      "ERROR": "Update failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      },
-      "HEADER": "Update AiKnowledgeBase"
-    },
-    "DELETE": {
-      "HEADER": "Delete AiKnowledgeBase",
-      "MESSAGE": "Please confirm that you want to delete this AiKnowledgeBase.",
-      "CONFIRM": "Confirm",
-      "CANCEL": "Cancel",
-      "SUCCESS": "AiKnowledgeBase deleted successfully",
-      "ERROR": "Could not delete AiKnowledgeBase"
-    }
-  },
-  "AI_KNOWLEDGE_BASE_SEARCH": {
-    "HEADER": "AiKnowledgeBase Search",
-    "SUB_HEADER": "Searching and displaying of AiKnowledgeBase",
-    "HELP_ARTICLE_ID": "Help Article",
-    "EMPTY_RESULTS": "No results.",
-    "BREADCRUMB": "Search",
-    "DIAGRAM": {
-      "SUM": "Total"
-    },
-    "HEADER_ACTIONS": {
-      "CREATE_BASE": "Create",
-      "EXPORT_ALL": "Export all",
-      "SHOW_CHART": "Show chart",
-      "HIDE_CHART": "Hide chart",
-      "CREATE_SEARCH_CONFIG": "Create search configuration",
-      "UPDATE_SEARCH_CONFIG": "Update search configuration",
-      "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel"
-    },
-    "ERROR_MESSAGES": {
-      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
-      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
-      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
-    },
-    "INPUT_FIELDS": {
-      "ID": "ID",
-      "NAME": "Name",
-      "DESCRIPTION": "Description"
-    },
-    "COLUMNS": {
-      "ID": "ID",
-      "NAME": "Name",
-      "DESCRIPTION": "Description"
-    },
-    "PREDEFINED_GROUP": {
-      "DEFAULT": "Default",
-      "EXTENDED": "Extended",
-      "FULL": "Full"
-    }
-  },
-  "AI_KNOWLEDGE_BASE_CREATE_UPDATE": {
-    "ACTION": {
-      "CREATE": "Create"
-    },
-    "CREATE": {
-      "HEADER": "Create AI Knowledge Base",
-      "SUCCESS": "Creation succesful",
-      "ERROR": "Creation failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      }
-    },
-    "UPDATE": {
-      "SUCCESS": "Update successful",
-      "FAILED": "Update unsuccessful",
-      "ERROR": "Update failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      },
-      "HEADER": "Update AI Knowledge Base"
-    },
-    "FORM": {
-      "NAME": "Name",
-      "DESCRIPTION": "Description",
-      "APPID": "App Id"
-    }
-  },
-  "AI_CONTEXT_DETAILS": {
-    "HELP_ARTICLE_ID": "Help Article",
-    "BREADCRUMB": "Details",
-    "HEADER": "AiContext Details",
-    "SUB_HEADER": "Display of AiContext Details",
+    "HEADER": "MCPServer Details",
+    "SUB_HEADER": "Display of MCPServer Details",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Loading details failed."
     },
@@ -132,19 +16,12 @@
       "SAVE": "Save"
     },
     "FORM": {
+      "VIEW_API_KEY": "View API Key",
       "ID": "ID",
-      "APPID": "App Id",
+      "URL": "URL",
       "NAME": "Name",
       "DESCRIPTION": "Description",
-      "AI_KNOWLEDGE_BASE": "AIKnowledgeBase",
-      "AIProvider": "AIProvider",
-      "AI_KNOWLEDGE_VECTOR_DB": "AIKnowledgeVectorDb",
-      "AI_KNOWLEDGE_URLS": "AIKnowledgeURLs",
-      "AI_KNOWLEDGE_DBS": "AIKnowledgeDatabases",
-      "AI_KNOWLEDGE_DOCUMENTS": "AIKnowledgeDocuments",
-      "AI_KNOWLEDGE_URLS_PLACEHOLDER": "Select AIKnowledge URLs",
-      "AI_KNOWLEDGE_DBS_PLACEHOLDER": "Select AIKnowledge Databases",
-      "AI_KNOWLEDGE_DOCUMENTS_PLACEHOLDER": "Select AIKnowledge Documents"
+      "APIKEY": "API Key"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",
@@ -158,27 +35,20 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update AiContext"
+      "HEADER": "Update MCPServer"
     },
     "DELETE": {
-      "HEADER": "Delete AiContext",
-      "MESSAGE": "Please confirm that you want to delete this AiContext.",
+      "HEADER": "Delete MCPServer",
+      "MESSAGE": "Please confirm that you want to delete this MCPServer.",
       "CONFIRM": "Confirm",
       "CANCEL": "Cancel",
-      "SUCCESS": "AiContext deleted successfully",
-      "ERROR": "Could not delete AiContext"
-    },
-    "TABLE": {
-      "NAME": "Name",
-      "DESCRIPTION": "Description",
-      "URL": "URL",
-      "AI_KNOWLEDGE_DB": "AIKnowledgeDatabase",
-      "STATUS": "Status"
+      "SUCCESS": "MCPServer deleted successfully",
+      "ERROR": "Could not delete MCPServer"
     }
   },
-  "AI_CONTEXT_SEARCH": {
-    "HEADER": "AiContext Search",
-    "SUB_HEADER": "Searching and displaying of AiContext",
+  "MCPSERVER_SEARCH": {
+    "HEADER": "MCPServer Search",
+    "SUB_HEADER": "Searching and displaying of MCPServer",
     "HELP_ARTICLE_ID": "Help Article",
     "EMPTY_RESULTS": "No results.",
     "BREADCRUMB": "Search",
@@ -200,13 +70,105 @@
       "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
       "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
     },
-    "COLUMNS": {
-      "APPID": "App Id",
+    "INPUT_FIELDS": "ACTION S4: ADD TRANSLATION for your input fields: https://onecx.github.io/docs/nx-plugins/current/general/getting_started/search/configure-search-criteria.html#action-4",
+    "PREDEFINED_GROUP": {
+      "DEFAULT": "Default",
+      "EXTENDED": "Extended",
+      "FULL": "Full"
+    },
+    "RESULTS": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "URL": "URL"
+    },
+    "CRITERIA": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "URL": "URL"
+    }
+  },
+  "CONFIGURATION_DETAILS": {
+    "HELP_ARTICLE_ID": "Help Article",
+    "BREADCRUMB": "Details",
+    "HEADER": "Configuration Details",
+    "SUB_HEADER": "Display of Configuration Details",
+    "ERROR_MESSAGES": {
+      "DETAILS_LOADING_FAILED": "Loading details failed."
+    },
+    "GENERAL": {
+      "BACK": "Back",
+      "MORE": "More",
+      "EDIT": " Edit",
+      "DELETE": "Delete",
+      "CANCEL": "Cancel",
+      "SAVE": "Save"
+    },
+    "FORM": {
+      "ID": "ID",      
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "MCP_SERVER": "MCP Server",
+      "PROVIDER": "Provider",
+      "MCP_SERVERS_PLACEHOLDER": "Select MCP Servers"
+    },
+    "CANCEL": {
+      "HEADER": "Confirm cancel",
+      "MESSAGE": "Please confirm that you want to cancel editing and reset changes.",
+      "CONFIRM": "Confirm"
+    },
+    "UPDATE": {
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      },
+      "HEADER": "Update Configuration"
+    },
+    "DELETE": {
+      "HEADER": "Delete Configuration",
+      "MESSAGE": "Please confirm that you want to delete this Configuration.",
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel",
+      "SUCCESS": "Configuration deleted successfully",
+      "ERROR": "Could not delete Configuration"
+    },
+    "TABLE": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "URL": "URL",
+      "STATUS": "Status"
+    }
+  },
+  "CONFIGURATION_SEARCH": {
+    "HEADER": "Configuration Search",
+    "SUB_HEADER": "Searching and displaying of Configuration",
+    "HELP_ARTICLE_ID": "Help Article",
+    "EMPTY_RESULTS": "No results.",
+    "BREADCRUMB": "Search",
+    "DIAGRAM": {
+      "SUM": "Total"
+    },
+    "HEADER_ACTIONS": {
+      "EXPORT_ALL": "Export all",
+      "SHOW_CHART": "Show chart",
+      "HIDE_CHART": "Hide chart",
+      "CREATE_SEARCH_CONFIG": "Create search configuration",
+      "UPDATE_SEARCH_CONFIG": "Update search configuration",
+      "DIALOG_CONFIRM": "Confirm",
+      "DIALOG_CANCEL": "Cancel"
+    },
+    "ERROR_MESSAGES": {
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
+      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
+      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
+      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+    },
+    "COLUMNS": {      
       "NAME": "Name",
       "DESCRIPTION": "Description"
     },
-    "INPUT_FIELDS": {
-      "APPID": "App Id",
+    "INPUT_FIELDS": {      
       "NAME": "Name",
       "DESCRIPTION": "Description"
     },
@@ -216,12 +178,12 @@
       "FULL": "Full"
     }
   },
-  "AI_CONTEXT_CREATE_UPDATE": {
+  "CONFIGURATION_CREATE_UPDATE": {
     "ACTION": {
       "CREATE": "Create"
     },
     "CREATE": {
-      "HEADER": "Create AiContext",
+      "HEADER": "Create Configuration",
       "SUCCESS": "Creation succesful",
       "ERROR": "Creation failed",
       "FORM": {
@@ -237,28 +199,27 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update AiContext"
+      "HEADER": "Update Configuration"
     },
-    "FORM": {
-      "APPID": "App Id",
+    "FORM": {      
       "NAME": "Name",
       "DESCRIPTION": "Description"
     }
   },
-  "AI_PROVIDER_DELETE": {
-    "HEADER": "Delete AIProvider",
-    "MESSAGE": "Please confirm that you want to delete this AIProvider.",
+  "PROVIDER_DELETE": {
+    "HEADER": "Delete Provider",
+    "MESSAGE": "Please confirm that you want to delete this Provider.",
     "CONFIRM": "Confirm",
     "CANCEL": "Cancel",
-    "SUCCESS": "AIProvider deleted successfully",
-    "ERROR": "Could not delete AIProvider"
+    "SUCCESS": "Provider deleted successfully",
+    "ERROR": "Could not delete Provider"
   },
-  "AI_PROVIDER_CREATE_UPDATE": {
+  "PROVIDER_CREATE_UPDATE": {
     "ACTION": {
       "CREATE": "Create"
     },
     "CREATE": {
-      "HEADER": "Create AIProvider",
+      "HEADER": "Create Provider",
       "SUCCESS": "Creation succesful",
       "ERROR": "Creation failed",
       "FORM": {
@@ -274,19 +235,21 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update AIProvider"
+      "HEADER": "Update Provider"
     },
     "FORM": {
       "NAME": "Name",
       "DESCRIPTION": "Description",
-      "APPID": "App Id"
+      "MODELNAME": "Modelname",
+      "LLMURL": "LlmUrl",
+      "APIKEY": "API Key"      
     }
   },
-  "AI_PROVIDER_DETAILS": {
+  "PROVIDER_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
-    "HEADER": "AIProvider Details",
-    "SUB_HEADER": "Display of AIProvider Details",
+    "HEADER": "Provider Details",
+    "SUB_HEADER": "Display of Provider Details",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Loading details failed."
     },
@@ -301,15 +264,13 @@
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
-      "MODELVERSION": "Modelversion",
-      "APPID": "App Id",
+      "MODELNAME": "Modelname",      
       "APIKEY": "API Key"
     }
   },
-  "AI_PROVIDER_SEARCH": {
-    "HEADER": "AIProvider Search",
-    "SUB_HEADER": "Searching and displaying of AIProvider",
+  "PROVIDER_SEARCH": {
+    "HEADER": "Provider Search",
+    "SUB_HEADER": "Searching and displaying of Provider",
     "HELP_ARTICLE_ID": "Help Article",
     "EMPTY_RESULTS": "No results.",
     "BREADCRUMB": "Search",
@@ -335,222 +296,14 @@
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
-      "MODELVERSION": "Modelversion",
-      "APPID": "App Id"
+      "MODELNAME": "Modelname",      
+      "TYPE": "Type"
     },
     "COLUMNS": {
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
-      "MODELVERSION": "Modelversion",
-      "APPID": "App Id"
-    },
-    "PREDEFINED_GROUP": {
-      "DEFAULT": "Default",
-      "EXTENDED": "Extended",
-      "FULL": "Full"
-    }
-  },
-  "AI_KNOWLEDGE_VECTOR_DB_DELETE": {
-    "HEADER": "Delete AIKnowledgeVectorDb",
-    "MESSAGE": "Please confirm that you want to delete this AIKnowledgeVectorDb.",
-    "CONFIRM": "Confirm",
-    "CANCEL": "Cancel",
-    "SUCCESS": "AIKnowledgeVectorDb deleted successfully",
-    "ERROR": "Could not delete AIKnowledgeVectorDb"
-  },
-  "AI_KNOWLEDGE_VECTOR_DB_CREATE_UPDATE": {
-    "ACTION": {
-      "CREATE": "Create"
-    },
-    "CREATE": {
-      "HEADER": "Create AIKnowledgeVectorDb",
-      "SUCCESS": "Creation succesful",
-      "ERROR": "Creation failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      }
-    },
-    "UPDATE": {
-      "SUCCESS": "Update successful",
-      "FAILED": "Update failed",
-      "ERROR": "Update failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      },
-      "HEADER": "Update AIKnowledgeVectorDb"
-    },
-    "FORM": {
-      "NAME": "Name",
-      "DESCRIPTION": "Description",
-      "VDB": "Vdb",
-      "VDBCOLLECTION": "VdbCollection"
-    }
-  },
-  "AI_KNOWLEDGE_VECTOR_DB_DETAILS": {
-    "HELP_ARTICLE_ID": "Help Article",
-    "BREADCRUMB": "Details",
-    "HEADER": "AIKnowledgeVectorDb Details",
-    "SUB_HEADER": "Display of AIKnowledgeVectorDb Details",
-    "ERROR_MESSAGES": {
-      "DETAILS_LOADING_FAILED": "Loading details failed."
-    },
-    "GENERAL": {
-      "BACK": "Back",
-      "EDIT": "Edit",
-      "MORE": "More",
-      "DELETE": "Delete"
-    },
-    "FORM": {
-      "NAME": "Name",
-      "DESCRIPTION": "Description",
-      "VDB": "Vdb",
-      "VDBCOLLECTION": "VdbCollection",
-      "AICONTEXT": {
-        "NAME":"AI Context",
-        "PLACEHOLDER": "Select an ai context"
-      }
-    }
-  },
-  "AI_KNOWLEDGE_VECTOR_DB_SEARCH": {
-    "HEADER": "AIKnowledgeVectorDb Search",
-    "SUB_HEADER": "Searching and displaying of AIKnowledgeVectorDb",
-    "HELP_ARTICLE_ID": "Help Article",
-    "EMPTY_RESULTS": "No results.",
-    "BREADCRUMB": "Search",
-    "DIAGRAM": {
-      "SUM": "Total"
-    },
-    "HEADER_ACTIONS": {
-      "EXPORT_ALL": "Export all",
-      "SHOW_CHART": "Show chart",
-      "HIDE_CHART": "Hide chart",
-      "CREATE_SEARCH_CONFIG": "Create search configuration",
-      "UPDATE_SEARCH_CONFIG": "Update search configuration",
-      "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel"
-    },
-    "ERROR_MESSAGES": {
-      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
-      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
-      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
-    },
-    "CRITERIA": {
-      "NAME": "Name",
-      "DESCRIPTION": "Description",
-      "VDB": "Vdb",
-      "VDBCOLLECTION": "VdbCollection"
-    },
-    "COLUMNS": {
-      "NAME": "Name",
-      "DESCRIPTION": "Description",
-      "VDB": "Vdb",
-      "VDBCOLLECTION": "VdbCollection"
-    },
-    "PREDEFINED_GROUP": {
-      "DEFAULT": "Default",
-      "EXTENDED": "Extended",
-      "FULL": "Full"
-    }
-  },
-  "AI_KNOWLEDGE_DOCUMENT_DELETE": {
-    "HEADER": "Delete AIKnowledgeDocument",
-    "MESSAGE": "Please confirm that you want to delete this AIKnowledgeDocument.",
-    "CONFIRM": "Confirm",
-    "CANCEL": "Cancel",
-    "SUCCESS": "AIKnowledgeDocument deleted successfully",
-    "ERROR": "Could not delete AIKnowledgeDocument"
-  },
-  "AI_KNOWLEDGE_DOCUMENT_CREATE_UPDATE": {
-    "ACTION": {
-      "CREATE": "Create"
-    },
-    "CREATE": {
-      "HEADER": "Create AIKnowledgeDocument",
-      "SUCCESS": "Creation succesful",
-      "ERROR": "Creation failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      }
-    },
-    "UPDATE": {
-      "SUCCESS": "Update successful",
-      "FAILED": "Update failed",
-      "ERROR": "Update failed",
-      "FORM": {
-        "SAVE": "Save",
-        "CANCEL": "Cancel"
-      },
-      "HEADER": "Update AIKnowledgeDocument"
-    },
-    "FORM": {
-      "ID": "id",
-      "NAME": "Name",
-      "DOCUMENTREFID": "DocumentRefId",
-      "STATUS": "Status"
-    }
-  },
-  "AI_KNOWLEDGE_DOCUMENT_DETAILS": {
-    "HELP_ARTICLE_ID": "Help Article",
-    "BREADCRUMB": "Details",
-    "HEADER": "AIKnowledgeDocument Details",
-    "SUB_HEADER": "Display of AIKnowledgeDocument Details",
-    "ERROR_MESSAGES": {
-      "DETAILS_LOADING_FAILED": "Loading details failed."
-    },
-    "GENERAL": {
-      "BACK": "Back",
-      "MORE": "More"
-    },
-    "UPDATE": {
-      "NAME": "Name",
-      "DOCUMENTREFID": "DocumentRefId"
-    }
-  },
-  "AI_KNOWLEDGE_DOCUMENT_SEARCH": {
-    "HEADER": "AIKnowledgeDocument Search",
-    "SUB_HEADER": "Searching and displaying of AIKnowledgeDocument",
-    "HELP_ARTICLE_ID": "Help Article",
-    "EMPTY_RESULTS": "No results.",
-    "BREADCRUMB": "Search",
-    "DIAGRAM": {
-      "SUM": "Total"
-    },
-    "HEADER_ACTIONS": {
-      "EXPORT_ALL": "Export all",
-      "SHOW_CHART": "Show chart",
-      "HIDE_CHART": "Hide chart",
-      "CREATE_SEARCH_CONFIG": "Create search configuration",
-      "UPDATE_SEARCH_CONFIG": "Update search configuration",
-      "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel"
-    },
-    "ERROR_MESSAGES": {
-      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
-      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
-      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
-    },
-    "INPUT_FIELDS": {
-      "NAME": "Name"
-    },
-    "CRITERIA": {
-      "ID": "id",
-      "NAME": "Name",
-      "DOCUMENTREFID": "DocumentRefId",
-      "STATUS": "Status"
-    },
-    "COLUMNS": {
-      "ID": "id",
-      "NAME": "Name",
-      "DOCUMENTREFID": "DocumentRefId",
-      "STATUS": "Status"
+      "MODELNAME": "Modelname"      
     },
     "PREDEFINED_GROUP": {
       "DEFAULT": "Default",

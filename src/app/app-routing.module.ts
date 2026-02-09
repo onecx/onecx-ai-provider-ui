@@ -5,26 +5,20 @@ import { addInitializeModuleGuard } from '@onecx/angular-integration-interface'
 import { startsWith } from '@onecx/angular-webcomponents'
 export const routes: Routes = [
   {
-    matcher: startsWith('ai-context'),
-    loadChildren: () => import('./ai-context/ai-context.module').then((mod) => mod.AiContextModule)
+    matcher: startsWith('mcpserver'),
+    loadChildren: () => import('./mcpserver/mcpserver.module').then((mod) => mod.MCPServerModule)
   },
   {
-    matcher: startsWith('aiprovider'),
-    loadChildren: () => import('./aiprovider/aiprovider.module').then((mod) => mod.AIProviderModule)
+    matcher: startsWith(''),
+    loadChildren: () => import('./configuration/configuration.module').then((mod) => mod.ConfigurationModule)
   },
   {
-    matcher: startsWith('aiknowledge-document'),
-    loadChildren: () =>
-      import('./aiknowledge-document/aiknowledge-document.module').then((mod) => mod.AIKnowledgeDocumentModule)
+    matcher: startsWith('configuration'),
+    loadChildren: () => import('./configuration/configuration.module').then((mod) => mod.ConfigurationModule)
   },
   {
-    matcher: startsWith('ai-knowledge-vector-db'),
-    loadChildren: () =>
-      import('./ai-knowledge-vector-db/ai-knowledge-vector-db.module').then((mod) => mod.AIKnowledgeVectorDbModule)
-  },
-  {
-    matcher: startsWith('ai-knowledge-base'),
-    loadChildren: () => import('./ai-knowledge-base/ai-knowledge-base.module').then((mod) => mod.AiKnowledgeBaseModule)
+    matcher: startsWith('provider'),
+    loadChildren: () => import('./provider/provider.module').then((mod) => mod.ProviderModule)
   }
 ]
 

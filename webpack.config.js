@@ -104,5 +104,12 @@ module.exports = {
   optimization: {
     runtimeChunk: false,
     splitChunks: false
-  }
+  },
+  module: {
+    parser: {
+      javascript: {
+        importMeta: false,
+      },
+    },
+  },
 }
