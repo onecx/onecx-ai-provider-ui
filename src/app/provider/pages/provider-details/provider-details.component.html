@@ -1,0 +1,105 @@
+<ocx-portal-page
+  permission="PROVIDER#VIEW"
+  [helpArticleId]="'PROVIDER_DETAILS.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-page-header
+    [header]="'PROVIDER_DETAILS.HEADER' | translate"
+    [subheader]="'PROVIDER_DETAILS.SUB_HEADER' | translate"
+    [actions]="(headerActions$ | async) ?? []"
+    [disableDefaultActions]="true"
+    [manualBreadcrumbs]="true"
+  >
+  </ocx-page-header>
+  <ocx-page-content>
+    <div class="surface-section mt-3 mb-1 mx-3">
+      <form [formGroup]="formGroup" errorTailor>
+        <div class="mt-3 mb-1">
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="Provider_detail_name"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="name"
+            />
+            <label class="ocx-required-label" for="Provider_detail_name">
+              {{ 'PROVIDER_DETAILS.FORM.NAME' | translate }}
+            </label>
+          </span>
+        </div>
+        <div class="mt-3 mb-1">
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="Provider_detail_description"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="description"
+            />
+            <label class="ocx-required-label" for="Provider_detail_description">
+              {{ 'PROVIDER_DETAILS.FORM.DESCRIPTION' | translate }}
+            </label>
+          </span>
+        </div>
+        <div class="mt-3 mb-1">
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="Provider_detail_llmUrl"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="llmUrl"
+            />
+            <label class="ocx-required-label" for="Provider_detail_llmUrl">
+              {{ 'PROVIDER_DETAILS.FORM.LLMURL' | translate }}
+            </label>
+          </span>
+        </div>        
+        <div class="mt-3 mb-1">
+          <span class="p-float-label mb-1" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="Provider_detail_modelName"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="modelName"
+            />
+            <label class="ocx-required-label" for="Provider_detail_modelName">
+              {{ 'PROVIDER_DETAILS.FORM.MODELNAME' | translate }}
+            </label>
+          </span>
+        </div>        
+        <div *ocxIfPermission="'PROVIDER#CHANGE_API_KEY'">
+          <div class="p-inputgroup mt-3 mb-1" >
+            <span class="p-float-label" controlErrorAnchor>
+              <input
+                pInputText
+                [type]="vm.isApiKeyHidden ? 'password' : 'text'"
+                id="Provider_detail_apiKey"
+                class="w-full pt-3 pb-2 text-responsive"
+                formControlName="apiKey"
+              />
+              <label for="Provider_detail_apiKey">{{ 'PROVIDER_DETAILS.FORM.APIKEY' | translate }} </label>
+            </span>
+            <a              
+              class="p-inputgroup-addon bg-primary pseudo-button pi pi-eye"
+              [ngClass]="{
+                'pi-eye': vm.isApiKeyHidden,
+                'pi-eye-slash': !vm.isApiKeyHidden,
+                'cursor-pointer': vm.editMode,
+                'p-disabled': !vm.editMode
+              }"
+              tabindex="0"
+              (click)="toggleApiKeyVisibility()"
+              (keydown.enter)="toggleApiKeyVisibility()"
+              [attr.aria-label]="'VIEW_API_KEY' | translate"
+            >
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ocx-page-content>
+</ocx-portal-page>
+

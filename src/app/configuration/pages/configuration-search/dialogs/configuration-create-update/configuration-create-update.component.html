@@ -1,0 +1,34 @@
+<form [formGroup]="formGroup">
+  <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+        <div [title]="'CONFIGURATION_CREATE_UPDATE.FORM.NAME' | translate">
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="configuration_detail_form_name"
+          class="w-full pt-3 pb-2"
+          formControlName="name"
+          [attr.aria-label]="'CONFIGURATION_CREATE_UPDATE.FORM.NAME' | translate"
+        />
+        <label class="ocx-required-label" for="configuration_detail_form_name">
+          {{ 'CONFIGURATION_CREATE_UPDATE.FORM.NAME' | translate }}</label
+        >
+      </span>
+    </div>
+    <div [title]="'CONFIGURATION_CREATE_UPDATE.FORM.DESCRIPTION' | translate">
+      <span class="p-float-label" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="configuration_detail_form_description"
+          class="w-full pt-3 pb-2"
+          formControlName="description"
+          [attr.aria-label]="'CONFIGURATION_CREATE_UPDATE.FORM.DESCRIPTION' | translate"
+        />
+        <label class="ocx-required-label" for="configuration_detail_form_description">
+          {{ 'CONFIGURATION_CREATE_UPDATE.FORM.DESCRIPTION' | translate }}</label
+        >
+      </span>
+    </div>
+  </div>
+</form>

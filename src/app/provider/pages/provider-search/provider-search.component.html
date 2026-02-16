@@ -1,0 +1,123 @@
+<ocx-portal-page
+  permission="PROVIDER#SEARCH"
+  [helpArticleId]="'PROVIDER_SEARCH.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-search-header
+    [headline]="'PROVIDER_SEARCH.HEADER' | translate"
+    [subheader]="'PROVIDER_SEARCH.SUB_HEADER' | translate"
+    (searched)="search(ProviderSearchFormGroup)"
+    (resetted)="resetSearch()"
+    [manualBreadcrumbs]="true"
+    [actions]="(headerActions$ | async) ?? []"
+    (viewModeChanged)="viewModeChanged($event)"
+    [viewMode]="vm.viewMode"
+  >
+    <form [formGroup]="ProviderSearchFormGroup">
+      <div class="grid mt-0 p-fluid">
+        <div class="col-12 md:col-3">
+          <span class="p-float-label">
+            <input
+              id="name"
+              pInputText
+              type="text"
+              formControlName="name"
+              class="p-inputtext p-component"
+              [ngModel]="vm.searchCriteria.name"
+            />
+            <label for="name">{{ 'PROVIDER_SEARCH.CRITERIA.NAME' | translate }}</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-3">
+          <span class="p-float-label">
+            <input
+              id="description"
+              pInputText
+              type="text"
+              formControlName="description"
+              class="p-inputtext p-component"
+              [ngModel]="vm.searchCriteria.description"
+            />
+            <label for="description">{{ 'PROVIDER_SEARCH.CRITERIA.DESCRIPTION' | translate }}</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-3">
+          <span class="p-float-label">
+            <input
+              id="llmUrl"
+              pInputText
+              type="text"
+              formControlName="llmUrl"
+              class="p-inputtext p-component"
+              [ngModel]="vm.searchCriteria.llmUrl"
+            />
+            <label for="llmUrl">{{ 'PROVIDER_SEARCH.CRITERIA.LLMURL' | translate }}</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-3">
+          <span class="p-float-label">
+            <input
+              id="modelName"
+              pInputText
+              type="text"
+              formControlName="modelName"
+              class="p-inputtext p-component"
+              [ngModel]="vm.searchCriteria.modelName"
+            />
+            <label for="modelName">{{ 'PROVIDER_SEARCH.CRITERIA.MODELNAME' | translate }}</label>
+          </span>
+        </div>
+        <div class="col-12 md:col-3">
+          <span class="p-float-label">
+            <input
+              id="type"
+              pInputText
+              type="text"
+              formControlName="type"
+              class="p-inputtext p-component"
+              [ngModel]="vm.searchCriteria.type"
+            />
+            <label for="type">{{ 'PROVIDER_SEARCH.CRITERIA.TYPE' | translate }}</label>
+          </span>
+        </div>
+      </div>
+    </form>
+  </ocx-search-header>
+  <ocx-content-container layout="horizontal">
+    <ocx-content class="w-full">
+      <ocx-interactive-data-view
+        (deleteItem)="delete($event)"
+        deletePermission="PROVIDER#DELETE"
+        (editItem)="edit($event)"
+        editPermission="PROVIDER#EDIT"
+        (viewItem)="details($event)"
+        viewPermission="PROVIDER#VIEW"
+        [data]="vm.results"
+        [columns]="vm.columns"
+        [listGridPaginator]="false"
+        [emptyResultsMessage]="
+          'PROVIDER_SEARCH.EMPTY_RESULTS' | translate
+        "
+        [supportedViewLayouts]="['table']"
+        (displayedColumnsChange)="onDisplayedColumnsChange($event)"
+      >
+      </ocx-interactive-data-view>
+    </ocx-content>
+    <ocx-content
+      class="w-full lg:w-3"
+      *ngIf="vm.results.length > 0 &&
+        vm.chartVisible &&
+        (diagramColumn$ | async)
+    "
+    >
+      <div class="flex flex-column md:flex-row lg:flex-column justify-content-center">
+        <ocx-group-by-count-diagram
+          *ngIf="diagramColumn$ | async as diagramColumn"
+          [data]="vm.results"
+          [column]="diagramColumn"
+          sumKey="PROVIDER_SEARCH.DIAGRAM.SUM"
+        ></ocx-group-by-count-diagram>
+      </div>
+    </ocx-content>
+  </ocx-content-container>
+</ocx-portal-page>

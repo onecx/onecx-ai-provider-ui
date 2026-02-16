@@ -1,0 +1,98 @@
+<ocx-portal-page
+  permission="MCPSERVER#VIEW"
+  [helpArticleId]="'MCPSERVER_DETAILS.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-loading-indicator *ngIf="vm.detailsLoadingIndicator"> </ocx-loading-indicator>
+  <ocx-data-loading-error *ngIf="!vm.detailsLoaded && !vm.detailsLoadingIndicator"> </ocx-data-loading-error>
+  <div *ngIf="vm.detailsLoaded && !vm.detailsLoadingIndicator">
+    <ocx-page-header
+      [header]="'MCPSERVER_DETAILS.HEADER' | translate"
+      [subheader]="'MCPSERVER_DETAILS.SUB_HEADER' | translate"
+      [objectDetails]="(headerLabels$ | async) ?? []"
+      [actions]="(headerActions$ | async) ?? []"
+      [disableDefaultActions]="true"
+      [manualBreadcrumbs]="true"
+    >
+    </ocx-page-header>
+    <ocx-page-content>
+      <div class="surface-section mt-3 mb-1 mx-3">
+        <form [formGroup]="formGroup" errorTailor>
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="mcpServer_detail_name"
+                class="w-full pt-3 pb-2 text-responsive"
+                formControlName="name"                
+              />
+              <label class="ocx-required-label" for="mcpServer_detail_name">
+                {{ 'MCPSERVER_DETAILS.FORM.NAME' | translate }}
+              </label>
+            </span>
+          </div>
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="mcpServer_detail_description"
+                class="w-full pt-3 pb-2 text-responsive"
+                formControlName="description"
+              />
+              <label class="ocx-required-label" for="mcpServer_detail_description">
+                {{ 'MCPSERVER_DETAILS.FORM.DESCRIPTION' | translate }}
+              </label>
+            </span>
+          </div>
+          <div class="mt-3 mb-1">
+            <span class="p-float-label mb-1" controlErrorAnchor>
+              <input
+                pInputText
+                type="text"
+                id="mcpServer_detail_url"
+                class="w-full pt-3 pb-2 text-responsive"
+                formControlName="url"
+              />
+              <label class="ocx-required-label" for="mcpServer_detail_url">
+                {{ 'MCPSERVER_DETAILS.FORM.URL' | translate }}
+              </label>
+            </span>
+          </div>          
+          <div>
+            <div class="p-inputgroup mt-3 mb-1" >
+              <span class="p-float-label" controlErrorAnchor>
+                <input
+                  pInputText
+                  [type]="vm.isApiKeyHidden ? 'password' : 'text'"
+                  id="mcpServer_detail_apiKey"
+                  class="w-full pt-3 pb-2 text-responsive"
+                  formControlName="apiKey"
+                  [disabled]="!vm.editMode && !hasAPIKeyPermission"
+                />
+                <label for="mcpServer_detail_apiKey">{{ 'MCPSERVER_DETAILS.FORM.APIKEY' | translate }} </label>
+              </span>
+              <a
+                *ocxIfPermission="'MCPSERVER#CHANGE_API_KEY'"
+                data-testid="toggle-api-access-button"
+                class="p-inputgroup-addon bg-primary pseudo-button pi pi-eye"
+                [ngClass]="{
+                  'pi-eye': vm.isApiKeyHidden,
+                  'pi-eye-slash': !vm.isApiKeyHidden,
+                  'cursor-pointer': vm.editMode,
+                  'p-disabled': !vm.editMode
+                }"
+                tabindex="0"
+                (click)="toggleApiKeyVisibility()"
+                (keydown.enter)="toggleApiKeyVisibility()"
+                [attr.aria-label]="'MCPSERVER_DETAILS.FORM.VIEW_API_KEY' | translate"
+              >
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>      
+    </ocx-page-content>
+  </div>
+</ocx-portal-page>

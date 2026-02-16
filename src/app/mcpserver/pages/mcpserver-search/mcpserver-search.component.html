@@ -1,0 +1,115 @@
+<ocx-portal-page
+  permission="MCPSERVER#SEARCH"
+  [helpArticleId]="'MCPSERVER_SEARCH.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-search-header
+    [headline]="'MCPSERVER_SEARCH.HEADER' | translate"
+    [subheader]="'MCPSERVER_SEARCH.SUB_HEADER' | translate"
+    (searched)="search(mcpserverSearchFormGroup)"
+    (resetted)="resetSearch()"
+    [manualBreadcrumbs]="true"
+    [actions]="(headerActions$ | async) ?? []"
+    (componentStateChanged)="searchHeaderComponentStateChanged($event)"
+    [viewMode]="vm.searchHeaderComponentState?.activeViewMode ?? 'basic'"
+  >
+    <form [formGroup]="mcpserverSearchFormGroup">
+      <div class="grid mt-0 p-fluid">
+        <div class="col-12 md:col-4">
+          <span class="p-float-label">
+            <input
+              pInputText
+              id="name"
+              type="text"
+              class="w-18rem"
+              formControlName="name"
+              [pTooltip]="'MCPSERVER_SEARCH.CRITERIA.NAME' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="name" style="white-space: nowrap"> {{ 'MCPSERVER_SEARCH.CRITERIA.NAME' | translate }}</label>
+          </span>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <span class="p-float-label">
+            <input
+              pInputText
+              id="description"
+              type="text"
+              class="w-18rem"
+              formControlName="description"
+              [pTooltip]="'MCPSERVER_SEARCH.CRITERIA.DESCRIPTION' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="description" style="white-space: nowrap"> {{ 'MCPSERVER_SEARCH.CRITERIA.DESCRIPTION' | translate }}</label>
+          </span>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <span class="p-float-label">
+            <input
+              pInputText
+              id="url"
+              type="text"
+              class="w-18rem"
+              formControlName="url"
+              [pTooltip]="'MCPSERVER_SEARCH.CRITERIA.URL' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+            />
+            <label for="url" style="white-space: nowrap"> {{ 'MCPSERVER_SEARCH.CRITERIA.URL' | translate }}</label>
+          </span>
+        </div>        
+      </div>
+      
+    </form>
+  </ocx-search-header>
+  <ocx-content-container layout="horizontal">
+    <ocx-content class="w-full">
+      <ocx-interactive-data-view
+        (viewItem)="details($event)"
+        viewPermission="MCPSERVER#VIEW"
+        [data]="vm.results"
+        [columns]="vm.columns"
+        [emptyResultsMessage]="
+          'MCPSERVER_SEARCH.EMPTY_RESULTS' | translate
+        "
+        (componentStateChanged)="resultComponentStateChanged($event)"
+        [layout]="vm.resultComponentState?.layout ?? 'list'"
+        [displayedColumns]="vm.resultComponentState?.displayedColumns ?? []"
+        [supportedViewLayouts]="['list', 'table']"
+        [page]="vm.resultComponentState?.activePage ?? 0"
+        [pageSize]="vm.resultComponentState?.pageSize"
+        [filters]="vm.resultComponentState?.filters ?? []"
+        [sortField]="vm.resultComponentState?.sorting?.sortColumn"
+        [sortDirection]="vm.resultComponentState?.sorting?.sortDirection ?? defaultDataSortDirection"
+        [selectedRows]="vm.resultComponentState?.selectedRows?? []"
+        [defaultGroupKey]="vm.resultComponentState?.activeColumnGroupKey ?? ''"
+        [actionColumnPosition]="vm.resultComponentState?.actionColumnConfig?.position?? 'right'"
+        [frozenActionColumn]="vm.resultComponentState?.actionColumnConfig?.frozen ?? false"
+      >
+        >
+      </ocx-interactive-data-view>
+    </ocx-content>
+    <ocx-content
+      class="w-full lg:w-3"
+      *ngIf="vm.results.length > 0 &&
+        vm.chartVisible &&
+        (diagramColumn$ | async)
+    "
+    >
+      <div class="flex flex-column md:flex-row lg:flex-column justify-content-center">
+        <ocx-group-by-count-diagram
+          *ngIf="diagramColumn$ | async as diagramColumn"
+          [data]="vm.results"
+          [column]="diagramColumn"
+          sumKey="MCPSERVER_SEARCH.DIAGRAM.SUM"
+          [diagramType]="vm.diagramComponentState?.activeDiagramType ?? defaultDiagramType"
+          (componentStateChanged)="diagramComponentStateChanged($event)"
+        ></ocx-group-by-count-diagram>
+      </div>
+    </ocx-content>
+  </ocx-content-container>
+</ocx-portal-page>

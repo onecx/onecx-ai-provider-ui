@@ -1,0 +1,5 @@
+serviceSuffix: 'Service'
+stringEnums: true
+providedIn: 'any'
+ngVersion: '15.2.7'
+configurationPrefix: 'API'
