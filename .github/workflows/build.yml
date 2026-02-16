@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    uses: onecx-apps/ci-angular/.github/workflows/build.yml@v1
+    uses: onecx/ci-angular/.github/workflows/build.yml@v1
     secrets: inherit
     with:
-      helmEventTargetRepository: onecx-apps/onecx-ai-management
+      helmEventTargetRepository: onecx/onecx-ai-management

@@ -1,7 +1,7 @@
 app:
   name: ui
   image:
-    repository: onecx-apps/onecx-ai-management-ui
+    repository: onecx/onecx-ai-management-ui
   routing:
     enabled: true
     path: /mfe/onecxAiUiManagement/
