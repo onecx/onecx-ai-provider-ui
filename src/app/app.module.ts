@@ -50,7 +50,7 @@ export const commonImports = [CommonModule]
       traceLimit: 75
     }),
     EffectsModule.forRoot([]),
-    PortalCoreModule.forRoot('onecx-ai-management-ui-app'),
+    PortalCoreModule.forRoot('onecx-ai-provider-ui-app'),
     TranslateModule.forRoot({
       extend: true,
       loader: {

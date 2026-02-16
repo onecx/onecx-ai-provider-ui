@@ -80,10 +80,10 @@ effectProvidersForWorkaround.forEach((p) => (p.ɵprov.providedIn = null))
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
   ]
 })
-export class OnecxAiUiManagementModule implements DoBootstrap {
+export class OnecxAiUiProviderModule implements DoBootstrap {
   constructor(private readonly injector: Injector) { }
 
   ngDoBootstrap(): void {
-    createAppEntrypoint(AppEntrypointComponent, 'onecx-ai-management-ui-webcomponent', this.injector)
+    createAppEntrypoint(AppEntrypointComponent, 'onecx-ai-provider-ui-webcomponent', this.injector)
   }
 }

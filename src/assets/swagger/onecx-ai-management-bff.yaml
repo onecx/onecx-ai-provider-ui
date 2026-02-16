@@ -4,7 +4,7 @@ info:
   title: onecx-ai bff
   version: 1.0.0
 servers:
-  - url: "http://onecx-ai-management-bff:8080"
+  - url: "http://onecx-ai-provider-bff:8080"
 tags:
   - name: configuration
   - name: provider

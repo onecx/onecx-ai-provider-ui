@@ -1,14 +1,14 @@
 apiVersion: v2
-name: onecx-ai-management-ui
+name: onecx-ai-provider-ui
 version: 0.0.0
-description: onecx-ai-management-ui UI
-home: https://github.com/onecx/onecx-ai-management-ui
+description: onecx-ai-provider-ui UI
+home: https://github.com/onecx/onecx-ai-provider-ui
 keywords:
-  - onecx-ai-management-ui
+  - onecx-ai-provider-ui
   - Angular
   - OneCX
 sources:
-  - https://github.com/onecx/onecx-ai-management-ui
+  - https://github.com/onecx/onecx-ai-provider-ui
 maintainers:
   - name: OneCX Developer Team
     email: tkit_dev@1000kit.org

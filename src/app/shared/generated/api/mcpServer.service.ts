@@ -40,7 +40,7 @@ import { APIConfiguration }                                     from '../configu
 })
 export class McpServerService {
 
-    protected basePath = 'http://onecx-ai-management-bff:8080';
+    protected basePath = 'http://onecx-ai-provider-bff:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new APIConfiguration();
     public encoder: HttpParameterCodec;

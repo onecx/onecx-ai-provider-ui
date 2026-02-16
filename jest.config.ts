@@ -2,7 +2,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  displayName: 'onecx-ai-management',
+  displayName: 'onecx-ai-provider',
   preset: './jest.preset.js',
   verbose: false,
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],

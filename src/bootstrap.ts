@@ -1,5 +1,5 @@
 import { bootstrapModule } from '@onecx/angular-webcomponents'
 import { environment } from 'src/environments/environment'
-import { OnecxAiUiManagementModule } from './app/onecx-ai-management-ui-app.remote.module'
+import { OnecxAiUiProviderModule } from './app/onecx-ai-provider-ui-app.remote.module'
 
-bootstrapModule(OnecxAiUiManagementModule, 'microfrontend', environment.production)
+bootstrapModule(OnecxAiUiProviderModule, 'microfrontend', environment.production)

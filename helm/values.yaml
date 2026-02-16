@@ -1,22 +1,22 @@
 app:
   name: ui
   image:
-    repository: onecx/onecx-ai-management-ui
+    repository: onecx/onecx-ai-provider-ui
   routing:
     enabled: true
-    path: /mfe/onecxAiUiManagement/
+    path: /mfe/onecxAiUiProvider/
   operator:
     microfrontend:
       enabled: true
       specs:
         main:
-          exposedModule: ./OnecxAiUiManagementModule
-          description: OneCX OnecxAiUi Management Module
-          note: OneCX OnecxAiUi Management UI module auto import via MF operator
+          exposedModule: ./OnecxAiUiProviderModule
+          description: OneCX OnecxAiUi Provider Module
+          note: OneCX OnecxAiUi Provider UI module auto import via MF operator
           type: MODULE
           technology: WEBCOMPONENTMODULE
-          remoteName: onecx-ai-management-ui
-          tagName: onecx-ai-management-ui-webcomponent
+          remoteName: onecx-ai-provider-ui
+          tagName: onecx-ai-provider-ui-webcomponent
     permission:
       enabled: true
       spec:
@@ -56,4 +56,4 @@ app:
         enabled: true
         spec:
           kcConfig:
-            clientId: onecx-ai-management-ui
+            clientId: onecx-ai-provider-ui

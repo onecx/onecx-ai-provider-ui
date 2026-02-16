@@ -1,9 +1,9 @@
 {
-  "name": "onecx-ai-management-ui",
+  "name": "onecx-ai-provider-ui",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "apigen": "openapi-generator-cli generate -i src/assets/swagger/onecx-ai-management-bff.yaml -c apigen.yaml -o src/app/shared/generated -g typescript-angular --type-mappings AnyType=object",
+    "apigen": "openapi-generator-cli generate -i src/assets/swagger/onecx-ai-provider-bff.yaml -c apigen.yaml -o src/app/shared/generated -g typescript-angular --type-mappings AnyType=object",
     "start": "nx serve --host 0.0.0.0 --disable-host-check",
     "build": "nx build",
     "format": "nx format:write --uncommitted",
