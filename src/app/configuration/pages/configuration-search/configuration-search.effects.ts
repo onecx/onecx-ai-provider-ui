@@ -76,7 +76,7 @@ export class ConfigurationSearchEffects {
     return this.actions$.pipe(
       ofType(routerNavigatedAction),
       filterForNavigatedTo(this.router, ConfigurationSearchComponent),
-      filterOutQueryParamsHaveNotChanged(this.router, configurationSearchCriteriasSchema, false),
+      filterOutQueryParamsHaveNotChanged(this.router, configurationSearchCriteriasSchema, true),
       concatLatestFrom(() => this.store.select(configurationSearchSelectors.selectCriteria)),
       switchMap(([, searchCriteria]) => this.performSearch(searchCriteria))
     )

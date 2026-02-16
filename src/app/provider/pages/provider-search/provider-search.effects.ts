@@ -306,7 +306,7 @@ export class ProviderSearchEffects {
     return this.actions$.pipe(
       ofType(routerNavigatedAction),
       filterForNavigatedTo(this.router, ProviderSearchComponent),
-      filterOutQueryParamsHaveNotChanged(this.router, ProviderSearchCriteriasSchema, false),
+      filterOutQueryParamsHaveNotChanged(this.router, ProviderSearchCriteriasSchema, true),
       concatLatestFrom(() => this.store.select(ProviderSearchSelectors.selectCriteria)),
       switchMap(([, searchCriteria]) => this.performSearch(searchCriteria))
     )

@@ -73,7 +73,7 @@ export class MCPServerSearchEffects {
     return this.actions$.pipe(
       ofType(routerNavigatedAction),
       filterForNavigatedTo(this.router, MCPServerSearchComponent),
-      filterOutQueryParamsHaveNotChanged(this.router, mcpserverSearchCriteriasSchema, false),
+      filterOutQueryParamsHaveNotChanged(this.router, mcpserverSearchCriteriasSchema, true),
       concatLatestFrom(() => this.store.select(mcpserverSearchSelectors.selectCriteria)),
       switchMap(([, searchCriteria]) => this.performSearch(searchCriteria))
     )
