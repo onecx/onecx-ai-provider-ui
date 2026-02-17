@@ -37,7 +37,7 @@
     "@ngrx/router-store": "^18.0.2",
     "@ngrx/store": "^18.0.2",
     "@ngrx/store-devtools": "^18.0.2",
-    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "@nx/angular": "^19.8.0",
     "@nx/devkit": "19.8.0",
