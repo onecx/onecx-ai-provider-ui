@@ -291,6 +291,26 @@ describe('ConfigurationSearchComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(ConfigurationSearchActions.createConfigurationButtonClicked())
   })
 
+  it('should dispatch navigateToProvidersButtonClicked', async () => {
+    const header = await ConfigurationSearch.getHeader()
+    const navigateToProvidersButton = await (await header.getPageHeader()).getInlineActionButtonByIcon(PrimeIcons.ANDROID)
+
+    expect(navigateToProvidersButton).toBeTruthy()
+    await navigateToProvidersButton?.click()
+
+    expect(store.dispatch).toHaveBeenCalledWith(ConfigurationSearchActions.navigateToProvidersButtonClicked())
+  })
+
+  it('should dispatch navigateToMCPServersButtonClicked', async () => {
+    const header = await ConfigurationSearch.getHeader()
+    const navigateToMCPServersButton = await (await header.getPageHeader()).getInlineActionButtonByIcon(PrimeIcons.BOOK)
+
+    expect(navigateToMCPServersButton).toBeTruthy()
+    await navigateToMCPServersButton?.click()
+
+    expect(store.dispatch).toHaveBeenCalledWith(ConfigurationSearchActions.navigateToMCPServersButtonClicked())
+  })
+
   it('should dispatch detailsButtonClicked action on details', () => {
     const row: RowListGridData = { id: 'test-id', imagePath: '' }
     component.details(row)

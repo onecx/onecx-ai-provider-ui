@@ -259,7 +259,7 @@ export class ConfigurationSearchEffects {
             })
             return ConfigurationSearchActions.deleteConfigurationSucceeded()
           }),
-          catchError((error) => {            
+          catchError((error) => {
             this.messageService.error({
               summaryKey: 'CONFIGURATION_DELETE.ERROR'
             })
@@ -317,6 +317,38 @@ export class ConfigurationSearchEffects {
             viewModel.results,
             'Configuration.csv'
           )
+        })
+      )
+    },
+    { dispatch: false }
+  )
+
+  navigateToProviders$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(ConfigurationSearchActions.navigateToProvidersButtonClicked),
+        concatLatestFrom(() => this.store.select(selectUrl)),
+        tap(([, currentUrl]) => {
+          const urlTree = this.router.parseUrl(currentUrl)
+          urlTree.queryParams = {}
+          urlTree.fragment = null
+          this.router.navigate([urlTree.toString(), 'provider'])
+        })
+      )
+    },
+    { dispatch: false }
+  )
+
+  navigateToMcpServers$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(ConfigurationSearchActions.navigateToMCPServersButtonClicked),
+        concatLatestFrom(() => this.store.select(selectUrl)),
+        tap(([, currentUrl]) => {
+          const urlTree = this.router.parseUrl(currentUrl)
+          urlTree.queryParams = {}
+          urlTree.fragment = null
+          this.router.navigate([urlTree.toString(), 'mcpserver'])
         })
       )
     },

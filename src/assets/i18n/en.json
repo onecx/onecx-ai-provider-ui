@@ -62,7 +62,9 @@
       "CREATE_SEARCH_CONFIG": "Create search configuration",
       "UPDATE_SEARCH_CONFIG": "Update search configuration",
       "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel"
+      "DIALOG_CANCEL": "Cancel",
+      "NAVIGATE_TO_PROVIDERS": "Provider",
+      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"      
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
