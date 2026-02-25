@@ -60,6 +60,8 @@ export const ConfigurationSearchActions = createActionGroup({
     }>(),
     'Displayed columns changed': props<{
       displayedColumns: DataTableColumn[]
-    }>()
+    }>(),
+    'Navigate to providers button clicked': emptyProps(),
+    'Navigate to MCP servers button clicked': emptyProps()
   }
 })

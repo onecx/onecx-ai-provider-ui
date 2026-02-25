@@ -46,7 +46,7 @@ describe('ConfigurationSearchEffects', () => {
   let store: MockStore<Store>
   let router: jest.Mocked<Router>
   let route: ActivatedRoute
-  
+
   let configurationService: jest.Mocked<ConfigurationService>
   let portalDialogService: jest.Mocked<PortalDialogService>
   let exportDataService: jest.Mocked<ExportDataService>
@@ -1015,6 +1015,36 @@ describe('ConfigurationSearchEffects', () => {
       }, 0)
 
       actions$.next(ConfigurationSearchActions.resetButtonClicked())
+    })
+  })
+
+  describe('navigateToProviders$', () => {
+    it('should navigate to providers page when providersButtonClicked action is dispatched', (done) => {
+      store.overrideSelector(selectUrl, '/')
+      store.refreshState()
+      const navigateSpy = jest.spyOn(router, 'navigate')
+
+      actions$.next(ConfigurationSearchActions.navigateToProvidersButtonClicked())
+
+      effects.navigateToProviders$.subscribe(() => {
+        expect(navigateSpy).toHaveBeenCalledWith(['/', 'provider'])
+        done()
+      })
+    })
+  })
+
+  describe('navigateToMcpServers$', () => {
+    it('should navigate to MCP servers page when mcpServersButtonClicked action is dispatched', (done) => {
+      store.overrideSelector(selectUrl, '/')
+      store.refreshState()
+      const navigateSpy = jest.spyOn(router, 'navigate')
+
+      actions$.next(ConfigurationSearchActions.navigateToMCPServersButtonClicked())
+
+      effects.navigateToMcpServers$.subscribe(() => {
+        expect(navigateSpy).toHaveBeenCalledWith(['/', 'mcpserver'])
+        done()
+      })
     })
   })
 })

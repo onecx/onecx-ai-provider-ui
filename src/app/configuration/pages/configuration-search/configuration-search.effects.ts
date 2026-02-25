@@ -62,10 +62,7 @@ export class ConfigurationSearchEffects {
         ofType(ConfigurationSearchActions.detailsButtonClicked),
         concatLatestFrom(() => this.store.select(selectUrl)),
         tap(([action, currentUrl]) => {
-          const urlTree = this.router.parseUrl(currentUrl)
-          urlTree.queryParams = {}
-          urlTree.fragment = null
-          this.router.navigate([urlTree.toString(), 'details', action.id])
+          this.navigateWithFragments(currentUrl, ['details', action.id])
         })
       )
     },
@@ -259,7 +256,7 @@ export class ConfigurationSearchEffects {
             })
             return ConfigurationSearchActions.deleteConfigurationSucceeded()
           }),
-          catchError((error) => {            
+          catchError((error) => {
             this.messageService.error({
               summaryKey: 'CONFIGURATION_DELETE.ERROR'
             })
@@ -317,6 +314,39 @@ export class ConfigurationSearchEffects {
             viewModel.results,
             'Configuration.csv'
           )
+        })
+      )
+    },
+    { dispatch: false }
+  )
+
+  navigateWithFragments(currentUrl: string, fragments: unknown[]) {
+    const urlTree = this.router.parseUrl(currentUrl)
+    urlTree.queryParams = {}
+    urlTree.fragment = null
+    this.router.navigate([urlTree.toString(), ...fragments])
+  }
+
+  navigateToProviders$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(ConfigurationSearchActions.navigateToProvidersButtonClicked),
+        concatLatestFrom(() => this.store.select(selectUrl)),
+        tap(([, currentUrl]) => {
+          this.navigateWithFragments(currentUrl, ['provider'])
+        })
+      )
+    },
+    { dispatch: false }
+  )
+
+  navigateToMcpServers$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(ConfigurationSearchActions.navigateToMCPServersButtonClicked),
+        concatLatestFrom(() => this.store.select(selectUrl)),
+        tap(([, currentUrl]) => {
+          this.navigateWithFragments(currentUrl, ['mcpserver'])
         })
       )
     },

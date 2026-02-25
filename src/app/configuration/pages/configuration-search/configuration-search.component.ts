@@ -36,6 +36,18 @@ export class ConfigurationSearchComponent implements OnInit {
     map((vm) => {
       const actions: Action[] = [
         {
+          labelKey: 'CONFIGURATION_SEARCH.HEADER_ACTIONS.NAVIGATE_TO_PROVIDERS',
+          icon: PrimeIcons.ANDROID,
+          show: 'always',
+          actionCallback: () => this.navigateToProviders()
+        },
+        {
+          labelKey: 'CONFIGURATION_SEARCH.HEADER_ACTIONS.NAVIGATE_TO_MCP_SERVERS',
+          icon: PrimeIcons.BOOK,
+          show: 'always',
+          actionCallback: () => this.navigateToMcpServers()
+        },
+        {
           labelKey: 'CONFIGURATION_CREATE_UPDATE.ACTION.CREATE',
           icon: PrimeIcons.PLUS,
           show: 'always',
@@ -82,7 +94,7 @@ export class ConfigurationSearchComponent implements OnInit {
     private readonly formBuilder: FormBuilder,
     @Inject(LOCALE_ID) public readonly locale: string,
     private readonly exportDataService: ExportDataService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.breadcrumbService.setItems([
@@ -113,20 +125,28 @@ export class ConfigurationSearchComponent implements OnInit {
         ...acc,
         [key]: isValidDate(value)
           ? new Date(
-              Date.UTC(
-                value.getFullYear(),
-                value.getMonth(),
-                value.getDate(),
-                value.getHours(),
-                value.getMinutes(),
-                value.getSeconds()
-              )
+            Date.UTC(
+              value.getFullYear(),
+              value.getMonth(),
+              value.getDate(),
+              value.getHours(),
+              value.getMinutes(),
+              value.getSeconds()
             )
+          )
           : value || undefined
       }),
       {}
     )
     this.store.dispatch(ConfigurationSearchActions.searchButtonClicked({ searchCriteria }))
+  }
+
+  navigateToProviders() {
+    this.store.dispatch(ConfigurationSearchActions.navigateToProvidersButtonClicked())
+  }
+
+  navigateToMcpServers() {
+    this.store.dispatch(ConfigurationSearchActions.navigateToMCPServersButtonClicked())
   }
 
   create() {
