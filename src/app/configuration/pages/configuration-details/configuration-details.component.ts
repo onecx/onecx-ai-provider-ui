@@ -150,8 +150,7 @@ export class ConfigurationDetailsComponent implements OnInit {
       name: new FormControl('', [Validators.required]),
       description: new FormControl(''),
       mcpServers: new FormControl(undefined),
-      llmProvider: new FormControl(undefined),
-      modificationCount: new FormControl(undefined)
+      llmProvider: new FormControl(undefined)
     })
     this.formGroup.disable()
 
@@ -163,7 +162,6 @@ export class ConfigurationDetailsComponent implements OnInit {
           description: vm.details?.description || '',
           mcpServers: vm.details?.mcpServers,
           llmProvider: vm.details?.llmProvider,
-          modificationCount: vm.details?.modificationCount
         })
 
         this.formGroup.markAsPristine()
