@@ -54,7 +54,7 @@ describe('ConfigurationSearchEffects', () => {
   let mockMessageService: PortalMessageServiceMock
 
   const mockCriteria: ConfigurationSearchCriteria = {
-    name: 'test-name',
+    name: 'test-name'
   }
 
   beforeEach(async () => {
@@ -64,7 +64,8 @@ describe('ConfigurationSearchEffects', () => {
       createConfiguration: jest.fn(),
       updateConfiguration: jest.fn(),
       deleteConfiguration: jest.fn(),
-      findConfigurationBySearchCriteria: jest.fn()
+      findConfigurationBySearchCriteria: jest.fn(),
+      getConfiguration: jest.fn()
     } as unknown as jest.Mocked<ConfigurationService>
 
     router = {
@@ -166,7 +167,7 @@ describe('ConfigurationSearchEffects', () => {
       const navigateSpy = jest.spyOn(router, 'navigate')
 
       route.queryParams = of({
-        name: 'different-name',
+        name: 'different-name'
       })
 
       actions$.next(ConfigurationSearchActions.resetButtonClicked())
@@ -248,9 +249,7 @@ describe('ConfigurationSearchEffects', () => {
         totalPages: 0
       })
 
-      const performSpy = jest
-        .spyOn(effects, 'performSearch')
-        .mockReturnValue(of(expectedAction) as any)
+      const performSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(expectedAction) as any)
 
       actions$.next({ type: routerNavigatedAction.type })
 
@@ -327,8 +326,8 @@ describe('ConfigurationSearchEffects', () => {
           totalPages: 1
         }) as never
       )
-    });
-    [
+    })
+    ;[
       {
         desc: 'should trigger search when createConfigurationSucceeded action is dispatched',
         action: ConfigurationSearchActions.createConfigurationSucceeded()
@@ -378,6 +377,7 @@ describe('ConfigurationSearchEffects', () => {
     beforeEach(() => {
       store.overrideSelector(configurationSearchSelectors.selectResults, mockResults)
       store.refreshState()
+      configurationService.getConfiguration.mockReturnValue(of(mockConfiguration) as never)
     })
 
     it('should open dialog and dispatch updateConfigurationSucceeded on successful update', (done) => {
@@ -404,9 +404,9 @@ describe('ConfigurationSearchEffects', () => {
         })
         done()
       })
-    });
+    })
 
-    [
+    ;[
       {
         desc: 'should dispatch updateConfigurationCancelled when dialog is cancelled',
         dialogResult: { button: 'secondary', result: null }
@@ -632,9 +632,9 @@ describe('ConfigurationSearchEffects', () => {
         })
         done()
       })
-    });
+    })
 
-    [
+    ;[
       {
         desc: 'should dispatch deleteConfigurationCancelled when dialog is cancelled',
         dialogResult: { button: 'secondary', result: null }
@@ -808,9 +808,9 @@ describe('ConfigurationSearchEffects', () => {
       })
 
       actions$.next(ConfigurationSearchActions.createConfigurationButtonClicked())
-    });
+    })
 
-    [
+    ;[
       {
         desc: 'should dispatch cancelled action when dialog is closed without result',
         dialogResult: null
@@ -886,15 +886,13 @@ describe('ConfigurationSearchEffects', () => {
   })
 
   describe('exportData$', () => {
-    [
+    ;[
       {
         desc: 'should handle export with empty displayed columns',
         viewModel: {
           columns: [],
           searchCriteria: {},
-          results: [
-            { id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }
-          ],
+          results: [{ id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }],
           displayedColumns: [],
           resultComponentState: { displayedColumns: undefined },
           searchHeaderComponentState: null,
@@ -909,9 +907,7 @@ describe('ConfigurationSearchEffects', () => {
         viewModel: {
           columns: [],
           searchCriteria: {},
-          results: [
-            { id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }
-          ],
+          results: [{ id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }],
           displayedColumns: [],
           resultComponentState: null,
           searchHeaderComponentState: null,
@@ -925,11 +921,7 @@ describe('ConfigurationSearchEffects', () => {
       it(desc, (done) => {
         store.overrideSelector(selectConfigurationSearchViewModel, viewModel)
         effects.exportData$.subscribe(() => {
-          expect(exportDataService.exportCsv).toHaveBeenCalledWith(
-            [],
-            viewModel.results,
-            'Configuration.csv'
-          )
+          expect(exportDataService.exportCsv).toHaveBeenCalledWith([], viewModel.results, 'Configuration.csv')
           done()
         })
         actions$.next(ConfigurationSearchActions.exportButtonClicked())
@@ -955,11 +947,7 @@ describe('ConfigurationSearchEffects', () => {
       store.overrideSelector(selectConfigurationSearchViewModel, mockViewModel)
 
       effects.exportData$.subscribe(() => {
-        expect(exportDataService.exportCsv).toHaveBeenCalledWith(
-          mockColumns,
-          mockResults,
-          'Configuration.csv'
-        )
+        expect(exportDataService.exportCsv).toHaveBeenCalledWith(mockColumns, mockResults, 'Configuration.csv')
         done()
       })
 
@@ -981,11 +969,7 @@ describe('ConfigurationSearchEffects', () => {
       store.overrideSelector(selectConfigurationSearchViewModel, mockViewModel)
 
       effects.exportData$.subscribe(() => {
-        expect(exportDataService.exportCsv).toHaveBeenCalledWith(
-          mockColumns,
-          [],
-          'Configuration.csv'
-        )
+        expect(exportDataService.exportCsv).toHaveBeenCalledWith(mockColumns, [], 'Configuration.csv')
         done()
       })
 
