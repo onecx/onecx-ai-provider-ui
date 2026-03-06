@@ -24,7 +24,6 @@ import {
   Configuration,
   ConfigurationService,
   CreateConfigurationRequest,
-  UpdateConfigurationRequest
 } from 'src/app/shared/generated'
 
 @Injectable()
