@@ -136,10 +136,11 @@ export class ConfigurationDetailsComponent implements OnInit {
     this.mcpServerQuery$ = new BehaviorSubject<string>('')
     this.filteredMCPServers$ = combineLatest([this.mcpServerQuery$, this.viewModel$]).pipe(
       map(([query, vm]) => {
-        const suggestions = [...(vm.details?.mcpServers ?? []), ...vm.MCPServers ?? []]
-        return suggestions.filter((mcp) =>
-          (mcp.name ?? '').toLowerCase().includes(query.toLowerCase())
-          && vm.details?.mcpServers?.every(selected => selected.id !== mcp.id)
+        const suggestions = [...(vm.details?.mcpServers ?? []), ...(vm.MCPServers ?? [])]
+        return suggestions.filter(
+          (mcp) =>
+            (mcp.name ?? '').toLowerCase().includes(query.toLowerCase()) &&
+            vm.details?.mcpServers?.every((selected) => selected.id !== mcp.id)
         )
       })
     )
@@ -149,7 +150,8 @@ export class ConfigurationDetailsComponent implements OnInit {
       name: new FormControl('', [Validators.required]),
       description: new FormControl(''),
       mcpServers: new FormControl(undefined),
-      llmProvider: new FormControl(undefined)
+      llmProvider: new FormControl(undefined),
+      modificationCount: new FormControl(undefined)
     })
     this.formGroup.disable()
 
@@ -160,7 +162,8 @@ export class ConfigurationDetailsComponent implements OnInit {
           name: vm.details?.name || '',
           description: vm.details?.description || '',
           mcpServers: vm.details?.mcpServers,
-          llmProvider: vm.details?.llmProvider
+          llmProvider: vm.details?.llmProvider,
+          modificationCount: vm.details?.modificationCount
         })
 
         this.formGroup.markAsPristine()

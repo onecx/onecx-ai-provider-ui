@@ -49,7 +49,8 @@ export class ConfigurationCreateUpdateComponent
   constructor() {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.maxLength(255)]),
-      description: new FormControl(null, [Validators.maxLength(255)])
+      description: new FormControl(null, [Validators.maxLength(255)]),
+      modificationCount: new FormControl(null)
     })
     this.formGroup.statusChanges
       .pipe(
@@ -71,7 +72,8 @@ export class ConfigurationCreateUpdateComponent
     if (this.vm.itemToEdit) {
       this.formGroup.patchValue({
         name: this.vm.itemToEdit.name,
-        description: this.vm.itemToEdit.description
+        description: this.vm.itemToEdit.description,
+        modificationCount: this.vm.itemToEdit.modificationCount
       })
     }
   }
