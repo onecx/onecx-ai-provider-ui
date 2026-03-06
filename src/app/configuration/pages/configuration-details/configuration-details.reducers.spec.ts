@@ -1,5 +1,6 @@
-import { configurationDetailsReducer, initialState } from "./configuration-details.reducers"
-import { ConfigurationDetailsActions } from "./configuration-details.actions"
+import { configurationDetailsReducer, initialState } from './configuration-details.reducers'
+import { ConfigurationDetailsActions } from './configuration-details.actions'
+import { Configuration } from 'src/app/shared/generated'
 
 describe('configurationDetailsReducer', () => {
   it('should return the initial state', () => {
@@ -26,7 +27,10 @@ describe('configurationDetailsReducer', () => {
   })
 
   it('should handle configurationProvidersReceived', () => {
-    const providers = [{ id: 'p1', name: 'Provider 1', modelName: 'model' }, { id: 'p2', name: 'Provider 2', modelName: 'model' }]
+    const providers = [
+      { id: 'p1', name: 'Provider 1', modelName: 'model' },
+      { id: 'p2', name: 'Provider 2', modelName: 'model' }
+    ]
     const action = ConfigurationDetailsActions.configurationProvidersReceived({ providers })
     const state = configurationDetailsReducer(initialState, action)
     expect(state.Providers).toEqual(providers)
@@ -36,7 +40,10 @@ describe('configurationDetailsReducer', () => {
 
   it('should handle configurationProvidersLoadingFailed', () => {
     const action = ConfigurationDetailsActions.configurationProvidersLoadingFailed({ error: 'err' })
-    const state = configurationDetailsReducer({ ...initialState, Providers: [{ id: 'p', name: 'Provider', modelName: 'model' }] }, action)
+    const state = configurationDetailsReducer(
+      { ...initialState, Providers: [{ id: 'p', name: 'Provider', modelName: 'model' }] },
+      action
+    )
     expect(state.Providers).toEqual([])
     expect(state.ProvidersLoadingIndicator).toBe(false)
     expect(state.ProvidersLoaded).toBe(false)
@@ -80,6 +87,40 @@ describe('configurationDetailsReducer', () => {
     expect(state.isSubmitting).toBe(true)
   })
 
+  it('should keep previous modificationCount on saveButtonClicked', () => {
+    const prevState = {
+      ...initialState,
+      details: { id: '1', name: 'before', modificationCount: 7 } as any
+    }
+    const details = { id: '1', name: 'after' }
+    const action = ConfigurationDetailsActions.saveButtonClicked({ details: details as any })
+    const state = configurationDetailsReducer(prevState, action)
+
+    expect(state.details).toEqual({
+      ...details,
+      modificationCount: 7
+    })
+    expect(state.editMode).toBe(false)
+    expect(state.isSubmitting).toBe(true)
+  })
+
+  it('should set modificationCount as undefined when previous details are null on saveButtonClicked', () => {
+    const prevState = {
+      ...initialState,
+      details: null as any
+    }
+    const details = { id: '1', name: 'after' }
+    const action = ConfigurationDetailsActions.saveButtonClicked({ details: details as any })
+    const state = configurationDetailsReducer(prevState, action)
+
+    expect(state.details).toEqual({
+      ...details,
+      modificationCount: undefined
+    })
+    expect(state.editMode).toBe(false)
+    expect(state.isSubmitting).toBe(true)
+  })
+
   it('should not change state on navigateBackButtonClicked', () => {
     const action = ConfigurationDetailsActions.navigateBackButtonClicked()
     const state = configurationDetailsReducer(initialState, action)
@@ -92,7 +133,7 @@ describe('configurationDetailsReducer', () => {
       ConfigurationDetailsActions.cancelEditConfirmClicked(),
       ConfigurationDetailsActions.cancelEditNotDirty(),
       ConfigurationDetailsActions.updateConfigurationCancelled(),
-      ConfigurationDetailsActions.updateConfigurationSucceeded()
+      ConfigurationDetailsActions.updateConfigurationSucceeded({ updateResult: {} as Configuration })
     ]
     for (const action of actions) {
       const state = configurationDetailsReducer(prevState, action)

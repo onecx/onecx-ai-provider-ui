@@ -62,7 +62,7 @@ describe('ConfigurationCreateUpdateComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should initialize form with empty values', () => {    
+  it('should initialize form with empty values', () => {
     expect(component.formGroup.get('name')?.value).toBeNull()
     expect(component.formGroup.get('description')?.value).toBeNull()
   })
@@ -76,7 +76,7 @@ describe('ConfigurationCreateUpdateComponent', () => {
   })
 
   it('should create dialog result with form values', () => {
-    const formValues = {      
+    const formValues = {
       name: 'AI Context 1',
       description: 'Description'
     }
@@ -91,7 +91,7 @@ describe('ConfigurationCreateUpdateComponent', () => {
 
   it('should merge existing item with form values in dialog result when editing', () => {
     component.vm = { itemToEdit: mockItem }
-    const formValues = {      
+    const formValues = {
       name: 'Updated AI Context 1',
       description: 'Updated Description'
     }
@@ -108,17 +108,17 @@ describe('ConfigurationCreateUpdateComponent', () => {
   it('should validate max length for all fields', () => {
     const longString = 'a'.repeat(256)
 
-    component.formGroup.patchValue({      
+    component.formGroup.patchValue({
       name: longString,
       description: longString
     })
-    
+
     expect(component.formGroup.get('name')?.errors?.['maxlength']).toBeTruthy()
     expect(component.formGroup.get('description')?.errors?.['maxlength']).toBeTruthy()
   })
 
   it('should consider form valid with valid values', () => {
-    component.formGroup.patchValue({      
+    component.formGroup.patchValue({
       name: 'Valid AI Context 1',
       description: 'Valid Description'
     })

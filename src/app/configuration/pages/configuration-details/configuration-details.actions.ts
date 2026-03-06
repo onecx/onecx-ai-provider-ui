@@ -33,7 +33,7 @@ export const ConfigurationDetailsActions = createActionGroup({
 
     'edit mode set': props<{ editMode: boolean }>(),
     'Update configuration cancelled': emptyProps(),
-    'Update configuration succeeded': emptyProps(),
+    'Update configuration succeeded': props<{updateResult: Configuration}>(),
     'Update configuration failed': props<{
       error: string | null
     }>(),

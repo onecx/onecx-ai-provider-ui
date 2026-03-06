@@ -7,10 +7,7 @@ import { PrimeIcons } from 'primeng/api'
 import { ConfigurationDetailsActions } from './configuration-details.actions'
 import { ConfigurationDetailsViewModel } from './configuration-details.viewmodel'
 import { selectConfigurationDetailsViewModel } from './configuration-details.selectors'
-import {
-  MCPServer,
-  Provider
-} from 'src/app/shared/generated'
+import { MCPServer, Provider } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-configuration-details',
@@ -108,33 +105,31 @@ export class ConfigurationDetailsComponent implements OnInit {
   ) {
     this.filteredProviders$ = combineLatest([this.providerQuery$, this.viewModel$]).pipe(
       map(([query, vm]) => {
-        const suggestions = [...(vm.details?.llmProvider ? [vm.details.llmProvider] : []), ...vm.Providers ?? []]
-        return suggestions.filter((p) =>
-          p.name.toLowerCase().includes(query.toLowerCase())
-          && vm.details?.llmProvider?.id !== p.id)
+        const suggestions = [...(vm.details?.llmProvider ? [vm.details.llmProvider] : []), ...(vm.Providers ?? [])]
+        return suggestions.filter(
+          (p) => p.name.toLowerCase().includes(query.toLowerCase()) && vm.details?.llmProvider?.id !== p.id
+        )
       })
     )
 
     this.mcpServerQuery$ = new BehaviorSubject<string>('')
-    this.filteredMCPServers$ = combineLatest([
-      this.mcpServerQuery$,
-      this.viewModel$
-    ]).pipe(
+    this.filteredMCPServers$ = combineLatest([this.mcpServerQuery$, this.viewModel$]).pipe(
       map(([query, vm]) => {
-        const suggestions = [...(vm.details?.mcpServers ?? []), ...vm.MCPServers ?? []]
-        return suggestions.filter((mcp) =>
-          (mcp.name ?? '').toLowerCase().includes(query.toLowerCase())
-          && vm.details?.mcpServers?.every(selected => selected.id !== mcp.id)
+        const suggestions = [...(vm.details?.mcpServers ?? []), ...(vm.MCPServers ?? [])]
+        return suggestions.filter(
+          (mcp) =>
+            (mcp.name ?? '').toLowerCase().includes(query.toLowerCase()) &&
+            vm.details?.mcpServers?.every((selected) => selected.id !== mcp.id)
         )
       })
     )
 
     this.formGroup = new FormGroup({
-      id: new FormControl('', [Validators.maxLength(255)]),      
+      id: new FormControl('', [Validators.maxLength(255)]),
       name: new FormControl('', [Validators.required]),
       description: new FormControl(''),
       mcpServers: new FormControl(undefined),
-      llmProvider: new FormControl(undefined),
+      llmProvider: new FormControl(undefined)
     })
     this.formGroup.disable()
 

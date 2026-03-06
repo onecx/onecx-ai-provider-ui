@@ -152,14 +152,15 @@ export class ConfigurationDetailsEffects {
           return of(ConfigurationDetailsActions.updateConfigurationCancelled())
         }
         const itemToEdit = {
-          ...updatedItem
+          ...updatedItem,
+          modificationCount: details.modificationCount
         } as UpdateConfigurationRequest
         return this.configurationService.updateConfiguration(itemToEditId, itemToEdit).pipe(
-          map(() => {
+          map((response) => {
             this.messageService.success({
               summaryKey: 'CONFIGURATION_DETAILS.UPDATE.SUCCESS'
             })
-            return ConfigurationDetailsActions.updateConfigurationSucceeded()
+            return ConfigurationDetailsActions.updateConfigurationSucceeded({updateResult: response})
           }),
           catchError((error) => {
             this.messageService.error({

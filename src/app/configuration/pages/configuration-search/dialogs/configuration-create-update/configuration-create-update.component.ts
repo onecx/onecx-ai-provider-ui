@@ -29,7 +29,7 @@ export class ConfigurationCreateUpdateComponent
   dialogResult: Configuration | undefined = undefined
 
   constructor() {
-    this.formGroup = new FormGroup({      
+    this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)])
     })
@@ -57,5 +57,4 @@ export class ConfigurationCreateUpdateComponent
       })
     }
   }
-
 }

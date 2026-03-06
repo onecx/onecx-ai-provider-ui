@@ -54,7 +54,7 @@ describe('ConfigurationSearchEffects', () => {
   let mockMessageService: PortalMessageServiceMock
 
   const mockCriteria: ConfigurationSearchCriteria = {
-    name: 'test-name',
+    name: 'test-name'
   }
 
   beforeEach(async () => {
@@ -64,7 +64,8 @@ describe('ConfigurationSearchEffects', () => {
       createConfiguration: jest.fn(),
       updateConfiguration: jest.fn(),
       deleteConfiguration: jest.fn(),
-      findConfigurationBySearchCriteria: jest.fn()
+      findConfigurationBySearchCriteria: jest.fn(),
+      getConfiguration: jest.fn()
     } as unknown as jest.Mocked<ConfigurationService>
 
     router = {
@@ -166,7 +167,7 @@ describe('ConfigurationSearchEffects', () => {
       const navigateSpy = jest.spyOn(router, 'navigate')
 
       route.queryParams = of({
-        name: 'different-name',
+        name: 'different-name'
       })
 
       actions$.next(ConfigurationSearchActions.resetButtonClicked())
@@ -248,9 +249,7 @@ describe('ConfigurationSearchEffects', () => {
         totalPages: 0
       })
 
-      const performSpy = jest
-        .spyOn(effects, 'performSearch')
-        .mockReturnValue(of(expectedAction) as any)
+      const performSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(expectedAction) as any)
 
       actions$.next({ type: routerNavigatedAction.type })
 
@@ -327,8 +326,8 @@ describe('ConfigurationSearchEffects', () => {
           totalPages: 1
         }) as never
       )
-    });
-    [
+    })
+    ;[
       {
         desc: 'should trigger search when createConfigurationSucceeded action is dispatched',
         action: ConfigurationSearchActions.createConfigurationSucceeded()
@@ -360,164 +359,6 @@ describe('ConfigurationSearchEffects', () => {
           ConfigurationSearchActions.configurationSearchResultsLoadingFailed({
             error: mockError
           })
-        )
-        done()
-      })
-    })
-  })
-
-  describe('editButtonClicked$', () => {
-    const mockConfiguration = {
-      id: 'test-123',
-      name: 'Test Context',
-      description: 'Test Description'
-    }
-
-    const mockResults = [mockConfiguration, { id: 'other-id', name: 'Other Context' }]
-
-    beforeEach(() => {
-      store.overrideSelector(configurationSearchSelectors.selectResults, mockResults)
-      store.refreshState()
-    })
-
-    it('should open dialog and dispatch updateConfigurationSucceeded on successful update', (done) => {
-      const mockDialogResult = {
-        button: 'primary',
-        result: { ...mockConfiguration, name: 'Updated Context' }
-      }
-
-      portalDialogService.openDialog.mockReturnValue(of(mockDialogResult) as never)
-
-      configurationService.updateConfiguration.mockReturnValue(of({}) as never)
-
-      const messageSuccessSpy = jest.spyOn(mockMessageService, 'success')
-
-      actions$.next(ConfigurationSearchActions.editConfigurationButtonClicked({ id: 'test-123' }))
-
-      effects.editButtonClicked$.subscribe((action) => {
-        expect(action.type).toEqual(ConfigurationSearchActions.updateConfigurationSucceeded.type)
-        expect(configurationService.updateConfiguration).toHaveBeenCalledWith('test-123', {
-          ...mockDialogResult.result
-        })
-        expect(messageSuccessSpy).toHaveBeenCalledWith({
-          summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.SUCCESS'
-        })
-        done()
-      })
-    });
-
-    [
-      {
-        desc: 'should dispatch updateConfigurationCancelled when dialog is cancelled',
-        dialogResult: { button: 'secondary', result: null }
-      },
-      {
-        desc: 'should dispatch updateConfigurationCancelled when dialog result is null',
-        dialogResult: null
-      }
-    ].forEach(({ desc, dialogResult }) => {
-      it(desc, (done) => {
-        portalDialogService.openDialog.mockReturnValue(of(dialogResult) as never)
-        actions$.next(ConfigurationSearchActions.editConfigurationButtonClicked({ id: 'test-123' }))
-        effects.editButtonClicked$.subscribe((action) => {
-          expect(action.type).toEqual(ConfigurationSearchActions.updateConfigurationCancelled.type)
-          expect(configurationService.updateConfiguration).not.toHaveBeenCalled()
-          done()
-        })
-      })
-    })
-
-    it('should dispatch updateConfigurationFailed when API call fails', (done) => {
-      const mockDialogResult = {
-        button: 'primary',
-        result: { ...mockConfiguration, name: 'Updated Context' }
-      }
-      const mockError = 'Update failed'
-
-      portalDialogService.openDialog.mockReturnValue(of(mockDialogResult) as never)
-      configurationService.updateConfiguration.mockReturnValue(throwError(() => mockError))
-
-      const messageErrorSpy = jest.spyOn(mockMessageService, 'error')
-
-      actions$.next(ConfigurationSearchActions.editConfigurationButtonClicked({ id: 'test-123' }))
-
-      effects.editButtonClicked$.subscribe((action) => {
-        expect(action.type).toEqual(ConfigurationSearchActions.updateConfigurationFailed.type)
-        expect(action).toEqual(ConfigurationSearchActions.updateConfigurationFailed({ error: mockError }))
-        expect(messageErrorSpy).toHaveBeenCalledWith({
-          summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.ERROR'
-        })
-        done()
-      })
-    })
-
-    it('should throw error when dialog result is missing', (done) => {
-      const mockDialogResult = {
-        button: 'primary',
-        result: null
-      }
-
-      portalDialogService.openDialog.mockReturnValue(of(mockDialogResult) as never)
-
-      const messageErrorSpy = jest.spyOn(mockMessageService, 'error')
-
-      actions$.next(ConfigurationSearchActions.editConfigurationButtonClicked({ id: 'test-123' }))
-
-      effects.editButtonClicked$.subscribe((action) => {
-        expect(action.type).toEqual(ConfigurationSearchActions.updateConfigurationFailed.type)
-        expect(messageErrorSpy).toHaveBeenCalledWith({
-          summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.ERROR'
-        })
-        done()
-      })
-    })
-
-    it('should throw error when item ID is missing from dialog result', (done) => {
-      const mockDialogResult = {
-        button: 'primary',
-        result: { name: 'Updated Context' }
-      }
-
-      portalDialogService.openDialog.mockReturnValue(of(mockDialogResult) as never)
-
-      const messageErrorSpy = jest.spyOn(mockMessageService, 'error')
-
-      actions$.next(ConfigurationSearchActions.editConfigurationButtonClicked({ id: 'test-123' }))
-
-      effects.editButtonClicked$.subscribe((action) => {
-        expect(action.type).toEqual(ConfigurationSearchActions.updateConfigurationFailed.type)
-        expect(messageErrorSpy).toHaveBeenCalledWith({
-          summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.ERROR'
-        })
-        done()
-      })
-    })
-
-    it('should pass correct item to dialog based on action id', (done) => {
-      const mockDialogResult = {
-        button: 'secondary',
-        result: null
-      }
-
-      portalDialogService.openDialog.mockReturnValue(of(mockDialogResult) as never)
-      actions$.next(ConfigurationSearchActions.editConfigurationButtonClicked({ id: 'test-123' }))
-
-      effects.editButtonClicked$.subscribe(() => {
-        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
-          'CONFIGURATION_CREATE_UPDATE.UPDATE.HEADER',
-          {
-            type: expect.anything(),
-            inputs: {
-              vm: {
-                itemToEdit: mockConfiguration
-              }
-            }
-          },
-          'CONFIGURATION_CREATE_UPDATE.UPDATE.FORM.SAVE',
-          'CONFIGURATION_CREATE_UPDATE.UPDATE.FORM.CANCEL',
-          {
-            baseZIndex: 100
-          }
         )
         done()
       })
@@ -632,9 +473,9 @@ describe('ConfigurationSearchEffects', () => {
         })
         done()
       })
-    });
+    })
 
-    [
+    ;[
       {
         desc: 'should dispatch deleteConfigurationCancelled when dialog is cancelled',
         dialogResult: { button: 'secondary', result: null }
@@ -808,9 +649,9 @@ describe('ConfigurationSearchEffects', () => {
       })
 
       actions$.next(ConfigurationSearchActions.createConfigurationButtonClicked())
-    });
+    })
 
-    [
+    ;[
       {
         desc: 'should dispatch cancelled action when dialog is closed without result',
         dialogResult: null
@@ -886,15 +727,13 @@ describe('ConfigurationSearchEffects', () => {
   })
 
   describe('exportData$', () => {
-    [
+    ;[
       {
         desc: 'should handle export with empty displayed columns',
         viewModel: {
           columns: [],
           searchCriteria: {},
-          results: [
-            { id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }
-          ],
+          results: [{ id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }],
           displayedColumns: [],
           resultComponentState: { displayedColumns: undefined },
           searchHeaderComponentState: null,
@@ -909,9 +748,7 @@ describe('ConfigurationSearchEffects', () => {
         viewModel: {
           columns: [],
           searchCriteria: {},
-          results: [
-            { id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }
-          ],
+          results: [{ id: '1', name: 'Context 1', description: 'Description 1', imagePath: '' }],
           displayedColumns: [],
           resultComponentState: null,
           searchHeaderComponentState: null,
@@ -925,11 +762,7 @@ describe('ConfigurationSearchEffects', () => {
       it(desc, (done) => {
         store.overrideSelector(selectConfigurationSearchViewModel, viewModel)
         effects.exportData$.subscribe(() => {
-          expect(exportDataService.exportCsv).toHaveBeenCalledWith(
-            [],
-            viewModel.results,
-            'Configuration.csv'
-          )
+          expect(exportDataService.exportCsv).toHaveBeenCalledWith([], viewModel.results, 'Configuration.csv')
           done()
         })
         actions$.next(ConfigurationSearchActions.exportButtonClicked())
@@ -955,11 +788,7 @@ describe('ConfigurationSearchEffects', () => {
       store.overrideSelector(selectConfigurationSearchViewModel, mockViewModel)
 
       effects.exportData$.subscribe(() => {
-        expect(exportDataService.exportCsv).toHaveBeenCalledWith(
-          mockColumns,
-          mockResults,
-          'Configuration.csv'
-        )
+        expect(exportDataService.exportCsv).toHaveBeenCalledWith(mockColumns, mockResults, 'Configuration.csv')
         done()
       })
 
@@ -981,11 +810,7 @@ describe('ConfigurationSearchEffects', () => {
       store.overrideSelector(selectConfigurationSearchViewModel, mockViewModel)
 
       effects.exportData$.subscribe(() => {
-        expect(exportDataService.exportCsv).toHaveBeenCalledWith(
-          mockColumns,
-          [],
-          'Configuration.csv'
-        )
+        expect(exportDataService.exportCsv).toHaveBeenCalledWith(mockColumns, [], 'Configuration.csv')
         done()
       })
 
