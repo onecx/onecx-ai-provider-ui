@@ -324,6 +324,7 @@ describe('ConfigurationDetailsComponent', () => {
       const pageDetails = component.formGroup.value
       delete baseConfigurationDetailsViewModel.details?.creationUser
       delete baseConfigurationDetailsViewModel.details?.modificationUser
+      delete baseConfigurationDetailsViewModel.details?.modificationCount
       expect(pageDetails).toEqual({
         ...baseConfigurationDetailsViewModel.details
       })
@@ -473,7 +474,6 @@ describe('ConfigurationDetailsComponent', () => {
         description: 'desc',
         mcpServers: [{ id: '', name: '' }],
         llmProvider: { id: 'id-1', name: 'provider', modelName: 'model' },
-        modificationCount: 1
       }
       const dispatchSpy = jest.spyOn(store, 'dispatch')
 

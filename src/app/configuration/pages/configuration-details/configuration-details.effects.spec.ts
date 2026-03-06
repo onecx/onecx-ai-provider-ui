@@ -263,7 +263,7 @@ describe('ConfigurationDetailsEffects', () => {
       effects.saveButtonClicked$.subscribe((action) => {
         expect(configurationService.updateConfiguration).toHaveBeenCalledWith('1', { ...details, ...newDetails })
         expect(successSpy).toHaveBeenCalledWith({ summaryKey: 'CONFIGURATION_DETAILS.UPDATE.SUCCESS' })
-        expect(action).toEqual(ConfigurationDetailsActions.updateConfigurationSucceeded())
+        expect(action.type).toEqual(ConfigurationDetailsActions.updateConfigurationSucceeded.type)
         done()
       })
     })

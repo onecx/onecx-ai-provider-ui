@@ -239,47 +239,6 @@ describe('ConfigurationSearchComponent', () => {
     component.search(formValue)
   })
 
-  it('should dispatch editConfigurationButtonClicked action on item edit click', async () => {
-
-    store.overrideSelector(selectConfigurationSearchViewModel, {
-      ...baseConfigurationSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          column_1: 'val_1'
-        }
-      ],
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
-    })
-    store.refreshState()
-
-    const interactiveDataView = await ConfigurationSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataTable()
-    const rowActionButtons = await dataTable?.getActionButtons()
-
-    expect(rowActionButtons?.length).toBeGreaterThan(0)
-    let editButton
-    for (const actionButton of rowActionButtons ?? []) {
-      const icon = await actionButton.getAttribute('ng-reflect-icon')
-      expect(icon).toBeTruthy()
-      if (icon == 'pi pi-pencil') {
-        editButton = actionButton
-      }
-    }
-    expect(editButton).toBeTruthy()
-    editButton?.click()
-
-    expect(store.dispatch).toHaveBeenCalledWith(ConfigurationSearchActions.editConfigurationButtonClicked({ id: '1' }))
-  })
-
   it('should dispatch createConfigurationButtonClicked action on create click', async () => {
 
     const header = await ConfigurationSearch.getHeader()

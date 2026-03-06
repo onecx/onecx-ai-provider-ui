@@ -92,7 +92,7 @@ describe('configurationDetailsReducer', () => {
       ConfigurationDetailsActions.cancelEditConfirmClicked(),
       ConfigurationDetailsActions.cancelEditNotDirty(),
       ConfigurationDetailsActions.updateConfigurationCancelled(),
-      ConfigurationDetailsActions.updateConfigurationSucceeded()
+      ConfigurationDetailsActions.updateConfigurationSucceeded({updateResult: {} as any} as any)
     ]
     for (const action of actions) {
       const state = configurationDetailsReducer(prevState, action)
