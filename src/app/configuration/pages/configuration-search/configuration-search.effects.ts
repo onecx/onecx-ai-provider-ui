@@ -5,7 +5,12 @@ import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
-import { ExportDataService, PortalMessageService, PortalDialogService, DialogState } from '@onecx/portal-integration-angular'
+import {
+  ExportDataService,
+  PortalMessageService,
+  PortalDialogService,
+  DialogState
+} from '@onecx/portal-integration-angular'
 import equal from 'fast-deep-equal'
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
@@ -15,7 +20,12 @@ import { configurationSearchCriteriasSchema } from './configuration-search.param
 import { configurationSearchSelectors, selectConfigurationSearchViewModel } from './configuration-search.selectors'
 import { ConfigurationCreateUpdateComponent } from './dialogs/configuration-create-update/configuration-create-update.component'
 import { PrimeIcons } from 'primeng/api'
-import { Configuration, ConfigurationService, CreateConfigurationRequest, UpdateConfigurationRequest } from 'src/app/shared/generated'
+import {
+  Configuration,
+  ConfigurationService,
+  CreateConfigurationRequest,
+  UpdateConfigurationRequest
+} from 'src/app/shared/generated'
 
 @Injectable()
 export class ConfigurationSearchEffects {
@@ -28,13 +38,16 @@ export class ConfigurationSearchEffects {
     private readonly store: Store,
     private readonly messageService: PortalMessageService,
     private readonly exportDataService: ExportDataService
-  ) { }
+  ) {}
 
   syncParamsToUrl$ = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(ConfigurationSearchActions.searchButtonClicked, ConfigurationSearchActions.resetButtonClicked),
-        concatLatestFrom(() => [this.store.select(configurationSearchSelectors.selectCriteria), this.route.queryParams]),
+        concatLatestFrom(() => [
+          this.store.select(configurationSearchSelectors.selectCriteria),
+          this.route.queryParams
+        ]),
         tap(([, criteria, queryParams]) => {
           const results = configurationSearchCriteriasSchema.safeParse(queryParams)
           if (!results.success || !equal(criteria, results.data)) {
@@ -81,7 +94,10 @@ export class ConfigurationSearchEffects {
 
   refreshSearchAfterCreateUpdate$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ConfigurationSearchActions.createConfigurationSucceeded, ConfigurationSearchActions.updateConfigurationSucceeded),
+      ofType(
+        ConfigurationSearchActions.createConfigurationSucceeded,
+        ConfigurationSearchActions.updateConfigurationSucceeded
+      ),
       concatLatestFrom(() => this.store.select(configurationSearchSelectors.selectCriteria)),
       switchMap(([, searchCriteria]) => this.performSearch(searchCriteria))
     )
@@ -90,61 +106,61 @@ export class ConfigurationSearchEffects {
   editButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ConfigurationSearchActions.editConfigurationButtonClicked),
-      concatLatestFrom(() => this.store.select(configurationSearchSelectors.selectResults)),
-      map(([action, results]) => {
-        return results.find((item) => item.id == action.id)
-      }),
-      mergeMap((itemToEdit) => {
-        return this.portalDialogService.openDialog<Configuration | undefined>(
-          'CONFIGURATION_CREATE_UPDATE.UPDATE.HEADER',
-          {
-            type: ConfigurationCreateUpdateComponent,
-            inputs: {
-              vm: {
-                itemToEdit
+      switchMap((action) =>
+        this.configurationService.getConfiguration(action.id as string).pipe(
+          mergeMap((itemToEdit) => {
+            return this.portalDialogService.openDialog<Configuration | undefined>(
+              'CONFIGURATION_CREATE_UPDATE.UPDATE.HEADER',
+              {
+                type: ConfigurationCreateUpdateComponent,
+                inputs: {
+                  vm: {
+                    itemToEdit
+                  }
+                }
+              },
+              'CONFIGURATION_CREATE_UPDATE.UPDATE.FORM.SAVE',
+              'CONFIGURATION_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+              {
+                baseZIndex: 100
               }
+            )
+          }),
+          switchMap((dialogResult) => {
+            if (!dialogResult || dialogResult.button == 'secondary') {
+              return of(ConfigurationSearchActions.updateConfigurationCancelled())
             }
-          },
-          'CONFIGURATION_CREATE_UPDATE.UPDATE.FORM.SAVE',
-          'CONFIGURATION_CREATE_UPDATE.UPDATE.FORM.CANCEL',
-          {
-            baseZIndex: 100
-          }
-        )
-      }),
-      switchMap((dialogResult) => {
-        if (!dialogResult || dialogResult.button == 'secondary') {
-          return of(ConfigurationSearchActions.updateConfigurationCancelled())
-        }
-        if (!dialogResult?.result) {
-          throw new Error('DialogResult was not set as expected!')
-        }
-        const itemToEditId = dialogResult.result.id
-        if (!itemToEditId) {
-          throw new Error('Item ID is required for update!')
-        }
-        const itemToEdit = {
-          ...dialogResult.result
-        } as UpdateConfigurationRequest
-        return this.configurationService.updateConfiguration(itemToEditId, itemToEdit).pipe(
-          map(() => {
-            this.messageService.success({
-              summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.SUCCESS'
+            if (!dialogResult.result) {
+              throw new Error('DialogResult was not set as expected!')
+            }
+            const itemToEditId = dialogResult.result.id
+            if (!itemToEditId) {
+              throw new Error('Item ID is required for update!')
+            }
+            const itemToEdit = {
+              ...dialogResult.result
+            } as UpdateConfigurationRequest
+            return this.configurationService.updateConfiguration(itemToEditId, itemToEdit).pipe(
+              map(() => {
+                this.messageService.success({
+                  summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.SUCCESS'
+                })
+                return ConfigurationSearchActions.updateConfigurationSucceeded()
+              })
+            )
+          }),
+          catchError((error) => {
+            this.messageService.error({
+              summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.ERROR'
             })
-            return ConfigurationSearchActions.updateConfigurationSucceeded()
+            return of(
+              ConfigurationSearchActions.updateConfigurationFailed({
+                error
+              })
+            )
           })
         )
-      }),
-      catchError((error) => {
-        this.messageService.error({
-          summaryKey: 'CONFIGURATION_CREATE_UPDATE.UPDATE.ERROR'
-        })
-        return of(
-          ConfigurationSearchActions.updateConfigurationFailed({
-            error
-          })
-        )
-      })
+      )
     )
   })
 
@@ -173,7 +189,7 @@ export class ConfigurationSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(ConfigurationSearchActions.createConfigurationCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem = {
@@ -244,9 +260,11 @@ export class ConfigurationSearchEffects {
           this.messageService.error({
             summaryKey: 'CONFIGURATION_DELETE.ERROR'
           })
-          return of(ConfigurationSearchActions.deleteConfigurationFailed({
-            error: 'Item to delete or its ID not found!'
-          }))
+          return of(
+            ConfigurationSearchActions.deleteConfigurationFailed({
+              error: 'Item to delete or its ID not found!'
+            })
+          )
         }
 
         return this.configurationService.deleteConfiguration(itemToDelete.id).pipe(
