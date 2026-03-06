@@ -153,10 +153,6 @@ export class ConfigurationSearchComponent implements OnInit {
     this.store.dispatch(ConfigurationSearchActions.createConfigurationButtonClicked())
   }
 
-  edit({ id }: RowListGridData) {
-    this.store.dispatch(ConfigurationSearchActions.editConfigurationButtonClicked({ id }))
-  }
-
   delete({ id }: RowListGridData) {
     this.store.dispatch(ConfigurationSearchActions.deleteConfigurationButtonClicked({ id }))
   }

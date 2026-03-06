@@ -25,9 +25,6 @@ export const ConfigurationSearchActions = createActionGroup({
     }>(),
 
     'Create configuration button clicked': emptyProps(),
-    'Edit configuration button clicked': props<{
-      id: number | string
-    }>(),
     'Create configuration cancelled': emptyProps(),
     'Update configuration cancelled': emptyProps(),
     'Create configuration succeeded': emptyProps(),
