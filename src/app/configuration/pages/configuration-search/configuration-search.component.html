@@ -47,9 +47,7 @@
       <ocx-interactive-data-view
         (deleteItem)="delete($any($event))"
         deletePermission="CONFIGURATION#DELETE"
-        (editItem)="edit($any($event))"
-        editPermission="CONFIGURATION#EDIT"
-        (viewItem)="details($any($event))"
+        (viewItem)="details($event)"
         viewPermission="CONFIGURATION#VIEW"
         [data]="vm.results"
         [columns]="vm.columns"
