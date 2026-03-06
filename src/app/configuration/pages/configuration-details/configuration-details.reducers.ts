@@ -90,7 +90,10 @@ export const configurationDetailsReducer = createReducer(
     ConfigurationDetailsActions.saveButtonClicked,
     (state: ConfigurationDetailsState, { details }): ConfigurationDetailsState => ({
       ...state,
-      details,
+      details: {
+        ...details,
+        modificationCount: state.details?.modificationCount
+      },
       editMode: false,
       isSubmitting: true
     })
@@ -105,13 +108,21 @@ export const configurationDetailsReducer = createReducer(
     ConfigurationDetailsActions.cancelEditConfirmClicked,
     ConfigurationDetailsActions.cancelEditNotDirty,
     ConfigurationDetailsActions.updateConfigurationCancelled,
-    ConfigurationDetailsActions.updateConfigurationSucceeded,
     (state: ConfigurationDetailsState): ConfigurationDetailsState => ({
       ...state,
       editMode: false,
       isSubmitting: false
     })
   ),
+  on(ConfigurationDetailsActions.updateConfigurationSucceeded, (state, {updateResult}): ConfigurationDetailsState => ({
+    ...state,
+    details: {
+      ...state.details!,
+      modificationCount: updateResult.modificationCount
+    },
+    editMode: false,
+    isSubmitting: false
+  })),
   on(
     ConfigurationDetailsActions.updateConfigurationFailed,
     (state: ConfigurationDetailsState): ConfigurationDetailsState => ({
