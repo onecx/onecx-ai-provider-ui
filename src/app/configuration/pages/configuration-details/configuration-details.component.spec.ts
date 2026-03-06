@@ -22,7 +22,7 @@ import { PrimeIcons } from 'primeng/api'
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { InputTextModule } from 'primeng/inputtext'
 import { MultiSelectModule } from 'primeng/multiselect'
-import { ReplaySubject, of } from 'rxjs'
+import { ReplaySubject, firstValueFrom, of } from 'rxjs'
 import {
   Configuration,
   ConfigurationService,
@@ -473,7 +473,7 @@ describe('ConfigurationDetailsComponent', () => {
         name: 'name',
         description: 'desc',
         mcpServers: [{ id: '', name: '' }],
-        llmProvider: { id: 'id-1', name: 'provider', modelName: 'model' },
+        llmProvider: { id: 'id-1', name: 'provider', modelName: 'model' }
       }
       const dispatchSpy = jest.spyOn(store, 'dispatch')
 
@@ -609,6 +609,55 @@ describe('ConfigurationDetailsComponent', () => {
       const nextSpy = jest.spyOn(component.providerQuery$, 'next')
       component.searchProviders({ query: 'test-provider' })
       expect(nextSpy).toHaveBeenCalledWith('test-provider')
+    })
+
+    it('should return empty provider suggestions when Providers is undefined', async () => {
+      const viewModel = {
+        ...baseConfigurationDetailsViewModel,
+        details: { ...baseConfigurationDetailsViewModel.details, llmProvider: undefined },
+        Providers: undefined
+      } as any
+      store.overrideSelector(selectConfigurationDetailsViewModel, viewModel)
+      store.refreshState()
+      fixture.detectChanges()
+
+      component.searchProviders({ query: 'provider' })
+      const providers = await firstValueFrom(component.filteredProviders$)
+
+      expect(providers).toEqual([])
+    })
+
+    it('should return empty MCP suggestions when selected and available MCP lists are undefined', async () => {
+      const viewModel = {
+        ...baseConfigurationDetailsViewModel,
+        details: { ...baseConfigurationDetailsViewModel.details, mcpServers: undefined },
+        MCPServers: undefined
+      } as any
+      store.overrideSelector(selectConfigurationDetailsViewModel, viewModel)
+      store.refreshState()
+      fixture.detectChanges()
+
+      component.searchMCPServers({ query: 'mcp' })
+      const mcpServers = await firstValueFrom(component.filteredMCPServers$)
+
+      expect(mcpServers).toEqual([])
+    })
+
+    it('should include MCP suggestion with missing name when query is empty', async () => {
+      const namelessMcp = { id: 'mcp-no-name', name: undefined } as any
+      const viewModel = {
+        ...baseConfigurationDetailsViewModel,
+        details: { ...baseConfigurationDetailsViewModel.details, mcpServers: [] },
+        MCPServers: [namelessMcp]
+      } as any
+      store.overrideSelector(selectConfigurationDetailsViewModel, viewModel)
+      store.refreshState()
+      fixture.detectChanges()
+
+      component.searchMCPServers({ query: '' })
+      const mcpServers = await firstValueFrom(component.filteredMCPServers$)
+
+      expect(mcpServers).toEqual([namelessMcp])
     })
 
     it('should return empty string from getMCPName when mcpServer is falsy', () => {

@@ -87,6 +87,40 @@ describe('configurationDetailsReducer', () => {
     expect(state.isSubmitting).toBe(true)
   })
 
+  it('should keep previous modificationCount on saveButtonClicked', () => {
+    const prevState = {
+      ...initialState,
+      details: { id: '1', name: 'before', modificationCount: 7 } as any
+    }
+    const details = { id: '1', name: 'after' }
+    const action = ConfigurationDetailsActions.saveButtonClicked({ details: details as any })
+    const state = configurationDetailsReducer(prevState, action)
+
+    expect(state.details).toEqual({
+      ...details,
+      modificationCount: 7
+    })
+    expect(state.editMode).toBe(false)
+    expect(state.isSubmitting).toBe(true)
+  })
+
+  it('should set modificationCount as undefined when previous details are null on saveButtonClicked', () => {
+    const prevState = {
+      ...initialState,
+      details: null as any
+    }
+    const details = { id: '1', name: 'after' }
+    const action = ConfigurationDetailsActions.saveButtonClicked({ details: details as any })
+    const state = configurationDetailsReducer(prevState, action)
+
+    expect(state.details).toEqual({
+      ...details,
+      modificationCount: undefined
+    })
+    expect(state.editMode).toBe(false)
+    expect(state.isSubmitting).toBe(true)
+  })
+
   it('should not change state on navigateBackButtonClicked', () => {
     const action = ConfigurationDetailsActions.navigateBackButtonClicked()
     const state = configurationDetailsReducer(initialState, action)
