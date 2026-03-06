@@ -9,9 +9,20 @@ import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+<<<<<<< HEAD
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
 import { Action, BreadcrumbService, PortalDialogService } from '@onecx/angular-accelerator'
+=======
+import {
+  Action,
+  AlwaysGrantPermissionChecker,
+  BreadcrumbService,
+  HAS_PERMISSION_CHECKER,
+  PortalCoreModule,
+  PortalDialogService
+} from '@onecx/portal-integration-angular'
+>>>>>>> d8e5633 (feat: adjusted test cases)
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { PrimeIcons } from 'primeng/api'
 import { AutoCompleteModule } from 'primeng/autocomplete'
@@ -319,7 +330,6 @@ describe('ConfigurationDetailsComponent', () => {
 
       const pageDetails = component.formGroup.value
       delete baseConfigurationDetailsViewModel.details?.creationUser
-      delete baseConfigurationDetailsViewModel.details?.modificationCount
       delete baseConfigurationDetailsViewModel.details?.modificationUser
       expect(pageDetails).toEqual({
         ...baseConfigurationDetailsViewModel.details
@@ -469,7 +479,12 @@ describe('ConfigurationDetailsComponent', () => {
         name: 'name',
         description: 'desc',
         mcpServers: [{ id: '', name: '' }],
+<<<<<<< HEAD
         llmProvider: { id: 'id-1', name: 'provider', modelName: 'model' }
+=======
+        llmProvider: { id: 'id-1', name: 'provider', modelName: 'model' },
+        modificationCount: 1
+>>>>>>> d8e5633 (feat: adjusted test cases)
       }
       const dispatchSpy = jest.spyOn(store, 'dispatch')
 
@@ -594,5 +609,24 @@ describe('ConfigurationDetailsComponent', () => {
       fixture.detectChanges()
       expect(component.formGroup.value.id).toBe('')
     })
+<<<<<<< HEAD
+=======
+
+    it('should call mcpServerQuery$.next when searchMCPServers is called', () => {
+      const nextSpy = jest.spyOn(component.mcpServerQuery$, 'next')
+      component.searchMCPServers({ query: 'test-mcp' })
+      expect(nextSpy).toHaveBeenCalledWith('test-mcp')
+    })
+
+    it('should call providerQuery$.next when searchProviders is called', () => {
+      const nextSpy = jest.spyOn(component.providerQuery$, 'next')
+      component.searchProviders({ query: 'test-provider' })
+      expect(nextSpy).toHaveBeenCalledWith('test-provider')
+    })
+
+    it('should return empty string from getMCPName when mcpServer is falsy', () => {
+      expect(component.getMCPName(null as any)).toBe('')
+    })
+>>>>>>> d8e5633 (feat: adjusted test cases)
   })
 })

@@ -64,7 +64,8 @@ describe('ConfigurationSearchEffects', () => {
       createConfiguration: jest.fn(),
       updateConfiguration: jest.fn(),
       deleteConfiguration: jest.fn(),
-      findConfigurationBySearchCriteria: jest.fn()
+      findConfigurationBySearchCriteria: jest.fn(),
+      getConfiguration: jest.fn()
     } as unknown as jest.Mocked<ConfigurationService>
 
     router = {
@@ -376,6 +377,7 @@ describe('ConfigurationSearchEffects', () => {
     beforeEach(() => {
       store.overrideSelector(configurationSearchSelectors.selectResults, mockResults)
       store.refreshState()
+      configurationService.getConfiguration.mockReturnValue(of(mockConfiguration) as never)
     })
 
     it('should open dialog and dispatch updateConfigurationSucceeded on successful update', (done) => {

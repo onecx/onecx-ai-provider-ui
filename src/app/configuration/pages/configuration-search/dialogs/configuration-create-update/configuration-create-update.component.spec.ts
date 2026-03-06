@@ -86,7 +86,8 @@ describe('ConfigurationCreateUpdateComponent', () => {
     component.ocxDialogButtonClicked()
 
     expect(component.dialogResult).toEqual({
-      ...formValues
+      ...formValues,
+      modificationCount: null
     })
   })
 
@@ -102,7 +103,8 @@ describe('ConfigurationCreateUpdateComponent', () => {
 
     expect(component.dialogResult).toEqual({
       ...mockItem,
-      ...formValues
+      ...formValues,
+      modificationCount: null
     })
   })
 
