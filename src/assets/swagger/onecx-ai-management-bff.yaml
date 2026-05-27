@@ -307,7 +307,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
-  /mcpServer/{id}:
+  /mcpServers/{id}:
     get:
       x-onecx:
         permissions:
@@ -386,7 +386,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailResponse'
         "404":
           description: MCP Server not found
-  /mcpServer/search:
+  /mcpServers/search:
     post:
       x-onecx:
         permissions:
