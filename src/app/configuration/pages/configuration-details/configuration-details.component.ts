@@ -148,6 +148,7 @@ export class ConfigurationDetailsComponent implements OnInit {
     this.formGroup = new FormGroup({
       id: new FormControl('', [Validators.maxLength(255)]),
       name: new FormControl('', [Validators.required]),
+      modificationCount: new FormControl(undefined),
       description: new FormControl(''),
       mcpServers: new FormControl(undefined),
       llmProvider: new FormControl(undefined)
@@ -159,6 +160,7 @@ export class ConfigurationDetailsComponent implements OnInit {
         this.formGroup.patchValue({
           id: vm.details?.id || '',
           name: vm.details?.name || '',
+          modificationCount: vm.details?.modificationCount,
           description: vm.details?.description || '',
           mcpServers: vm.details?.mcpServers,
           llmProvider: vm.details?.llmProvider,
