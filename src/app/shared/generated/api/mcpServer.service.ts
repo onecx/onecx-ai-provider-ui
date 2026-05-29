@@ -212,7 +212,7 @@ export class McpServerService {
             }
         }
 
-        let localVarPath = `/mcpServer/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/mcpServers/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -279,7 +279,7 @@ export class McpServerService {
             }
         }
 
-        let localVarPath = `/mcpServer/search`;
+        let localVarPath = `/mcpServers/search`;
         return this.httpClient.request<MCPServerPageResult>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -338,7 +338,7 @@ export class McpServerService {
             }
         }
 
-        let localVarPath = `/mcpServer/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/mcpServers/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<MCPServer>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -409,7 +409,7 @@ export class McpServerService {
             }
         }
 
-        let localVarPath = `/mcpServer/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/mcpServers/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<MCPServer>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
