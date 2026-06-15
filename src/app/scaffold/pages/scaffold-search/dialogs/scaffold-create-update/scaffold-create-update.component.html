@@ -1,0 +1,49 @@
+<form [formGroup]="formGroup">
+  <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
+    <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.NAME' | translate">
+      <p-floatlabel variant="on" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="scaffold_form_name"
+          class="w-full pt-3 pb-2"
+          formControlName="name"
+        />
+        <label class="ocx-required-label" for="scaffold_form_name">
+          {{ 'SCAFFOLD_CREATE_UPDATE.FORM.NAME' | translate }}
+        </label>
+      </p-floatlabel>
+    </div>
+    <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.SOURCE_PRODUCT' | translate">
+      <p-floatlabel variant="on" controlErrorAnchor>
+        <input
+          pInputText
+          type="text"
+          id="scaffold_form_sourceProduct"
+          class="w-full pt-3 pb-2"
+          formControlName="sourceProduct"
+          [readonly]="!!vm.itemToEdit?.sourceProduct"
+          [attr.aria-label]="'SCAFFOLD_CREATE_UPDATE.FORM.SOURCE_PRODUCT' | translate"
+        />
+        <label for="scaffold_form_sourceProduct">
+          {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SOURCE_PRODUCT' | translate }}
+        </label>
+      </p-floatlabel>
+    </div>
+    <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate">
+      <p-floatlabel variant="on" controlErrorAnchor>
+        <textarea
+          pTextarea
+          id="scaffold_form_systemPrompt"
+          class="w-full"
+          rows="6"
+          formControlName="systemPrompt"
+          [attr.aria-label]="'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate"
+        ></textarea>
+        <label for="scaffold_form_systemPrompt">
+          {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate }}
+        </label>
+      </p-floatlabel>
+    </div>
+  </div>
+</form>

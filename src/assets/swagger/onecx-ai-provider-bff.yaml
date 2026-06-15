@@ -10,6 +10,105 @@ tags:
   - name: provider
   - name: mcpServer
 paths:
+  /scaffolds:
+    post:
+      x-onecx:
+        permissions:
+          configuration:
+            - write
+      tags: [ scaffold ]
+      description: Create a Scaffold
+      operationId: createScaffold
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateScaffoldRequest' }
+      responses:
+        "201":
+          description: Scaffold created successfully
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Scaffold' }
+  /scaffolds/{id}:
+    get:
+      x-onecx:
+        permissions:
+          configuration:
+            - read
+      tags: [ scaffold ]
+      description: Get Scaffold by id
+      operationId: getScaffoldById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Scaffold' }
+    put:
+      x-onecx:
+        permissions:
+          configuration:
+            - write
+      tags: [ scaffold ]
+      description: Update a Scaffold
+      operationId: updateScaffoldById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateScaffoldRequest' }
+      responses:
+        "200":
+          description: Scaffold updated successfully
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Scaffold' }
+    delete:
+      x-onecx:
+        permissions:
+          configuration:
+            - delete
+      tags: [ scaffold ]
+      description: Delete a Scaffold
+      operationId: deleteScaffoldById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Scaffold deleted }
+  /scaffolds/search:
+    post:
+      x-onecx:
+        permissions:
+          configuration:
+            - read
+      tags: [ scaffold ]
+      description: Find Scaffolds by Search Criteria
+      operationId: findScaffoldByCriteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ScaffoldSearchCriteria' }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScaffoldPageResult' }
   /configurations:
     post:
       x-onecx:
@@ -436,6 +535,74 @@ paths:
                 $ref: '#/components/schemas/MCPServerPageResult'
 components:
   schemas:
+    Scaffold:
+      type: object
+      properties:
+        modificationCount: { format: int32, type: integer }
+        creationDate: { $ref: '#/components/schemas/OffsetDateTime' }
+        creationUser: { type: string }
+        modificationDate: { $ref: '#/components/schemas/OffsetDateTime' }
+        modificationUser: { type: string }
+        id: { type: string }
+        name: { type: string }
+        systemPrompt: { type: string }
+        sourceProduct: { type: string }
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+    CreateScaffoldRequest:
+      type: object
+      properties:
+        name: { type: string }
+        systemPrompt: { type: string }
+        sourceProduct: { type: string }
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+    UpdateScaffoldRequest:
+      type: object
+      required: [ modificationCount ]
+      properties:
+        modificationCount: { format: int32, type: integer }
+        name: { type: string }
+        systemPrompt: { type: string }
+        sourceProduct: { type: string }
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+    ScaffoldSearchCriteria:
+      type: object
+      properties:
+        name: { type: string }
+        sourceProduct: { type: string }
+        pageNumber: { format: int32, default: 0, type: integer }
+        pageSize: { format: int32, default: 10, maximum: 100, type: integer }
+    ScaffoldPageResult:
+      type: object
+      properties:
+        totalElements: { format: int64, type: integer }
+        number: { format: int32, type: integer }
+        size: { format: int32, type: integer }
+        totalPages: { format: int64, type: integer }
+        stream:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scaffold'
+    Skill:
+      type: object
+      properties:
+        modificationCount: { format: int32, type: integer }
+        creationDate: { $ref: '#/components/schemas/OffsetDateTime' }
+        creationUser: { type: string }
+        modificationDate: { $ref: '#/components/schemas/OffsetDateTime' }
+        modificationUser: { type: string }
+        id: { type: string }
+        name: { type: string }
+        inputSchema: { type: string }
+        outputSchema: { type: string }
     MCPServer:
       type: object
       properties:

@@ -1,0 +1,75 @@
+<ocx-portal-page
+  permission="SCAFFOLD#VIEW"
+  [helpArticleId]="'SCAFFOLD_SEARCH.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-search-header
+    [header]="'SCAFFOLD_SEARCH.HEADER' | translate"
+    [subheader]="'SCAFFOLD_SEARCH.SUB_HEADER' | translate"
+    (searched)="search(scaffoldSearchFormGroup)"
+    (resetted)="resetSearch()"
+    [manualBreadcrumbs]="true"
+    [actions]="(headerActions$ | async) ?? []"
+    (viewModeChanged)="viewModeChanged($any($event))"
+    [viewMode]="vm.viewMode"
+  >
+    <form [formGroup]="scaffoldSearchFormGroup">
+      <div class="grid mt-0 p-fluid">
+        <div class="col-12 md:col-6">
+          <p-floatlabel variant="on">
+            <input id="name" pInputText type="text" formControlName="name" class="p-inputtext p-component" />
+            <label for="name">{{ 'SCAFFOLD_SEARCH.CRITERIA.NAME' | translate }}</label>
+          </p-floatlabel>
+        </div>
+        <div class="col-12 md:col-6">
+          <p-floatlabel variant="on">
+            <input
+              id="sourceProduct"
+              pInputText
+              type="text"
+              formControlName="sourceProduct"
+              class="p-inputtext p-component"
+            />
+            <label for="sourceProduct">{{ 'SCAFFOLD_SEARCH.CRITERIA.SOURCE_PRODUCT' | translate }}</label>
+          </p-floatlabel>
+        </div>
+      </div>
+    </form>
+  </ocx-search-header>
+  <ocx-content-container layout="horizontal">
+    <ocx-content class="w-full">
+      <ocx-interactive-data-view
+        (deleteItem)="delete($any($event))"
+        deletePermission="SCAFFOLD#DELETE"
+        (editItem)="edit($any($event))"
+        editPermission="SCAFFOLD#EDIT"
+        (viewItem)="details($any($event))"
+        viewPermission="SCAFFOLD#VIEW"
+        [data]="vm.results"
+        [columns]="vm.columns"
+        [defaultGroupKey]="'SCAFFOLD_SEARCH.PREDEFINED_GROUP.DEFAULT'"
+        [listGridPaginator]="false"
+        [emptyResultsMessage]="'SCAFFOLD_SEARCH.EMPTY_RESULTS' | translate"
+        [supportedViewLayouts]="['table']"
+        (displayedColumnsChange)="onDisplayedColumnsChange($event)"
+      >
+      </ocx-interactive-data-view>
+    </ocx-content>
+    <ocx-content
+      class="w-full lg:w-3"
+      *ngIf="vm.results.length > 0 &&
+        vm.chartVisible &&
+        (diagramColumn$ | async)
+    "
+    >
+      <div class="flex flex-column md:flex-row lg:flex-column justify-content-center">
+        <ocx-group-by-count-diagram
+          *ngIf="diagramColumn$ | async as diagramColumn"
+          [data]="vm.results"
+          [column]="diagramColumn"
+          sumKey="MCPSERVER_SEARCH.DIAGRAM.SUM"
+        ></ocx-group-by-count-diagram>
+      </div>
+    </ocx-content>
+  </ocx-content-container>
+</ocx-portal-page>

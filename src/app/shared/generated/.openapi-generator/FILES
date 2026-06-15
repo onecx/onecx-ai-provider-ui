@@ -5,6 +5,7 @@ api/api.ts
 api/configuration.service.ts
 api/mcpServer.service.ts
 api/provider.service.ts
+api/scaffold.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -17,6 +18,7 @@ model/configurationSearchCriteria.ts
 model/createConfigurationRequest.ts
 model/createMCPServerRequest.ts
 model/createProviderRequest.ts
+model/createScaffoldRequest.ts
 model/executionPolicy.ts
 model/mCPServer.ts
 model/mCPServerPageResult.ts
@@ -30,8 +32,13 @@ model/providerHealthStatus.ts
 model/providerPageResult.ts
 model/providerSearchCriteria.ts
 model/providerType.ts
+model/scaffold.ts
+model/scaffoldPageResult.ts
+model/scaffoldSearchCriteria.ts
+model/skill.ts
 model/updateConfigurationRequest.ts
 model/updateMCPServerRequest.ts
 model/updateProviderRequest.ts
+model/updateScaffoldRequest.ts
 param.ts
 variables.ts

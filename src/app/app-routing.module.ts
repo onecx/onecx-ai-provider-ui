@@ -18,6 +18,10 @@ export const routes: Routes = [
   {
     matcher: startsWith('provider'),
     loadChildren: () => import('./provider/provider.module').then((mod) => mod.ProviderModule)
+  },
+  {
+    matcher: startsWith('scaffold'),
+    loadChildren: () => import('./scaffold/scaffold.module').then((mod) => mod.ScaffoldModule)
   }
 ]
 

@@ -59,18 +59,11 @@
       "EXPORT_ALL": "Export all",
       "SHOW_CHART": "Show chart",
       "HIDE_CHART": "Hide chart",
-      "CREATE_SEARCH_CONFIG": "Create search configuration",
-      "UPDATE_SEARCH_CONFIG": "Update search configuration",
-      "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
       "NAVIGATE_TO_MCP_SERVERS": "MCP Server"      
     },
     "ERROR_MESSAGES": {
-      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
-      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
-      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed."
     },
     "INPUT_FIELDS": "ACTION S4: ADD TRANSLATION for your input fields: https://onecx.github.io/docs/nx-plugins/current/general/getting_started/search/configure-search-criteria.html#action-4",
     "PREDEFINED_GROUP": {
@@ -155,18 +148,11 @@
       "EXPORT_ALL": "Export all",
       "SHOW_CHART": "Show chart",
       "HIDE_CHART": "Hide chart",
-      "CREATE_SEARCH_CONFIG": "Create search configuration",
-      "UPDATE_SEARCH_CONFIG": "Update search configuration",
-      "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
       "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
     },
     "ERROR_MESSAGES": {
-      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
-      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
-      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed."
     },
     "COLUMNS": {      
       "NAME": "Name",
@@ -284,17 +270,10 @@
     "HEADER_ACTIONS": {
       "EXPORT_ALL": "Export all",
       "SHOW_CHART": "Show chart",
-      "HIDE_CHART": "Hide chart",
-      "CREATE_SEARCH_CONFIG": "Create search configuration",
-      "UPDATE_SEARCH_CONFIG": "Update search configuration",
-      "DIALOG_CONFIRM": "Confirm",
-      "DIALOG_CANCEL": "Cancel"
+      "HIDE_CHART": "Hide chart"
     },
     "ERROR_MESSAGES": {
-      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
-      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
-      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed."
     },
     "CRITERIA": {
       "NAME": "Name",
@@ -319,6 +298,94 @@
       "ONLINE": "Online",
       "OFFLINE": "Offline: Not Reachable",
       "NODATA": "No Data"
+    }
+  },
+  "SCAFFOLD_DELETE": {
+    "HEADER": "Delete Scaffold",
+    "MESSAGE": "Please confirm that you want to delete this Scaffold.",
+    "CONFIRM": "Confirm",
+    "CANCEL": "Cancel",
+    "SUCCESS": "Scaffold deleted successfully",
+    "ERROR": "Could not delete Scaffold"
+  },
+  "SCAFFOLD_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Create"
+    },
+    "CREATE": {
+      "HEADER": "Create Scaffold",
+      "SUCCESS": "Creation succesful",
+      "ERROR": "Creation failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "UPDATE": {
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      },
+      "HEADER": "Update Scaffold"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "SOURCE_PRODUCT": "Source Product",
+      "SYSTEM_PROMPT": "System Prompt"
+    }
+  },
+  "SCAFFOLD_DETAILS": {
+    "HELP_ARTICLE_ID": "Help Article",
+    "BREADCRUMB": "Details",
+    "HEADER": "Scaffold Details",
+    "SUB_HEADER": "Display of Scaffold Details",
+    "ERROR_MESSAGES": {
+      "DETAILS_LOADING_FAILED": "Loading details failed."
+    },
+    "GENERAL": {
+      "BACK": "Back",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "SAVE": "Save",
+      "CANCEL": "Cancel"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "SOURCE_PRODUCT": "Source Product",
+      "SYSTEM_PROMPT": "System Prompt"
+    }
+  },
+  "SCAFFOLD_SEARCH": {
+    "HEADER": "Scaffold Search",
+    "SUB_HEADER": "Searching and displaying of Scaffold",
+    "HELP_ARTICLE_ID": "Help Article",
+    "EMPTY_RESULTS": "No results.",
+    "BREADCRUMB": "Search",
+    "DIAGRAM": {
+      "SUM": "Total"
+    },
+    "HEADER_ACTIONS": {
+      "EXPORT_ALL": "Export all",
+      "SHOW_CHART": "Show chart",
+      "HIDE_CHART": "Hide chart"
+    },
+    "ERROR_MESSAGES": {
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed."
+    },
+    "CRITERIA": {
+      "NAME": "Name",
+      "SOURCE_PRODUCT": "Source Product"
+    },
+    "COLUMNS": {
+      "NAME": "Name",
+      "SOURCE_PRODUCT": "Source Product"
+    },
+    "PREDEFINED_GROUP": {
+      "DEFAULT": "Default",
+      "EXTENDED": "Extended",
+      "FULL": "Full"
     }
   }
 }
