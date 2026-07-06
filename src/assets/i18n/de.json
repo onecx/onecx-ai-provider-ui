@@ -1,4 +1,41 @@
 {
+  "DASHBOARD": {
+    "HEADER": "Agent Plane Dashboard",
+    "SUBHEADER": "Navigation zu den primären Scaffold-Entitäten",
+    "ACTIONS": {
+      "OPEN_SEARCH": "Verwalten"
+    },
+    "PANELS": {
+      "AGENT": {
+        "TITLE": "Agent",
+        "SUBTITLE": "Kern-Orchestrierung",
+        "DESCRIPTION": "Verwalten Sie Agent-Definitionen, Versionen und den Betriebsstatus."
+      },
+      "SCAFFOLD": {
+        "TITLE": "Scaffold",
+        "SUBTITLE": "Prompt-Grundlage",
+        "DESCRIPTION": "Steuern Sie wiederverwendbare Scaffold-Vorlagen und Basis-Systemprompts."
+      },
+      "PROVIDER": {
+        "TITLE": "Provider",
+        "SUBTITLE": "Modell-Backends",
+        "DESCRIPTION": "Konfigurieren Sie externe Modell-Provider und deren Konnektivität."
+      },
+      "TOOL": {
+        "TITLE": "Tool (MCP)",
+        "SUBTITLE": "Ausführungserweiterungen",
+        "DESCRIPTION": "Verwalten Sie MCP-Tool-Endpunkte und Integrationspunkte für die Ausführung."
+      },
+      "RUNTIME_CONFIG": {
+        "TITLE": "Runtime Config",
+        "SUBTITLE": "Ausführungsumgebung",
+        "DESCRIPTION": "Pflegen Sie Laufzeiteinstellungen und Endpunkt-Integrationen für Agents."
+      }
+    }
+  },
+  "DASHBOARD_VIEW": {
+    "HEADER": "DASHBOARD Seitenkopf"
+  },
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "BREADCRUMB": "Details",
@@ -85,8 +122,8 @@
   "CONFIGURATION_DETAILS": {
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "BREADCRUMB": "Details",
-    "HEADER": "Configuration Details",
-    "SUB_HEADER": "Anzeigen von Configuration Details",
+    "HEADER": "Scaffold Details",
+    "SUB_HEADER": "Anzeigen von Scaffold Details",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Details konnten nicht geladen werden."
     },
@@ -116,12 +153,12 @@
       "ERROR": "Speichern fehlgeschlagen"
     },
     "DELETE": {
-      "HEADER": "Configuration löschen",
-      "MESSAGE": "Bitte bestätigen Sie, dass Sie dieses Configuration löschen möchten.",
+      "HEADER": "Scaffold löschen",
+      "MESSAGE": "Bitte bestätigen Sie, dass Sie dieses Scaffold löschen möchten.",
       "CONFIRM": "Bestätigen",
       "CANCEL": "Abbrechen",
-      "SUCCESS": "Configuration erfolgreich gelöscht",
-      "ERROR": "Konnte Configuration nicht löschen"
+      "SUCCESS": "Scaffold erfolgreich gelöscht",
+      "ERROR": "Konnte Scaffold nicht löschen"
     },
     "TABLE": {
       "NAME": "Name",
@@ -131,8 +168,8 @@
     }
   },
   "CONFIGURATION_SEARCH": {
-    "HEADER": "Configuration Suche",
-    "SUB_HEADER": "Suchen und Anzeigen von Configuration",
+    "HEADER": "Scaffold Suche",
+    "SUB_HEADER": "Suchen und Anzeigen von Scaffold",
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "EMPTY_RESULTS": "Keine Ergebnisse.",
     "BREADCRUMB": "Suche",
@@ -175,7 +212,7 @@
       "CREATE": "Erstellen"
     },
     "CREATE": {
-      "HEADER": "Neues Configuration erstellen",
+      "HEADER": "Neues Scaffold erstellen",
       "SUCCESS": "Erstellung erfolgreich",
       "ERROR": "Erstellung fehlgeschlagen",
       "FORM": {
@@ -191,7 +228,7 @@
         "SAVE": "Speichern",
         "CANCEL": "Abbrechen"
       },
-      "HEADER": "Configuration bearbeiten"
+      "HEADER": "Scaffold bearbeiten"
     },
     "FORM": {
       "NAME": "Name",

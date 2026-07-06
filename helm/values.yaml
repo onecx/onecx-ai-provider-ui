@@ -51,6 +51,15 @@ app:
             VIEW: View mode for mcpserver
             SEARCH: Search mcpserver
             BACK: Navigate back in details of mcpserver
+          DASHBOARD:
+            CREATE: Create Dashboard item
+            EDIT: Edit Dashboard item
+            DELETE: Delete Dashboard item
+            SEARCH: Search Dashboard items
+            VIEW: View Dashboard item details
+            IMPORT: Import Dashboard items
+            EXPORT: Export Dashboard items
+            BACK: Navigate back in details of Dashboard item
     keycloak:
       client:
         enabled: true

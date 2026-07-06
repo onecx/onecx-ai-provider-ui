@@ -1,4 +1,41 @@
 {
+  "DASHBOARD": {
+    "HEADER": "Agent Plane Dashboard",
+    "SUBHEADER": "Navigate to primary agent scaffold entities",
+    "ACTIONS": {
+      "OPEN_SEARCH": "Manage"
+    },
+    "PANELS": {
+      "AGENT": {
+        "TITLE": "Agent",
+        "SUBTITLE": "Core orchestration",
+        "DESCRIPTION": "Manage agent definitions, versions, and operational status."
+      },
+      "SCAFFOLD": {
+        "TITLE": "Scaffold",
+        "SUBTITLE": "Prompt foundation",
+        "DESCRIPTION": "Control reusable scaffold templates and baseline system prompts."
+      },
+      "PROVIDER": {
+        "TITLE": "Provider",
+        "SUBTITLE": "Model backends",
+        "DESCRIPTION": "Configure external model providers and their connectivity."
+      },
+      "TOOL": {
+        "TITLE": "Tool (MCP)",
+        "SUBTITLE": "Execution extensions",
+        "DESCRIPTION": "Manage MCP tool endpoints and execution integration points."
+      },
+      "RUNTIME_CONFIG": {
+        "TITLE": "Runtime Config",
+        "SUBTITLE": "Execution environment",
+        "DESCRIPTION": "Maintain runtime settings and endpoint integrations for agents."
+      }
+    }
+  },
+  "DASHBOARD_VIEW": {
+    "HEADER": "DASHBOARD Header"
+  },
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
@@ -64,7 +101,7 @@
       "DIALOG_CONFIRM": "Confirm",
       "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
-      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"      
+      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
@@ -92,8 +129,8 @@
   "CONFIGURATION_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
-    "HEADER": "Configuration Details",
-    "SUB_HEADER": "Display of Configuration Details",
+    "HEADER": "Scaffold Details",
+    "SUB_HEADER": "Display of Scaffold Details",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Loading details failed."
     },
@@ -106,7 +143,7 @@
       "SAVE": "Save"
     },
     "FORM": {
-      "ID": "ID",      
+      "ID": "ID",
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "MCP_SERVER": "MCP Server",
@@ -125,15 +162,15 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update Configuration"
+      "HEADER": "Update Scaffold"
     },
     "DELETE": {
-      "HEADER": "Delete Configuration",
-      "MESSAGE": "Please confirm that you want to delete this Configuration.",
+      "HEADER": "Delete Scaffold",
+      "MESSAGE": "Please confirm that you want to delete this Scaffold.",
       "CONFIRM": "Confirm",
       "CANCEL": "Cancel",
-      "SUCCESS": "Configuration deleted successfully",
-      "ERROR": "Could not delete Configuration"
+      "SUCCESS": "Scaffold deleted successfully",
+      "ERROR": "Could not delete Scaffold"
     },
     "TABLE": {
       "NAME": "Name",
@@ -143,8 +180,8 @@
     }
   },
   "CONFIGURATION_SEARCH": {
-    "HEADER": "Configuration Search",
-    "SUB_HEADER": "Searching and displaying of Configuration",
+    "HEADER": "Scaffold Search",
+    "SUB_HEADER": "Searching and displaying of Scaffold",
     "HELP_ARTICLE_ID": "Help Article",
     "EMPTY_RESULTS": "No results.",
     "BREADCRUMB": "Search",
@@ -168,11 +205,11 @@
       "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
       "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
     },
-    "COLUMNS": {      
+    "COLUMNS": {
       "NAME": "Name",
       "DESCRIPTION": "Description"
     },
-    "INPUT_FIELDS": {      
+    "INPUT_FIELDS": {
       "NAME": "Name",
       "DESCRIPTION": "Description"
     },
@@ -187,7 +224,7 @@
       "CREATE": "Create"
     },
     "CREATE": {
-      "HEADER": "Create Configuration",
+      "HEADER": "Create Scaffold",
       "SUCCESS": "Creation succesful",
       "ERROR": "Creation failed",
       "FORM": {
@@ -203,9 +240,9 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update Configuration"
+      "HEADER": "Update Scaffold"
     },
-    "FORM": {      
+    "FORM": {
       "NAME": "Name",
       "DESCRIPTION": "Description"
     }
@@ -246,7 +283,7 @@
       "DESCRIPTION": "Description",
       "MODELNAME": "Modelname",
       "LLMURL": "LlmUrl",
-      "APIKEY": "API Key"      
+      "APIKEY": "API Key"
     }
   },
   "PROVIDER_DETAILS": {
@@ -268,7 +305,7 @@
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",      
+      "MODELNAME": "Modelname",
       "APIKEY": "API Key"
     }
   },
@@ -300,7 +337,7 @@
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",      
+      "MODELNAME": "Modelname",
       "TYPE": "Type"
     },
     "COLUMNS": {
@@ -308,7 +345,7 @@
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
       "MODELNAME": "Modelname",
-      "STATUS": "Status"     
+      "STATUS": "Status"
     },
     "PREDEFINED_GROUP": {
       "DEFAULT": "Default",
