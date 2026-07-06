@@ -16,8 +16,7 @@ interface DashboardPanel {
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  standalone: false
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
   viewModel$: Observable<DashboardViewModel>
@@ -49,7 +48,7 @@ export class DashboardComponent {
       descriptionKey: 'DASHBOARD.PANELS.TOOL.DESCRIPTION',
       route: '../mcpserver',
       icon: 'pi pi-wrench'
-    },
+    }
     // {
     //   titleKey: 'DASHBOARD.PANELS.RUNTIME_CONFIG.TITLE',
     //   subtitleKey: 'DASHBOARD.PANELS.RUNTIME_CONFIG.SUBTITLE',
