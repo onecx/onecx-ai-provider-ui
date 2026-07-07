@@ -62,15 +62,15 @@ export class ProviderSearchEffects {
       ofType(ProviderSearchActions.providerHealthPollTicked),
       mergeMap(({ id }) =>
         (id
-          ? this.providerService.getProviderHealthStatus(id).pipe(
-              map(resp => resp?.status ?? 'NODATA'),
+          ? this.providerService.getProviderHealthStatusesByIds({ providerIds: [id] }).pipe(
+              map((resp) => resp.providerHealthStatuses?.[0]?.status ?? 'NODATA'),
               catchError((error: HttpErrorResponse) =>
                 of(error?.status === 404 ? 'NODATA' : 'OFFLINE')
               )
             )
           : of('NODATA')
         ).pipe(
-          map(status =>
+          map((status) =>
             ProviderSearchActions.providerHealthStatusUpdated({ id, status })
           )
         )
@@ -365,15 +365,15 @@ export class ProviderSearchEffects {
     }).pipe(
       map(({ stream, totalElements }) =>
         ProviderSearchActions.providerSearchResultsReceived({
-          results: stream,
-          totalNumberOfResults: totalElements
-        }),
+          results: stream ?? [],
+          totalNumberOfResults: totalElements ?? 0
+        })
+      ),
       catchError((error) =>
         of(
           ProviderSearchActions.providerSearchResultsLoadingFailed({
             error
-            })
-          )
+          })
         )
       )
     )

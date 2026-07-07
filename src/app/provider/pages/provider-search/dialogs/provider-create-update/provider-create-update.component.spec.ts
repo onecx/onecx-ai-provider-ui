@@ -74,7 +74,7 @@ describe('ProviderCreateUpdateComponent', () => {
       modelName: 'model',
       llmUrl: 'OldUrl',
       apiKey: 'OldKey'
-    }
+    } as any
     component.formGroup.setValue({
       name: 'New',
       description: 'NewDesc',
@@ -101,7 +101,7 @@ describe('ProviderCreateUpdateComponent', () => {
       modelName: 'PatchedModel',
       llmUrl: 'PatchedUrl',
       apiKey: 'PatchedKey'
-    }
+    } as any
     component.formGroup.setValue({ name: null, description: null, modelName: null, llmUrl: null, apiKey: null })
     component.ngOnInit()
     expect(component.formGroup.value).toEqual({

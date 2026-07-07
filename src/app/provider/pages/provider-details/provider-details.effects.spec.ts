@@ -41,7 +41,7 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
       llmUrl: 'Test llmUrl',
       modelName: 'Test modelName',
       apiKey: 'TestAPIKey'
-    },
+    } as any,
     editMode: false,
     isApiKeyHidden: false
   }
@@ -190,7 +190,7 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
 
   it('should patch form fields with empty string if details fields are undefined', async () => {
     store.overrideSelector(selectProviderDetailsViewModel, {
-      details: { id: '', name: '', modelName: '' },
+      details: { id: '', name: '', description: '' },
       editMode: false,
       isApiKeyHidden: false
     })
@@ -200,9 +200,9 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const pageDetails = component.formGroup.value
     expect(pageDetails).toEqual({
       name: '',
-      description: undefined,
+      description: '',
       llmUrl: undefined,
-      modelName: '',
+      modelName: null,
       apiKey: undefined
     })
   })

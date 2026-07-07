@@ -99,7 +99,7 @@ export class ConfigurationDetailsEffects {
         return this.providerService.findProviderBySearchCriteria({}).pipe(
           map(({ stream }) =>
             ConfigurationDetailsActions.configurationProvidersReceived({
-              providers: stream
+              providers: stream ?? []
             })
           ),
           catchError((error) =>

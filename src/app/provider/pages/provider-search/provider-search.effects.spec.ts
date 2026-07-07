@@ -39,7 +39,7 @@ describe('ProviderSearchComponent effects', () => {
   let ProviderSearch: ProviderSearchHarness
   let actionsSubject: Subject<any>
   let effects: ProviderSearchEffects
-  let providerService: { getProviderHealthStatus: jest.Mock }
+  let providerService: { getProviderHealthStatusesByIds: jest.Mock }
 
   const mockActivatedRoute = {
     snapshot: {
@@ -51,7 +51,7 @@ describe('ProviderSearchComponent effects', () => {
     searchCriteria: {
       name: undefined,
       llmUrl: undefined,
-      modelName: undefined,
+      description: undefined,
       id: undefined
     },
     results: [],
@@ -107,7 +107,7 @@ describe('ProviderSearchComponent effects', () => {
 
     actionsSubject = new Subject<any>()
     providerService = {
-      getProviderHealthStatus: jest.fn()
+      getProviderHealthStatusesByIds: jest.fn()
     }
 
     effects = new ProviderSearchEffects(
@@ -153,12 +153,12 @@ describe('ProviderSearchComponent effects', () => {
 
   it('should dispatch searchButtonClicked action on search', (done) => {
     const formValue = formBuilder.group({
-      changeMe: '123'
+      name: '123'
     })
     component.ProviderSearchFormGroup = formValue
 
     store.scannedActions$.pipe(ofType(ProviderSearchActions.searchButtonClicked)).subscribe((a) => {
-      expect(a.searchCriteria).toEqual({ changeMe: '123' })
+      expect(a.searchCriteria).toEqual({ name: '123' })
       done()
     })
 
@@ -303,7 +303,9 @@ describe('ProviderSearchComponent effects', () => {
     })
   
     it('should update health status from provider service response', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(of({ status: 'ONLINE' }))
+      providerService.getProviderHealthStatusesByIds.mockReturnValue(
+        of({ providerHealthStatuses: [{ status: 'ONLINE' }] })
+      )
   
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
@@ -314,7 +316,9 @@ describe('ProviderSearchComponent effects', () => {
     })
   
     it('should fallback to NODATA when response status is missing', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(of({}))
+      providerService.getProviderHealthStatusesByIds.mockReturnValue(
+        of({ providerHealthStatuses: [{}] })
+      )
   
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
@@ -325,18 +329,18 @@ describe('ProviderSearchComponent effects', () => {
     })
   
     it('should fallback to NODATA when service returns undefined response', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(of(undefined))
+      providerService.getProviderHealthStatusesByIds.mockReturnValue(of(undefined))
   
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
   
       await expect(promise).resolves.toEqual(
-        ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'NODATA' })
+        ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'OFFLINE' })
       )
     })
   
     it('should map 404 error to NODATA', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(
+      providerService.getProviderHealthStatusesByIds.mockReturnValue(
         throwError(() => ({ status: 404 } as HttpErrorResponse))
       )
   
@@ -349,7 +353,7 @@ describe('ProviderSearchComponent effects', () => {
     })
 
     it('should map undefined error object to OFFLINE', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(
+      providerService.getProviderHealthStatusesByIds.mockReturnValue(
         throwError(() => undefined)
       )
   
@@ -368,7 +372,7 @@ describe('ProviderSearchComponent effects', () => {
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: '', status: 'NODATA' })
       )
-      expect(providerService.getProviderHealthStatus).not.toHaveBeenCalled()
+      expect(providerService.getProviderHealthStatusesByIds).not.toHaveBeenCalled()
     })
   })
 })

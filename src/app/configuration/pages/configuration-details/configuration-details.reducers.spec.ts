@@ -28,8 +28,8 @@ describe('configurationDetailsReducer', () => {
 
   it('should handle configurationProvidersReceived', () => {
     const providers = [
-      { id: 'p1', name: 'Provider 1', modelName: 'model' },
-      { id: 'p2', name: 'Provider 2', modelName: 'model' }
+      { id: 'p1', name: 'Provider 1', description: 'model' },
+      { id: 'p2', name: 'Provider 2', description: 'model' }
     ]
     const action = ConfigurationDetailsActions.configurationProvidersReceived({ providers })
     const state = configurationDetailsReducer(initialState, action)
@@ -41,7 +41,7 @@ describe('configurationDetailsReducer', () => {
   it('should handle configurationProvidersLoadingFailed', () => {
     const action = ConfigurationDetailsActions.configurationProvidersLoadingFailed({ error: 'err' })
     const state = configurationDetailsReducer(
-      { ...initialState, Providers: [{ id: 'p', name: 'Provider', modelName: 'model' }] },
+      { ...initialState, Providers: [{ id: 'p', name: 'Provider', description: 'model' }] },
       action
     )
     expect(state.Providers).toEqual([])

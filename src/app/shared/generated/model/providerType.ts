@@ -1,5 +1,5 @@
 /**
- * onecx-ai bff
+ * onecx-ai-provider  service
  *
  * 
  *
@@ -10,6 +10,8 @@
 
 
 export enum ProviderType {
-    Ollama = 'OLLAMA'
+    Ollama = 'OLLAMA',
+    Openai = 'OPENAI',
+    Anthropic = 'ANTHROPIC'
 }
 

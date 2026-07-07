@@ -1,4 +1,136 @@
 {
+  "AGENT_DETAILS": {
+    "HEADER": "Agent Details",
+    "SUB_HEADER": "Display and edit Agent details",
+    "HELP_ARTICLE_ID": "Help Article",
+    "BREADCRUMB": "Details",
+    "ARIA_LABEL": "Page Header with Details",
+    "ERROR_MESSAGES": {
+      "DETAILS_LOADING_FAILED": "Loading details failed."
+    },
+    "GENERAL": {
+      "BACK": "Back",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "CANCEL": "Cancel",
+      "SAVE": "Save"
+    },
+    "FORM": {
+      "ID": "ID",
+      "TENANT_ID": "Tenant ID",
+      "NAME": "Name",
+      "MODEL_ID": "Model ID",
+      "SCAFFOLD_ID": "Scaffold ID",
+      "RUNTIME_CONFIG_ID": "Runtime Config ID",
+      "ADDITIONAL_PROMPT": "Additional Prompt",
+      "A2A_ENABLED": "A2A Enabled",
+      "VERSION": "Version",
+      "STATUS": "Status",
+      "CREATION_USER": "Created By",
+      "MODIFICATION_USER": "Modified By",
+      "MODIFICATION_COUNT": "Modification Count"
+    },
+    "CANCEL": {
+      "HEADER": "Confirm cancellation",
+      "MESSAGE": "Please confirm that you want to cancel editing and reset changes.",
+      "CONFIRM": "Confirm"
+    },
+    "UPDATE": {
+      "HEADER": "Update Agent",
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "DELETE": {
+      "HEADER": "Delete Agent",
+      "MESSAGE": "Please confirm that you want to delete this Agent item.",
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel",
+      "SUCCESS": "Agent deleted successfully",
+      "ERROR": "Could not delete Agent"
+    }
+  },
+  "AGENT_SEARCH": {
+    "HEADER": "Agent Search",
+    "SUB_HEADER": "Searching and displaying of Agents",
+    "HELP_ARTICLE_ID": "Help Article",
+    "EMPTY_RESULTS": "No results.",
+    "BREADCRUMB": "Search",
+    "DIAGRAM": {
+      "SUM": "Total",
+      "ARIA_LABEL": "Diagram for Search Results"
+    },
+    "HEADER_ACTIONS": {
+      "EXPORT_ALL": "Export all",
+      "SHOW_CHART": "Show chart",
+      "HIDE_CHART": "Hide chart",
+      "CREATE_SEARCH_CONFIG": "Create search configuration",
+      "UPDATE_SEARCH_CONFIG": "Update search configuration",
+      "DIALOG_CONFIRM": "Confirm",
+      "DIALOG_CANCEL": "Cancel"
+    },
+    "ERROR_MESSAGES": {
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
+      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
+      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
+      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+    },
+    "HEADER_ARIA_LABEL": "Page Header with Search",
+    "PREDEFINED_GROUP": {
+      "DEFAULT": "Default",
+      "EXTENDED": "Extended",
+      "FULL": "Full"
+    },
+    "RESULTS_ARIA_LABEL": "Search Results",
+    "RESULTS": {
+      "NAME": "Name",
+      "TENANT_ID": "Tenant ID",
+      "STATUS": "Status",
+      "VERSION": "Version",
+      "A2A_ENABLED": "A2A Enabled",
+      "MODEL_ID": "Model ID"
+    },
+    "CRITERIA": {
+      "TENANT_ID": {
+        "LABEL": "Tenant ID",
+        "ARIA_LABEL": "Tenant ID",
+        "TOOLTIP": "Tenant ID"
+      },
+      "NAME": {
+        "LABEL": "Name",
+        "ARIA_LABEL": "Name",
+        "TOOLTIP": "Name"
+      },
+      "MODEL_ID": {
+        "LABEL": "Model ID",
+        "ARIA_LABEL": "Model ID",
+        "TOOLTIP": "Model ID"
+      },
+      "SCAFFOLD_ID": {
+        "LABEL": "Scaffold ID",
+        "ARIA_LABEL": "Scaffold ID",
+        "TOOLTIP": "Scaffold ID"
+      },
+      "RUNTIME_CONFIG_ID": {
+        "LABEL": "Runtime Config ID",
+        "ARIA_LABEL": "Runtime Config ID",
+        "TOOLTIP": "Runtime Config ID"
+      },
+      "STATUS": {
+        "LABEL": "Status",
+        "ARIA_LABEL": "Status",
+        "TOOLTIP": "Status"
+      },
+      "VERSION": {
+        "LABEL": "Version",
+        "ARIA_LABEL": "Version",
+        "TOOLTIP": "Version"
+      }
+    }
+  },
   "DASHBOARD": {
     "HEADER": "Agent Plane Dashboard",
     "SUBHEADER": "Navigate to primary agent scaffold entities",

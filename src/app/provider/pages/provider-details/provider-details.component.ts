@@ -127,7 +127,6 @@ export class ProviderDetailsComponent implements OnInit {
         description: Provider.details?.description,
         llmUrl: Provider.details?.llmUrl,
         type: Provider.details?.type,
-        modelName: Provider.details?.modelName,
         apiKey: Provider.details?.apiKey
       })
     })

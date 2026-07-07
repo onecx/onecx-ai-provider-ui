@@ -223,12 +223,12 @@ describe('ConfigurationSearchComponent', () => {
 
   it('should dispatch searchButtonClicked action on search', (done) => {
     const formValue = formBuilder.group({
-      changeMe: '123'
+      name: '123'
     })
     component.configurationSearchFormGroup = formValue
 
     store.scannedActions$.pipe(ofType(ConfigurationSearchActions.searchButtonClicked)).subscribe((a) => {
-      expect(a.searchCriteria).toEqual({ changeMe: '123' })
+      expect(a.searchCriteria).toEqual({ name: '123' })
       done()
     })
 

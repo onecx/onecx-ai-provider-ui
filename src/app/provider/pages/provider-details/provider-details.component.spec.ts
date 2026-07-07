@@ -70,7 +70,7 @@ describe('ProviderDetailsComponent', () => {
       llmUrl: 'Test llmUrl',
       modelName: 'Test modelName',
       apiKey: 'TestAPIKey'
-    },
+    } as any,
     editMode: false,
     isApiKeyHidden: false
   }
@@ -174,7 +174,7 @@ describe('ProviderDetailsComponent', () => {
         name: 'Test name',
         description: 'Test description',
         llmUrl: 'Test llmUrl',
-        modelName: 'Test modelName',
+        modelName: null,
         apiKey: 'TestAPIKey'
       })
     })

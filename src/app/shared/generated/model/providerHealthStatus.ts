@@ -1,5 +1,5 @@
 /**
- * onecx-ai bff
+ * onecx-ai-provider  service
  *
  * 
  *
@@ -10,6 +10,7 @@
 
 
 export interface ProviderHealthStatus { 
+    providerId?: string;
     status?: ProviderHealthStatusStatusEnum;
     checkedAt?: string;
 }

@@ -346,21 +346,21 @@ describe('ProviderSearchComponent', () => {
     })
 
     it('should map undefined value to undefined in searchCriteria', () => {
-      const formValue = formBuilder.group({ modelName: undefined })
+      const formValue = formBuilder.group({ description: undefined })
       component.search(formValue)
       expect(store.dispatch).toHaveBeenCalledWith(
         ProviderSearchActions.searchButtonClicked({
-          searchCriteria: { modelName: undefined }
+          searchCriteria: { description: undefined }
         })
       )
     })
 
     it('should map null value to undefined in searchCriteria', () => {
-      const formValue = formBuilder.group({ modelName: null })
+      const formValue = formBuilder.group({ description: null })
       component.search(formValue)
       expect(store.dispatch).toHaveBeenCalledWith(
         ProviderSearchActions.searchButtonClicked({
-          searchCriteria: { modelName: undefined }
+          searchCriteria: { description: undefined }
         })
       )
     })
@@ -377,13 +377,13 @@ describe('ProviderSearchComponent', () => {
         )
       ).toISOString()
 
-      const formValue = formBuilder.group({ modelName: localDate })
+      const formValue = formBuilder.group({ description: localDate })
       component.search(formValue)
 
       expect(store.dispatch).toHaveBeenCalledWith(
         ProviderSearchActions.searchButtonClicked({
           searchCriteria: {
-            modelName: expectedIso
+            description: expectedIso
           }
         })
       )

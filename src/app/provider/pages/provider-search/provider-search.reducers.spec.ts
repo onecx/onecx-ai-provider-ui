@@ -34,7 +34,7 @@ describe('ProviderSearchReducer', () => {
   })
 
   it('should reset results and criteria on resetButtonClicked', () => {
-    const prevState = { ...initialState, results: [{ id: '1', name: 'Test', modelName: 'model' }], criteria: { name: 'Test' } }
+    const prevState = { ...initialState, results: [{ id: '1', name: 'Test', description: 'model' }], criteria: { name: 'Test' } }
     const action = ProviderSearchActions.resetButtonClicked()
     const state = ProviderSearchReducer(prevState, action)
     expect(state.results).toEqual([])
@@ -50,11 +50,11 @@ describe('ProviderSearchReducer', () => {
 
   it('should set results on providerSearchResultsReceived', () => {
     const action = ProviderSearchActions.providerSearchResultsReceived({
-      results: [{ id: '1', name: 'Test', modelName: 'model' }],
+      results: [{ id: '1', name: 'Test', description: 'model' }],
       totalNumberOfResults: 1
     })
     const state = ProviderSearchReducer(initialState, action)
-    expect(state.results).toEqual([{ id: '1', name: 'Test', modelName: 'model' }])
+    expect(state.results).toEqual([{ id: '1', name: 'Test', description: 'model' }])
   })
 
   it('should initialize healthStatus if undefined', () => {
@@ -93,7 +93,7 @@ describe('ProviderSearchReducer', () => {
   })
 
   it('should clear results on providerSearchResultsLoadingFailed', () => {
-    const prevState = { ...initialState, results: [{ id: '1', name: 'Test', modelName: 'model' }] }
+    const prevState = { ...initialState, results: [{ id: '1', name: 'Test', description: 'model' }] }
     const action = ProviderSearchActions.providerSearchResultsLoadingFailed({ error: null })
     const state = ProviderSearchReducer(prevState, action)
     expect(state.results).toEqual([])

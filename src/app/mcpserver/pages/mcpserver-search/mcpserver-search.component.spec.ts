@@ -155,13 +155,13 @@ describe('MCPServerSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          name: 'val_1'
         }
       ],
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
           filterable: true,
           sortable: true,
@@ -219,7 +219,7 @@ describe('MCPServerSearchComponent', () => {
   })
 
   it('should display chosen column in the diagram', async () => {
-    component.diagramColumnId = 'changeMe'
+    component.diagramColumnId = 'name'
     store.overrideSelector(selectMCPServerSearchViewModel, {
       ...baseMCPServerSearchViewModel,
       chartVisible: true,
@@ -227,23 +227,23 @@ describe('MCPServerSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          name: 'val_1'
         },
         {
           id: '2',
           imagePath: '',
-          changeMe: 'val_2'
+          name: 'val_2'
         },
         {
           id: '3',
           imagePath: '',
-          changeMe: 'val_2'
+          name: 'val_2'
         }
       ],
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
           filterable: true,
           sortable: true,
@@ -331,13 +331,13 @@ describe('MCPServerSearchComponent', () => {
       {
         id: '1',
         imagePath: '',
-        changeMe: 'val_1'
+        name: 'val_1'
       }
     ]
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
+        id: 'name',
         nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
         filterable: true,
         sortable: true,
@@ -384,7 +384,7 @@ describe('MCPServerSearchComponent', () => {
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
+        id: 'name',
         nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
         filterable: true,
         sortable: true,
@@ -463,7 +463,7 @@ describe('MCPServerSearchComponent', () => {
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
+        id: 'name',
         nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
         filterable: true,
         sortable: true,
@@ -489,7 +489,7 @@ describe('MCPServerSearchComponent', () => {
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
-    component.diagramColumnId = 'changeMe'
+    component.diagramColumnId = 'name'
 
     store.overrideSelector(selectMCPServerSearchViewModel, {
       ...baseMCPServerSearchViewModel,
@@ -498,7 +498,7 @@ describe('MCPServerSearchComponent', () => {
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
           filterable: true,
           sortable: true,
@@ -521,14 +521,14 @@ describe('MCPServerSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          name: 'val_1'
         }
       ],
       chartVisible: false,
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
           filterable: true,
           sortable: true,
@@ -551,14 +551,14 @@ describe('MCPServerSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          name: 'val_1'
         }
       ],
       chartVisible: true,
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
           filterable: true,
           sortable: true,
@@ -583,13 +583,13 @@ describe('MCPServerSearchComponent', () => {
       {
         id: '1',
         imagePath: '',
-        changeMe: 'val_1'
+        name: 'val_1'
       }
     ]
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
+        id: 'name',
         nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
         filterable: true,
         sortable: true,

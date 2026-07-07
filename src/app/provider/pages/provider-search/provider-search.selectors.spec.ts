@@ -7,8 +7,7 @@ describe('ProviderSearch selectors', () => {
         id: '1',
         name: 'Test',
         description: 'Desc',
-        llmUrl: 'url',
-        modelName: 'model',
+        llmUrl: 'url'
       }
     ]
     const healthStatus = {
@@ -22,7 +21,6 @@ describe('ProviderSearch selectors', () => {
         name: 'Test',
         description: 'Desc',
         llmUrl: 'url',
-        modelName: 'model',
         status: 'ONLINE'
       }
     ])
@@ -67,7 +65,6 @@ describe('ProviderSearch selectors', () => {
           name: 'Test',
           description: undefined,
           llmUrl: undefined,
-          modelName: 'model',
           status: 'ONLINE'
         }
       ],
@@ -123,8 +120,7 @@ describe('ProviderSearch selectors', () => {
         id: undefined,
         name: 'Test',
         description: 'Desc',
-        llmUrl: 'url',
-        modelName: 'model'
+        llmUrl: 'url'
       }
     ]
     const mapped = selectResults.projector(results as any, undefined)
@@ -136,7 +132,6 @@ describe('ProviderSearch selectors', () => {
         name: 'Test',
         description: 'Desc',
         llmUrl: 'url',
-        modelName: 'model',
         status: 'NODATA'
       }
     ])

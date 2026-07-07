@@ -21,7 +21,6 @@ export const selectResults = createSelector(
         name: item.name,
         description: item.description,
         llmUrl: item.llmUrl,
-        modelName: item.modelName,
         status: statusKey
       }
     })

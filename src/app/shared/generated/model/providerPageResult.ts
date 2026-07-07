@@ -1,5 +1,5 @@
 /**
- * onecx-ai bff
+ * onecx-ai-provider  service
  *
  * 
  *
@@ -14,10 +14,10 @@ export interface ProviderPageResult {
     /**
      * The total elements in the resource.
      */
-    totalElements: number;
-    number: number;
-    size: number;
-    totalPages: number;
-    stream: Array<Provider>;
+    totalElements?: number;
+    number?: number;
+    size?: number;
+    totalPages?: number;
+    stream?: Array<Provider>;
 }
 

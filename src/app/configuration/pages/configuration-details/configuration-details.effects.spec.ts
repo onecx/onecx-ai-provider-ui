@@ -268,7 +268,7 @@ describe('ConfigurationDetailsEffects', () => {
 
   describe('loadProviders$', () => {
     it('should dispatch configurationProvidersReceived on success', (done) => {
-      const stream = [{ id: '1', name: 'provider', modelName: 'model' }]
+      const stream = [{ id: '1', name: 'provider', description: 'model' }]
 
       providerService.findProviderBySearchCriteria.mockReturnValue(
         of({ stream }) as any

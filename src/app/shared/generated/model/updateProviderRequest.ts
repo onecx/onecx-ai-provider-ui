@@ -1,5 +1,5 @@
 /**
- * onecx-ai bff
+ * onecx-ai-provider  service
  *
  * 
  *
@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { ProviderType } from './providerType';
+import { AuthMode } from './authMode';
 
 
 export interface UpdateProviderRequest { 
@@ -16,8 +17,8 @@ export interface UpdateProviderRequest {
     type?: ProviderType;
     description?: string;
     llmUrl?: string;
-    modelName: string;
     apiKey?: string;
+    authMode?: AuthMode;
 }
 
 

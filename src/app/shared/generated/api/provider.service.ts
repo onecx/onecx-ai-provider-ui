@@ -1,5 +1,5 @@
 /**
- * onecx-ai bff
+ * onecx-ai-provider  service
  *
  * 
  *
@@ -23,7 +23,9 @@ import { ProblemDetailResponse } from '../model/problemDetailResponse';
 // @ts-ignore
 import { Provider } from '../model/provider';
 // @ts-ignore
-import { ProviderHealthStatus } from '../model/providerHealthStatus';
+import { ProviderHealthStatusRequest } from '../model/providerHealthStatusRequest';
+// @ts-ignore
+import { ProviderHealthStatusResponse } from '../model/providerHealthStatusResponse';
 // @ts-ignore
 import { ProviderPageResult } from '../model/providerPageResult';
 // @ts-ignore
@@ -42,7 +44,7 @@ import { APIConfiguration }                                     from '../configu
 })
 export class ProviderService {
 
-    protected basePath = 'http://onecx-ai-provider-bff:8080';
+    protected basePath = 'http://onecx-ai-provider-svc:8080';
     public defaultHeaders = new HttpHeaders();
     public configuration = new APIConfiguration();
     public encoder: HttpParameterCodec;
@@ -354,17 +356,17 @@ export class ProviderService {
     }
 
     /**
-     * Return Provider health status by its ID
-     * @param id 
+     * Return health statuses of providers by their ids
+     * @param providerHealthStatusRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getProviderHealthStatus(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<ProviderHealthStatus>;
-    public getProviderHealthStatus(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<ProviderHealthStatus>>;
-    public getProviderHealthStatus(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<ProviderHealthStatus>>;
-    public getProviderHealthStatus(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getProviderHealthStatus.');
+    public getProviderHealthStatusesByIds(providerHealthStatusRequest: ProviderHealthStatusRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<ProviderHealthStatusResponse>;
+    public getProviderHealthStatusesByIds(providerHealthStatusRequest: ProviderHealthStatusRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<ProviderHealthStatusResponse>>;
+    public getProviderHealthStatusesByIds(providerHealthStatusRequest: ProviderHealthStatusRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<ProviderHealthStatusResponse>>;
+    public getProviderHealthStatusesByIds(providerHealthStatusRequest: ProviderHealthStatusRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (providerHealthStatusRequest === null || providerHealthStatusRequest === undefined) {
+            throw new Error('Required parameter providerHealthStatusRequest was null or undefined when calling getProviderHealthStatusesByIds.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -387,6 +389,15 @@ export class ProviderService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -398,10 +409,11 @@ export class ProviderService {
             }
         }
 
-        let localVarPath = `/providers/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/health`;
-        return this.httpClient.request<ProviderHealthStatus>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/providers/health`;
+        return this.httpClient.request<ProviderHealthStatusResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                body: providerHealthStatusRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

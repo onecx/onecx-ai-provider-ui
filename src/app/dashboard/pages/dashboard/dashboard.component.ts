@@ -23,13 +23,13 @@ interface DashboardPanel {
 export class DashboardComponent {
   viewModel$: Observable<DashboardViewModel>
   readonly navigationPanels: DashboardPanel[] = [
-    // {
-    //   titleKey: 'DASHBOARD.PANELS.AGENT.TITLE',
-    //   subtitleKey: 'DASHBOARD.PANELS.AGENT.SUBTITLE',
-    //   descriptionKey: 'DASHBOARD.PANELS.AGENT.DESCRIPTION',
-    //   route: '../configuration',
-    //   icon: 'pi pi-sparkles'
-    // },
+    {
+      titleKey: 'DASHBOARD.PANELS.AGENT.TITLE',
+      subtitleKey: 'DASHBOARD.PANELS.AGENT.SUBTITLE',
+      descriptionKey: 'DASHBOARD.PANELS.AGENT.DESCRIPTION',
+      route: '../agent',
+      icon: 'pi pi-sparkles'
+    },
     {
       titleKey: 'DASHBOARD.PANELS.SCAFFOLD.TITLE',
       subtitleKey: 'DASHBOARD.PANELS.SCAFFOLD.SUBTITLE',
