@@ -218,7 +218,7 @@ describe('ConfigurationSearchComponent', () => {
     const searchHeader = await ConfigurationSearch.getHeader()
     const pageHeader = await searchHeader.getPageHeader()
     const headerText = await pageHeader.getHeaderText()
-    expect(headerText).toBe('Configuration Search')
+    expect(headerText).toBe('Scaffold Search')
   })
 
   it('should dispatch searchButtonClicked action on search', (done) => {
@@ -459,8 +459,8 @@ describe('ConfigurationSearchComponent', () => {
   it('should display translated headers', async () => {
     const searchHeader = await ConfigurationSearch.getHeader()
     const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Configuration Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of Configuration')
+    expect(await pageHeader.getHeaderText()).toEqual('Scaffold Search')
+    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of Scaffold')
   })
 
   it('should display translated empty message when no search results', async () => {
