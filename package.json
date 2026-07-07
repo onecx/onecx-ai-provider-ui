@@ -53,7 +53,7 @@
     "@onecx/angular-webcomponents": "^6.23.2",
     "@onecx/integration-interface": "^6.23.2",
     "@onecx/ngrx-accelerator": "^6.23.2",
-    "@onecx/nx-plugin": "^6.0.0",
+    "@onecx/nx-plugin": "^6.4.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "husky": "^9.1.7",
     "keycloak-js": "^25.0.6",
