@@ -336,7 +336,7 @@ describe('SkillSearchEffects', () => {
       }
       ;(router.parseUrl as jest.Mock).mockReturnValue(mockUrlTree)
 
-      const emissions: Array<{ queryParams: unknown; fragment: unknown }> = []
+      const emissions: { queryParams: unknown; fragment: unknown }[] = []
       emissions.push({ queryParams: { ...mockUrlTree.queryParams }, fragment: mockUrlTree.fragment })
 
       effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
