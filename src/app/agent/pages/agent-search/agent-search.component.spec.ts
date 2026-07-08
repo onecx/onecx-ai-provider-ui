@@ -181,6 +181,7 @@ describe('AgentSearchComponent', () => {
 
   it('should dispatch resetButtonClicked action on resetSearch', (done) => {
     store.scannedActions$.pipe(ofType(agentSearchActions.resetButtonClicked)).subscribe(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.resetButtonClicked())
       done()
     })
 
@@ -194,7 +195,7 @@ describe('AgentSearchComponent', () => {
     await overflowActionButton?.click()
 
     const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems.length).toBe(2)
+    expect(overflowMenuItems).toHaveLength(2)
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
     expect(exportAllActionItem).not.toBeNull()
@@ -218,7 +219,7 @@ describe('AgentSearchComponent', () => {
     await overflowActionButton?.click()
 
     const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems.length).toBe(2)
+    expect(overflowMenuItems).toHaveLength(2)
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
     expect(showHideChartActionItem).not.toBeNull()
@@ -344,7 +345,7 @@ describe('AgentSearchComponent', () => {
       await columnGroupSelector.openCustomGroupColumnSelectorDialog()
       const pickList = await columnGroupSelector.getPicklist()
       const transferControlButtons = await pickList.getTransferControlsButtons()
-      expect(transferControlButtons.length).toBe(4)
+      expect(transferControlButtons).toHaveLength(4)
 
       // Currently, all columns are selected. Next, we are unselecting all to have a clean test setting.
       const deactivateAllColumnsButton = transferControlButtons[1]
@@ -418,7 +419,7 @@ describe('AgentSearchComponent', () => {
     const dataTable = await dataView.getDataListGrid()
     if (dataTable) {
       const rows = await dataTable.getActionButtons('list')
-      expect(rows.length).toBe(0)
+      expect(rows).toHaveLength(0)
     }
     expect(fixture.debugElement.query(By.css('.p-dataview-emptymessage'))).not.toBeNull()
   })

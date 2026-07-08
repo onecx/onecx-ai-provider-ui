@@ -163,7 +163,7 @@ describe('AgentDetailsComponent', () => {
   it('should have 4 inline actions', async () => {
     const pageHeader = await agentDetails.getHeader()
     const inlineActions = await pageHeader.getInlineActionButtons()
-    expect(inlineActions.length).toBe(3)
+    expect(inlineActions).toHaveLength(3)
 
     const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     expect(backAction).toBeTruthy()
@@ -300,7 +300,7 @@ describe('AgentDetailsComponent', () => {
 
     const pageHeader = await agentDetails.getHeader()
     const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails.length).toBe(5)
+    expect(objectDetails).toHaveLength(5)
 
     const label = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.CHANGE_ME')
     const testDetailItem = await pageHeader.getObjectInfoByLabel(label)
