@@ -73,7 +73,7 @@ export class AgentDetailsComponent implements OnInit {
         {
           titleKey: 'AGENT_DETAILS.GENERAL.EDIT',
           labelKey: 'AGENT_DETAILS.GENERAL.EDIT',
-          // permission: 'AGENT#EDIT',
+          permission: 'AGENT#EDIT',
           show: 'always',
           icon: PrimeIcons.PENCIL,
           conditional: true,
@@ -109,7 +109,7 @@ export class AgentDetailsComponent implements OnInit {
         {
           titleKey: 'AGENT_DETAILS.GENERAL.DELETE',
           labelKey: 'AGENT_DETAILS.GENERAL.DELETE',
-          // permission: 'AGENT#DELETE',
+          permission: 'AGENT#DELETE',
           icon: PrimeIcons.TRASH,
           show: 'always',
           btnClass: '',
