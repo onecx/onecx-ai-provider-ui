@@ -16,7 +16,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { AgentService, SearchAgentResponse } from 'src/app/shared/generated'
+import { AgentPageResult, AgentService } from 'src/app/shared/generated'
 import { agentSearchActions } from './agent-search.actions'
 import { AgentSearchEffects } from './agent-search.effects'
 import { AgentSearchCriteria } from './agent-search.parameters'
@@ -167,7 +167,7 @@ describe('AgentSearchEffects', () => {
           number: 0,
           totalElements: 1,
           totalPages: 1
-        } as unknown as HttpEvent<SearchAgentResponse>)
+        } as unknown as HttpEvent<AgentPageResult>)
       )
     })
 

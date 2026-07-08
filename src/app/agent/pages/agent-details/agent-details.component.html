@@ -22,148 +22,226 @@
     <ocx-content [attr.aria-label]="'AGENT_DETAILS.ARIA_LABEL' | translate">
       <div class="surface-section mt-3 mb-1 mx-3">
         <form [formGroup]="formGroup" class="flex flex-column gap-4" errorTailor>
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="agent_detail_tenant_id"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="tenantId"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_tenant_id">
-              {{ 'AGENT_DETAILS.FORM.TENANT_ID' | translate }}
-            </label>
-          </p-floatlabel>
+          <p-tabView>
+            <p-tabPanel [header]="'AGENT_DETAILS.TABS.GENERAL' | translate">
+              <div class="flex flex-column gap-4 mt-3">
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <input
+                    pInputText
+                    type="text"
+                    id="agent_detail_name"
+                    class="w-full pt-3 pb-2 text-responsive"
+                    formControlName="name"
+                    required
+                    aria-required="true"
+                  />
+                  <label class="ocx-required-label" for="agent_detail_name">
+                    {{ 'AGENT_DETAILS.FORM.NAME' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="agent_detail_name"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="name"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_name">
-              {{ 'AGENT_DETAILS.FORM.NAME' | translate }}
-            </label>
-          </p-floatlabel>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <textarea
+                    pInputText
+                    id="agent_detail_description"
+                    class="w-full pt-3 pb-2 text-responsive"
+                    rows="3"
+                    formControlName="description"
+                  ></textarea>
+                  <label for="agent_detail_description">
+                    {{ 'AGENT_DETAILS.FORM.DESCRIPTION' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="agent_detail_model_id"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="modelId"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_model_id">
-              {{ 'AGENT_DETAILS.FORM.MODEL_ID' | translate }}
-            </label>
-          </p-floatlabel>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <textarea
+                    pInputText
+                    id="agent_detail_additional_prompt"
+                    class="w-full pt-3 pb-2 text-responsive"
+                    rows="4"
+                    formControlName="additionalPrompt"
+                  ></textarea>
+                  <label for="agent_detail_additional_prompt">
+                    {{ 'AGENT_DETAILS.FORM.ADDITIONAL_PROMPT' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="agent_detail_scaffold_id"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="scaffoldId"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_scaffold_id">
-              {{ 'AGENT_DETAILS.FORM.SCAFFOLD_ID' | translate }}
-            </label>
-          </p-floatlabel>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <p-select
+                    id="agent_detail_provider"
+                    formControlName="provider"
+                    [options]="vm.providers"
+                    [optionLabel]="'name'"
+                    [filter]="true"
+                    [showClear]="true"
+                    class="w-full"
+                    (onChange)="onProviderChanged()"
+                  >
+                  </p-select>
+                  <label for="agent_detail_provider">
+                    {{ 'AGENT_DETAILS.FORM.PROVIDER' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="agent_detail_runtime_config_id"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="runtimeConfigId"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_runtime_config_id">
-              {{ 'AGENT_DETAILS.FORM.RUNTIME_CONFIG_ID' | translate }}
-            </label>
-          </p-floatlabel>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <p-select
+                    id="agent_detail_model"
+                    formControlName="model"
+                    [options]="getFilteredModels(vm.models)"
+                    [optionLabel]="'name'"
+                    [filter]="true"
+                    [showClear]="true"
+                    class="w-full"
+                  >
+                  </p-select>
+                  <label for="agent_detail_model">
+                    {{ 'AGENT_DETAILS.FORM.MODEL' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <textarea
-              pInputText
-              id="agent_detail_additional_prompt"
-              class="w-full pt-3 pb-2 text-responsive"
-              rows="4"
-              formControlName="additionalPrompt"
-            ></textarea>
-            <label for="agent_detail_additional_prompt">
-              {{ 'AGENT_DETAILS.FORM.ADDITIONAL_PROMPT' | translate }}
-            </label>
-          </p-floatlabel>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <p-select
+                    id="agent_detail_scaffold"
+                    formControlName="scaffold"
+                    [options]="vm.scaffolds"
+                    [optionLabel]="'name'"
+                    [filter]="true"
+                    [showClear]="true"
+                    class="w-full"
+                  >
+                  </p-select>
+                  <label for="agent_detail_scaffold">
+                    {{ 'AGENT_DETAILS.FORM.SCAFFOLD' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="number"
-              id="agent_detail_version"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="version"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_version">
-              {{ 'AGENT_DETAILS.FORM.VERSION' | translate }}
-            </label>
-          </p-floatlabel>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <p-multiSelect
+                    id="agent_detail_tools"
+                    formControlName="tools"
+                    [options]="vm.tools"
+                    [optionLabel]="'name'"
+                    [filter]="true"
+                    [defaultLabel]="'AGENT_DETAILS.FORM.ADDITIONAL_TOOLS' | translate"
+                    class="w-full"
+                  >
+                  </p-multiSelect>
+                  <label for="agent_detail_tools">
+                    {{ 'AGENT_DETAILS.FORM.ADDITIONAL_TOOLS' | translate }}
+                  </label>
+                </p-floatlabel>
+              </div>
+            </p-tabPanel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input
-              pInputText
-              type="text"
-              id="agent_detail_status"
-              class="w-full pt-3 pb-2 text-responsive"
-              formControlName="status"
-              required
-              aria-required="true"
-            />
-            <label class="ocx-required-label" for="agent_detail_status">
-              {{ 'AGENT_DETAILS.FORM.STATUS' | translate }}
-            </label>
-          </p-floatlabel>
+            <p-tabPanel [header]="'AGENT_DETAILS.TABS.ASSIGNMENTS' | translate">
+              <div class="flex flex-column gap-3 mt-3">
+                <h3 class="m-0 text-lg font-semibold text-900">
+                  {{ 'AGENT_DETAILS.ASSIGNMENTS.GROUPS_SECTION' | translate }}
+                </h3>
 
-          <div class="flex align-items-center gap-2">
-            <input type="checkbox" id="agent_detail_a2a_enabled" formControlName="a2aEnabled" />
-            <label for="agent_detail_a2a_enabled">{{ 'AGENT_DETAILS.FORM.A2A_ENABLED' | translate }}</label>
-          </div>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <p-multiSelect
+                    id="agent_detail_groups"
+                    formControlName="groups"
+                    [options]="vm.groups"
+                    [optionLabel]="'name'"
+                    [filter]="true"
+                    [defaultLabel]="'AGENT_DETAILS.ASSIGNMENTS.GROUPS' | translate"
+                    class="w-full"
+                  >
+                  </p-multiSelect>
+                  <label for="agent_detail_groups">
+                    {{ 'AGENT_DETAILS.ASSIGNMENTS.GROUPS' | translate }}
+                  </label>
+                </p-floatlabel>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input pInputText type="text" id="agent_detail_id" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.id ?? ''" readonly />
-            <label for="agent_detail_id">{{ 'AGENT_DETAILS.FORM.ID' | translate }}</label>
-          </p-floatlabel>
+                <div class="flex flex-column md:flex-row md:align-items-center gap-2">
+                  <div class="flex flex-column w-full md:flex-1">
+                    <label for="agent_detail_new_group_name" class="mb-1">
+                      {{ 'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate }}
+                    </label>
+                    <input
+                      pInputText
+                      type="text"
+                      id="agent_detail_new_group_name"
+                      class="w-full"
+                      formControlName="newGroupName"
+                      [placeholder]="'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate"
+                    />
+                  </div>
+                  <button
+                    pButton
+                    type="button"
+                    class="w-full md:w-auto flex-shrink-0"
+                    icon="pi pi-plus"
+                    [disabled]="!vm.editMode"
+                    (click)="createGroupInPlace()"
+                  >
+                    {{ 'AGENT_DETAILS.ASSIGNMENTS.CREATE_GROUP' | translate }}
+                  </button>
+                </div>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input pInputText type="text" id="agent_detail_creation_user" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.creationUser ?? ''" readonly />
-            <label for="agent_detail_creation_user">{{ 'AGENT_DETAILS.FORM.CREATION_USER' | translate }}</label>
-          </p-floatlabel>
+                <h3 class="mt-2 mb-0 text-lg font-semibold text-900">
+                  {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTERS_SECTION' | translate }}
+                </h3>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input pInputText type="text" id="agent_detail_modification_user" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.modificationUser ?? ''" readonly />
-            <label for="agent_detail_modification_user">{{ 'AGENT_DETAILS.FORM.MODIFICATION_USER' | translate }}</label>
-          </p-floatlabel>
+                <div class="flex justify-content-end">
+                  <button
+                    pButton
+                    type="button"
+                    icon="pi pi-plus"
+                    [disabled]="!vm.editMode"
+                    (click)="addFilter()"
+                  >
+                    {{ 'AGENT_DETAILS.ASSIGNMENTS.ADD_FILTER' | translate }}
+                  </button>
+                </div>
 
-          <p-floatlabel variant="on" controlErrorAnchor>
-            <input pInputText type="text" id="agent_detail_modification_count" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.modificationCount ?? ''" readonly />
-            <label for="agent_detail_modification_count">{{ 'AGENT_DETAILS.FORM.MODIFICATION_COUNT' | translate }}</label>
-          </p-floatlabel>
+                <div formArrayName="filters" class="flex flex-column gap-2">
+                  <div
+                    class="flex align-items-center gap-2"
+                    *ngFor="let filterGroup of filtersFormArray.controls; let i = index"
+                    [formGroupName]="i"
+                  >
+                    <p-autoComplete
+                      formControlName="key"
+                      [suggestions]="filterKeySuggestions"
+                      (completeMethod)="searchFilterKeys($any($event))"
+                      [dropdown]="true"
+                      [inputId]="'agent_detail_filter_key_' + i"
+                      class="w-full"
+                      [forceSelection]="true"
+                    ></p-autoComplete>
+                    <span class="font-medium">:</span>
+                    <div class="flex flex-column w-full">
+                      <label [for]="'agent_detail_filter_value_' + i" class="mb-1">
+                        {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTER_VALUE' | translate }}
+                      </label>
+                      <input
+                        pInputText
+                        type="text"
+                        class="w-full"
+                        [id]="'agent_detail_filter_value_' + i"
+                        formControlName="value"
+                      />
+                    </div>
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-trash"
+                      severity="danger"
+                      [text]="true"
+                      [attr.aria-label]="'AGENT_DETAILS.ASSIGNMENTS.REMOVE_FILTER' | translate"
+                      [disabled]="!vm.editMode"
+                      (click)="removeFilter(i)"
+                    >
+                      <span class="hidden">{{ 'AGENT_DETAILS.ASSIGNMENTS.REMOVE_FILTER' | translate }}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </p-tabPanel>
+          </p-tabView>
         </form>
       </div>
     </ocx-content>
