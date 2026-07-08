@@ -1,0 +1,172 @@
+<ocx-portal-page
+  permission="AGENT#VIEW"
+  [helpArticleId]="'AGENT_DETAILS.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  @if (vm.detailsLoadingIndicator) {
+  <ocx-loading-indicator> </ocx-loading-indicator>
+  } @if (!vm.detailsLoaded && !vm.detailsLoadingIndicator) {
+  <ocx-error> </ocx-error>
+  } @if (vm.detailsLoaded && !vm.detailsLoadingIndicator) {
+  <div>
+    <ocx-page-header
+      [header]="'AGENT_DETAILS.HEADER' | translate"
+      [subheader]="'AGENT_DETAILS.SUB_HEADER' | translate"
+      [attr.aria-label]="'AGENT_DETAILS.HEADER' | translate"
+      [objectDetails]="(objectDetails$ | async) ?? []"
+      [actions]="(headerActions$ | async) ?? []"
+      [disableDefaultActions]="true"
+      [manualBreadcrumbs]="true"
+    >
+    </ocx-page-header>
+    <ocx-content [attr.aria-label]="'AGENT_DETAILS.ARIA_LABEL' | translate">
+      <div class="surface-section mt-3 mb-1 mx-3">
+        <form [formGroup]="formGroup" class="flex flex-column gap-4" errorTailor>
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="agent_detail_tenant_id"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="tenantId"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_tenant_id">
+              {{ 'AGENT_DETAILS.FORM.TENANT_ID' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="agent_detail_name"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="name"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_name">
+              {{ 'AGENT_DETAILS.FORM.NAME' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="agent_detail_model_id"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="modelId"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_model_id">
+              {{ 'AGENT_DETAILS.FORM.MODEL_ID' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="agent_detail_scaffold_id"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="scaffoldId"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_scaffold_id">
+              {{ 'AGENT_DETAILS.FORM.SCAFFOLD_ID' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="agent_detail_runtime_config_id"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="runtimeConfigId"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_runtime_config_id">
+              {{ 'AGENT_DETAILS.FORM.RUNTIME_CONFIG_ID' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <textarea
+              pInputText
+              id="agent_detail_additional_prompt"
+              class="w-full pt-3 pb-2 text-responsive"
+              rows="4"
+              formControlName="additionalPrompt"
+            ></textarea>
+            <label for="agent_detail_additional_prompt">
+              {{ 'AGENT_DETAILS.FORM.ADDITIONAL_PROMPT' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="number"
+              id="agent_detail_version"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="version"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_version">
+              {{ 'AGENT_DETAILS.FORM.VERSION' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="agent_detail_status"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="status"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="agent_detail_status">
+              {{ 'AGENT_DETAILS.FORM.STATUS' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <div class="flex align-items-center gap-2">
+            <input type="checkbox" id="agent_detail_a2a_enabled" formControlName="a2aEnabled" />
+            <label for="agent_detail_a2a_enabled">{{ 'AGENT_DETAILS.FORM.A2A_ENABLED' | translate }}</label>
+          </div>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input pInputText type="text" id="agent_detail_id" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.id ?? ''" readonly />
+            <label for="agent_detail_id">{{ 'AGENT_DETAILS.FORM.ID' | translate }}</label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input pInputText type="text" id="agent_detail_creation_user" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.creationUser ?? ''" readonly />
+            <label for="agent_detail_creation_user">{{ 'AGENT_DETAILS.FORM.CREATION_USER' | translate }}</label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input pInputText type="text" id="agent_detail_modification_user" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.modificationUser ?? ''" readonly />
+            <label for="agent_detail_modification_user">{{ 'AGENT_DETAILS.FORM.MODIFICATION_USER' | translate }}</label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input pInputText type="text" id="agent_detail_modification_count" class="w-full pt-3 pb-2 text-responsive" [value]="vm.details?.modificationCount ?? ''" readonly />
+            <label for="agent_detail_modification_count">{{ 'AGENT_DETAILS.FORM.MODIFICATION_COUNT' | translate }}</label>
+          </p-floatlabel>
+        </form>
+      </div>
+    </ocx-content>
+  </div>
+  }
+</ocx-portal-page>

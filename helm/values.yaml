@@ -60,6 +60,15 @@ app:
             IMPORT: Import Dashboard items
             EXPORT: Export Dashboard items
             BACK: Navigate back in details of Dashboard item
+          AGENT:
+            CREATE: Create Agent item
+            EDIT: Edit Agent item
+            DELETE: Delete Agent item
+            SEARCH: Search Agent items
+            VIEW: View Agent item details
+            IMPORT: Import Agent items
+            EXPORT: Export Agent items
+            BACK: Navigate back in details of Agent item
     keycloak:
       client:
         enabled: true

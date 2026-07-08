@@ -4,6 +4,12 @@ import { TranslateModule } from '@ngx-translate/core'
 import { startsWith } from '@onecx/angular-webcomponents'
 export const routes: Routes = [
   {
+    // Adjust the matcher to match the feature route.
+    // If you only have one feature, you can use '' for simplification.
+    matcher: startsWith('agent'),
+    loadChildren: () => import('./agent/agent.module').then((mod) => mod.AgentModule)
+  },
+  {
     matcher: startsWith('dashboard'),
     loadChildren: () => import('./dashboard/dashboard.module').then((mod) => mod.DashboardModule)
   },
