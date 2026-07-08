@@ -208,7 +208,7 @@ describe('MCPServerDetailsComponent', () => {
 
     const pageHeader = await mcpserverDetails.getHeader()
     const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails.length).toBe(5)
+    expect(objectDetails).toHaveLength(5)
 
     const testDetailItem = await pageHeader.getObjectInfoByLabel('HELLO_DETAILS.FORM.ID')
     expect(await testDetailItem?.getLabel()).toEqual('HELLO_DETAILS.FORM.ID')
