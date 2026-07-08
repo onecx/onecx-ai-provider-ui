@@ -154,9 +154,9 @@
         "DESCRIPTION": "Configure external model providers and their connectivity."
       },
       "TOOL": {
-        "TITLE": "Tool (MCP)",
+        "TITLE": "Tools (MCP)",
         "SUBTITLE": "Execution extensions",
-        "DESCRIPTION": "Manage MCP tool endpoints and execution integration points."
+        "DESCRIPTION": "Manage Tools (MCP) endpoints and execution integration points."
       },
       "RUNTIME_CONFIG": {
         "TITLE": "Runtime Config",
@@ -171,8 +171,8 @@
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
-    "HEADER": "MCPServer Details",
-    "SUB_HEADER": "Display of MCPServer Details",
+    "HEADER": "Tools (MCP) Details",
+    "SUB_HEADER": "Display Tools (MCP) details",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Loading details failed."
     },
@@ -204,20 +204,20 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update MCPServer"
+      "HEADER": "Update Tools (MCP)"
     },
     "DELETE": {
-      "HEADER": "Delete MCPServer",
-      "MESSAGE": "Please confirm that you want to delete this MCPServer.",
+      "HEADER": "Delete Tools (MCP)",
+      "MESSAGE": "Please confirm that you want to delete this Tools (MCP) entry.",
       "CONFIRM": "Confirm",
       "CANCEL": "Cancel",
-      "SUCCESS": "MCPServer deleted successfully",
-      "ERROR": "Could not delete MCPServer"
+      "SUCCESS": "Tools (MCP) entry deleted successfully",
+      "ERROR": "Could not delete Tools (MCP) entry"
     }
   },
   "MCPSERVER_SEARCH": {
-    "HEADER": "MCPServer Search",
-    "SUB_HEADER": "Searching and displaying of MCPServer",
+    "HEADER": "Tools (MCP) Search",
+    "SUB_HEADER": "Search and display Tools (MCP)",
     "HELP_ARTICLE_ID": "Help Article",
     "EMPTY_RESULTS": "No results.",
     "BREADCRUMB": "Search",
@@ -233,7 +233,7 @@
       "DIALOG_CONFIRM": "Confirm",
       "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
-      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
+      "NAVIGATE_TO_MCP_SERVERS": "Tools (MCP)"
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
@@ -278,9 +278,9 @@
       "ID": "ID",
       "NAME": "Name",
       "DESCRIPTION": "Description",
-      "MCP_SERVER": "MCP Server",
+      "MCP_SERVER": "Tools (MCP)",
       "PROVIDER": "Provider",
-      "MCP_SERVERS_PLACEHOLDER": "Select MCP Servers"
+      "MCP_SERVERS_PLACEHOLDER": "Select Tools (MCP)"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",
@@ -329,7 +329,7 @@
       "DIALOG_CONFIRM": "Confirm",
       "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
-      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
+      "NAVIGATE_TO_MCP_SERVERS": "Tools (MCP)"
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
