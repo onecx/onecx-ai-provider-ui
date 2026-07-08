@@ -1,0 +1,71 @@
+<ocx-portal-page
+  permission="SKILL#VIEW"
+  [helpArticleId]="'SKILL_DETAILS.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  @if (vm.detailsLoadingIndicator) {
+  <ocx-loading-indicator> </ocx-loading-indicator>
+  } @if (!vm.detailsLoaded && !vm.detailsLoadingIndicator) {
+  <ocx-error> </ocx-error>
+  } @if (vm.detailsLoaded && !vm.detailsLoadingIndicator) {
+  <div>
+    <ocx-page-header
+      [header]="'SKILL_DETAILS.HEADER' | translate"
+      [subheader]="'SKILL_DETAILS.SUB_HEADER' | translate"
+      [attr.aria-label]="'SKILL_DETAILS.HEADER' | translate"
+      [objectDetails]="(objectDetails$ | async) ?? []"
+      [actions]="(headerActions$ | async) ?? []"
+      [disableDefaultActions]="true"
+      [manualBreadcrumbs]="true"
+    >
+    </ocx-page-header>
+    <ocx-content [attr.aria-label]="'SKILL_DETAILS.ARIA_LABEL' | translate">
+      <div class="surface-section mt-3 mb-1 mx-3">
+        <form [formGroup]="formGroup" class="flex flex-column gap-4" errorTailor>
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="skill_detail_name"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="name"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="skill_detail_name">
+              {{ 'SKILL_DETAILS.FORM.NAME' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="skill_detail_description"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="description"
+            />
+            <label for="skill_detail_description">
+              {{ 'SKILL_DETAILS.FORM.DESCRIPTION' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <textarea
+              pInputTextarea
+              id="skill_detail_instruction"
+              class="w-full pt-3 pb-2 text-responsive instruction-textarea"
+              formControlName="instruction"
+              rows="12"
+              autoResize="true"
+            ></textarea>
+            <label for="skill_detail_instruction">
+              {{ 'SKILL_DETAILS.FORM.INSTRUCTION' | translate }}
+            </label>
+          </p-floatlabel>
+        </form>
+      </div>
+    </ocx-content>
+  </div>
+  }
+</ocx-portal-page>

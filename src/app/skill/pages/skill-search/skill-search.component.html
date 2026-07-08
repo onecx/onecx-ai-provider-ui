@@ -1,0 +1,84 @@
+<ocx-portal-page
+  permission="SKILL#SEARCH"
+  [helpArticleId]="'SKILL_SEARCH.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-search-header
+    [header]="'SKILL_SEARCH.HEADER' | translate"
+    [subheader]="'SKILL_SEARCH.SUB_HEADER' | translate"
+    (searched)="search(skillSearchFormGroup)"
+    (resetted)="resetSearch()"
+    [manualBreadcrumbs]="true"
+    [actions]="(headerActions$ | async) ?? []"
+    (componentStateChanged)="searchHeaderComponentStateChanged($event)"
+    [viewMode]="vm.searchHeaderComponentState?.activeViewMode ?? 'basic'"
+    [attr.aria-label]="'SKILL_SEARCH.HEADER_ARIA_LABEL' | translate"
+  >
+    <form [formGroup]="skillSearchFormGroup">
+      <div class="grid mt-0 p-fluid">
+        <div class="col-12 md:col-3">
+          <p-floatlabel variant="on">
+            <input
+              pInputText
+              id="onecx-ai-provider-ui_skill_search_criteria_name"
+              type="text"
+              class="w-18rem"
+              formControlName="name"
+              [pTooltip]="'SKILL_SEARCH.CRITERIA.NAME.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              [attr.aria-label]="'SKILL_SEARCH.CRITERIA.NAME.ARIA_LABEL' | translate"
+            />
+            <label for="onecx-ai-provider-ui_skill_search_criteria_name" class="white-space-nowrap">
+              {{ 'SKILL_SEARCH.CRITERIA.NAME.LABEL' | translate }}
+            </label>
+          </p-floatlabel>
+        </div>
+      </div>
+    </form>
+  </ocx-search-header>
+
+  <ocx-content-container layout="horizontal">
+    <ocx-content class="w-full">
+      <ocx-interactive-data-view
+        (editItem)="edit($event)"
+        editPermission="SKILL#EDIT"
+        (viewItem)="details($event)"
+        viewPermission="SKILL#VIEW"
+        [data]="vm.results"
+        [columns]="vm.columns"
+        [emptyResultsMessage]="'SKILL_SEARCH.EMPTY_RESULTS' | translate"
+        (componentStateChanged)="resultComponentStateChanged($event)"
+        [layout]="vm.resultComponentState?.layout ?? 'list'"
+        [supportedViewLayouts]="['list', 'table']"
+        [page]="vm.resultComponentState?.activePage ?? 0"
+        [pageSize]="vm.resultComponentState?.pageSize"
+        [filters]="vm.resultComponentState?.filters ?? []"
+        [sortField]="vm.resultComponentState?.sorting?.sortColumn"
+        [sortDirection]="vm.resultComponentState?.sorting?.sortDirection ?? defaultDataSortDirection"
+        [selectedRows]="vm.resultComponentState?.selectedRows?? []"
+        [defaultGroupKey]="vm.resultComponentState?.activeColumnGroupKey ?? ''"
+        [actionColumnPosition]="vm.resultComponentState?.actionColumnConfig?.position?? 'right'"
+        [frozenActionColumn]="vm.resultComponentState?.actionColumnConfig?.frozen ?? false"
+        [attr.aria-label]="'SKILL_SEARCH.RESULTS_ARIA_LABEL' | translate"
+      >
+      </ocx-interactive-data-view>
+    </ocx-content>
+    @if (vm.results.length > 0 && vm.chartVisible && (diagramColumn$ | async)) {
+    <ocx-content class="w-full lg:w-3">
+      <div class="flex flex-column md:flex-row lg:flex-column justify-content-center">
+        @if (diagramColumn$ | async; as diagramColumn) {
+        <ocx-group-by-count-diagram
+          [data]="vm.results"
+          [column]="diagramColumn"
+          sumKey="SKILL_SEARCH.DIAGRAM.SUM"
+          [diagramType]="vm.diagramComponentState?.activeDiagramType ?? defaultDiagramType"
+          (componentStateChanged)="diagramComponentStateChanged($event)"
+          [attr.aria-label]="'SKILL_SEARCH.DIAGRAM.ARIA_LABEL' | translate"
+        ></ocx-group-by-count-diagram>
+        }
+      </div>
+    </ocx-content>
+    }
+  </ocx-content-container>
+</ocx-portal-page>
