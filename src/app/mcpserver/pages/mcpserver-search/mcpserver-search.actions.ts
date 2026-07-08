@@ -4,7 +4,7 @@ import {
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
-import { MCPServer } from 'src/app/shared/generated'
+import { Tool as MCPServer } from 'src/app/shared/generated'
 import { MCPServerSearchCriteria } from './mcpserver-search.parameters'
 
 export const MCPServerSearchActions = createActionGroup({

@@ -1,4 +1,4 @@
-import { MCPServer } from 'src/app/shared/generated'
+import { Tool as MCPServer } from 'src/app/shared/generated'
 
 export interface MCPServerDetailsViewModel {
   details: MCPServer | undefined

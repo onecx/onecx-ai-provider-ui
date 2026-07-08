@@ -19,11 +19,7 @@ export const routes: Routes = [
   },
   {
     matcher: startsWith(''),
-    loadChildren: () => import('./configuration/configuration.module').then((mod) => mod.ConfigurationModule)
-  },
-  {
-    matcher: startsWith('configuration'),
-    loadChildren: () => import('./configuration/configuration.module').then((mod) => mod.ConfigurationModule)
+    loadChildren: () => import('./dashboard/dashboard.module').then((mod) => mod.DashboardModule)
   },
   {
     matcher: startsWith('provider'),
