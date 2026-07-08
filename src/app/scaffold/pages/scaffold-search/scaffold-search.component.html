@@ -1,0 +1,83 @@
+<ocx-portal-page
+  permission="SCAFFOLD#SEARCH"
+  [helpArticleId]="'SCAFFOLD_SEARCH.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  <ocx-search-header
+    [header]="'SCAFFOLD_SEARCH.HEADER' | translate"
+    [subheader]="'SCAFFOLD_SEARCH.SUB_HEADER' | translate"
+    (searched)="search(scaffoldSearchFormGroup)"
+    (resetted)="resetSearch()"
+    [manualBreadcrumbs]="true"
+    [actions]="(headerActions$ | async) ?? []"
+    (componentStateChanged)="searchHeaderComponentStateChanged($event)"
+    [viewMode]="vm.searchHeaderComponentState?.activeViewMode ?? 'basic'"
+    [attr.aria-label]="'SCAFFOLD_SEARCH.HEADER_ARIA_LABEL' | translate"
+  >
+    <form [formGroup]="scaffoldSearchFormGroup">
+      <div class="grid mt-0 p-fluid">
+        <div class="col-12 md:col-3">
+          <p-floatlabel variant="on">
+            <!-- ACTION S3: Change this search criteria -->
+            <input
+              pInputText
+              id="onecx-ai-provider-ui_scaffold_search_criteria_change_me"
+              type="text"
+              class="w-18rem"
+              formControlName="changeMe"
+              [pTooltip]="'SCAFFOLD_SEARCH.CRITERIA.CHANGE_ME.TOOLTIP' | translate"
+              tooltipPosition="top"
+              tooltipEvent="hover"
+              role="main"
+              [attr.aria-label]="'SCAFFOLD_SEARCH.CRITERIA.CHANGE_ME.ARIA_LABEL' | translate"
+            />
+            <label for="onecx-ai-provider-ui_scaffold_search_criteria_change_me" class="white-space-nowrap">
+              {{ 'SCAFFOLD_SEARCH.CRITERIA.CHANGE_ME.LABEL' | translate }}
+            </label>
+          </p-floatlabel>
+        </div>
+        <!-- ACTION S3: Specify search criteria here -->
+      </div>
+    </form>
+  </ocx-search-header>
+
+  <ocx-content-container layout="horizontal">
+    <ocx-content class="w-full">
+      <ocx-interactive-data-view
+        [data]="vm.results"
+        [columns]="vm.columns"
+        [emptyResultsMessage]="'SCAFFOLD_SEARCH.EMPTY_RESULTS' | translate"
+        (componentStateChanged)="resultComponentStateChanged($event)"
+        [layout]="vm.resultComponentState?.layout ?? 'list'"
+        [supportedViewLayouts]="['list', 'table']"
+        [page]="vm.resultComponentState?.activePage ?? 0"
+        [pageSize]="vm.resultComponentState?.pageSize"
+        [filters]="vm.resultComponentState?.filters ?? []"
+        [sortField]="vm.resultComponentState?.sorting?.sortColumn"
+        [sortDirection]="vm.resultComponentState?.sorting?.sortDirection ?? defaultDataSortDirection"
+        [selectedRows]="vm.resultComponentState?.selectedRows?? []"
+        [defaultGroupKey]="vm.resultComponentState?.activeColumnGroupKey ?? ''"
+        [actionColumnPosition]="vm.resultComponentState?.actionColumnConfig?.position?? 'right'"
+        [frozenActionColumn]="vm.resultComponentState?.actionColumnConfig?.frozen ?? false"
+        [attr.aria-label]="'SCAFFOLD_SEARCH.RESULTS_ARIA_LABEL' | translate"
+      >
+      </ocx-interactive-data-view>
+    </ocx-content>
+    @if (vm.results.length > 0 && vm.chartVisible && (diagramColumn$ | async)) {
+    <ocx-content class="w-full lg:w-3">
+      <div class="flex flex-column md:flex-row lg:flex-column justify-content-center">
+        @if (diagramColumn$ | async; as diagramColumn) {
+        <ocx-group-by-count-diagram
+          [data]="vm.results"
+          [column]="diagramColumn"
+          sumKey="SCAFFOLD_SEARCH.DIAGRAM.SUM"
+          [diagramType]="vm.diagramComponentState?.activeDiagramType ?? defaultDiagramType"
+          (componentStateChanged)="diagramComponentStateChanged($event)"
+          [attr.aria-label]="'SCAFFOLD_SEARCH.DIAGRAM.ARIA_LABEL' | translate"
+        ></ocx-group-by-count-diagram>
+        }
+      </div>
+    </ocx-content>
+    }
+  </ocx-content-container>
+</ocx-portal-page>

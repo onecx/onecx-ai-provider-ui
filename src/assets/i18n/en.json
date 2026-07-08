@@ -1,4 +1,50 @@
 {
+  "SCAFFOLD_SEARCH": {
+    "HEADER": "Scaffold Search",
+    "SUB_HEADER": "Searching and displaying of Scaffolds",
+    "HELP_ARTICLE_ID": "Help Article",
+    "EMPTY_RESULTS": "No results.",
+    "BREADCRUMB": "Search",
+    "DIAGRAM": {
+      "SUM": "Total",
+      "ARIA_LABEL": "Diagram for Search Results"
+    },
+    "HEADER_ACTIONS": {
+      "EXPORT_ALL": "Export all",
+      "SHOW_CHART": "Show chart",
+      "HIDE_CHART": "Hide chart",
+      "CREATE_SEARCH_CONFIG": "Create search configuration",
+      "UPDATE_SEARCH_CONFIG": "Update search configuration",
+      "DIALOG_CONFIRM": "Confirm",
+      "DIALOG_CANCEL": "Cancel"
+    },
+    "ERROR_MESSAGES": {
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
+      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
+      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
+      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+    },
+    "CHANGE_ME": "ACTION S4: Adjust translation keys for search header",
+    "HEADER_ARIA_LABEL": "Page Header with Search",
+    "PREDEFINED_GROUP": {
+      "DEFAULT": "Default",
+      "EXTENDED": "Extended",
+      "FULL": "Full"
+    },
+    "RESULTS_ARIA_LABEL": "Search Results",
+    "RESULTS": {
+      "OUTPUT_FIELDS": "ACTION S8: Adjust translation keys for result columns",
+      "CHANGE_ME": "Change Me"
+    },
+    "CRITERIA": {
+      "INPUT_FIELDS": "ACTION S4: Adjust translation keys for input fields",
+      "CHANGE_ME": {
+        "LABEL": "Change Me",
+        "ARIA_LABEL": "Change Me",
+        "TOOLTIP": "Change Me"
+      }
+    }
+  },
   "AGENT_DETAILS": {
     "HEADER": "Agent Details",
     "SUB_HEADER": "Display and edit Agent details",

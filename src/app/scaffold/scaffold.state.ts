@@ -1,3 +1,5 @@
-/* eslint-disable  @typescript-eslint/no-empty-interface */
-/* eslint-disable  @typescript-eslint/no-empty-object-type */
-export interface ScaffoldState {}
+import { ScaffoldSearchState } from './pages/scaffold-search/scaffold-search.state'
+
+export interface ScaffoldState {
+  search: ScaffoldSearchState
+}

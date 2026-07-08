@@ -78,7 +78,6 @@ app:
             IMPORT: Import Scaffold items
             EXPORT: Export Scaffold items
             BACK: Navigate back in details of Scaffold item
-            # "ACTION P: Adjust permissions for the entity"
     keycloak:
       client:
         enabled: true
