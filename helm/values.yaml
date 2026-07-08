@@ -69,6 +69,16 @@ app:
             IMPORT: Import Agent items
             EXPORT: Export Agent items
             BACK: Navigate back in details of Agent item
+          SCAFFOLD:
+            CREATE: Create Scaffold item
+            EDIT: Edit Scaffold item
+            DELETE: Delete Scaffold item
+            SEARCH: Search Scaffold items
+            VIEW: View Scaffold item details
+            IMPORT: Import Scaffold items
+            EXPORT: Export Scaffold items
+            BACK: Navigate back in details of Scaffold item
+            # "ACTION P: Adjust permissions for the entity"
     keycloak:
       client:
         enabled: true
