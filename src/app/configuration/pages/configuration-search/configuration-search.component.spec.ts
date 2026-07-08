@@ -141,7 +141,7 @@ describe('ConfigurationSearchComponent', () => {
     await overflowActionButton?.click()
 
     const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems.length).toBe(2)
+    expect(overflowMenuItems).toHaveLength(2)
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
     expect(await exportAllActionItem!.getText()).toBe('Export all')
@@ -163,7 +163,7 @@ describe('ConfigurationSearchComponent', () => {
     await overflowActionButton?.click()
 
     const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems.length).toBe(2)
+    expect(overflowMenuItems).toHaveLength(2)
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
     expect(await showHideChartActionItem!.getText()).toEqual('Hide chart')
@@ -483,10 +483,10 @@ describe('ConfigurationSearchComponent', () => {
     const dataView = await interactiveDataView.getDataView()
     const dataTable = await dataView.getDataTable()
     const rows = await dataTable?.getRows()
-    expect(rows?.length).toBe(1)
+    expect(rows).toHaveLength(1)
 
     const rowData = await rows?.at(0)?.getData()
-    expect(rowData?.length).toBe(1)
+    expect(rowData).toHaveLength(1)
     expect(rowData?.at(0)).toEqual('No results.')
   })
 

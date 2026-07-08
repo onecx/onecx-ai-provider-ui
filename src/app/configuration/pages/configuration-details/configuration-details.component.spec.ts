@@ -282,7 +282,7 @@ describe('ConfigurationDetailsComponent', () => {
     it('should have 2 inline actions', async () => {
       const pageHeader = await ConfigurationDetails.getHeader()
       const inlineActions = await pageHeader.getInlineActionButtons()
-      expect(inlineActions.length).toBe(2)
+      expect(inlineActions).toHaveLength(2)
 
       const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
       expect(backAction).toBeTruthy()
@@ -348,7 +348,7 @@ describe('ConfigurationDetailsComponent', () => {
 
       const pageHeader = await ConfigurationDetails.getHeader()
       const objectDetails = await pageHeader.getObjectInfos()
-      expect(objectDetails.length).toBe(4)
+      expect(objectDetails).toHaveLength(4)
 
       const firstDetailItem = await pageHeader.getObjectInfoByLabel('first')
       expect(await firstDetailItem?.getLabel()).toEqual('first')
@@ -567,7 +567,7 @@ describe('ConfigurationDetailsComponent', () => {
       component.searchMCPServers({ query: '' })
 
       component.filteredMCPServers$.subscribe((result) => {
-        expect(result.length).toBe(1)
+        expect(result).toHaveLength(1)
         done()
       })
     })

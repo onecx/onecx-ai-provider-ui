@@ -8,11 +8,11 @@ import { tap } from 'rxjs'
 @Injectable()
 export class DashboardEffects {
   constructor(
-    private actions$: Actions,
-    @SkipSelf() private route: ActivatedRoute,
-    private router: Router,
-    private store: Store,
-    private messageService: PortalMessageService
+    private readonly actions$: Actions,
+    @SkipSelf() private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly store: Store,
+    private readonly messageService: PortalMessageService
   ) {}
 
   errorMessages: { action: Action; key: string }[] = []

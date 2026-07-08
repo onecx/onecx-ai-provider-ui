@@ -190,7 +190,7 @@ describe('MCPServerSearchComponent', () => {
     await overflowActionButton?.click()
 
     const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems.length).toBe(2)
+    expect(overflowMenuItems).toHaveLength(2)
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
     expect(await exportAllActionItem!.getText()).toBe('Export all')
@@ -212,7 +212,7 @@ describe('MCPServerSearchComponent', () => {
     await overflowActionButton?.click()
 
     const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems.length).toBe(2)
+    expect(overflowMenuItems).toHaveLength(2)
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
     expect(await showHideChartActionItem!.getText()).toEqual('Hide chart')
@@ -414,7 +414,7 @@ describe('MCPServerSearchComponent', () => {
     await columnGroupSelector!.openCustomGroupColumnSelectorDialog()
     const pickList = await columnGroupSelector!.getPicklist()
     const transferControlButtons = await pickList.getTransferControlsButtons()
-    expect(transferControlButtons.length).toBe(4)
+    expect(transferControlButtons).toHaveLength(4)
 
     // Currently, all columns are selected. Next, we are unselecting all to have a clean test setting.
     const deactivateAllColumnsButton = transferControlButtons[1]

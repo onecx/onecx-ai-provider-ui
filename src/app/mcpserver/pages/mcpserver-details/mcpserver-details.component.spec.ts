@@ -152,7 +152,7 @@ describe('MCPServerDetailsComponent', () => {
     const pageHeader = await mcpserverDetails.getHeader()
     const inlineActions = await pageHeader.getInlineActionButtons()
 
-    expect(inlineActions.length).toBe(2)
+    expect(inlineActions).toHaveLength(2)
 
     const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     expect(backAction).toBeTruthy()

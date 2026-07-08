@@ -1,5 +1,5 @@
 import { ComponentHarness } from '@angular/cdk/testing'
 
 export class DashboardHarness extends ComponentHarness {
-  static hostSelector = 'app-dashboard'
+  static readonly hostSelector = 'app-dashboard'
 }
