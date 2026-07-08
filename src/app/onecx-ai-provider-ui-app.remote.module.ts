@@ -8,12 +8,12 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store'
 import { StoreModule } from '@ngrx/store'
 import { StoreDevtoolsModule } from '@ngrx/store-devtools'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AngularAuthModule } from '@onecx/angular-auth'
-import { provideThemeConfig, provideTranslationPathFromMeta, createTranslateLoader, HAS_PERMISSION_CHECKER, AlwaysGrantPermissionChecker } from '@onecx/angular-utils'
+import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
+import { createTranslateLoader, provideThemeConfig, provideTranslationPathFromMeta } from '@onecx/angular-utils'
 import { createAppEntrypoint, initializeRouter } from '@onecx/angular-webcomponents'
 import { provideNavigatedEventStoreConnector } from '@onecx/ngrx-accelerator'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
-import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 import { routes } from './app-routing.module'
 import { commonImports } from './app.module'
@@ -68,7 +68,6 @@ effectProvidersForWorkaround.forEach((p) => (p.ɵprov.providedIn = null))
       const initializerFn = initializeRouter(inject(Router), inject(AppStateService))
       return initializerFn()
     }),
-    { provide: HAS_PERMISSION_CHECKER, useClass: AlwaysGrantPermissionChecker },
     provideHttpClient(withInterceptorsFromDi()),
     provideNavigatedEventStoreConnector(),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
