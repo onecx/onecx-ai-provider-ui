@@ -455,8 +455,8 @@ describe('MCPServerSearchComponent', () => {
   it('should display translated headers', async () => {
     const searchHeader = await mcpserverSearch.getHeader()
     const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('MCPServer Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of MCPServer')
+    expect(await pageHeader.getHeaderText()).toEqual('Tools (MCP) Search')
+    expect(await pageHeader.getSubheaderText()).toEqual('Search and display Tools (MCP)')
   })
 
   it('should display translated empty message when no search results', async () => {
