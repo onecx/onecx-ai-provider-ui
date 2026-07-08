@@ -46,6 +46,7 @@
       "GROUPS": "Group Assignments",
       "GROUPS_SECTION": "Group Assignments",
       "FILTERS_SECTION": "Filters",
+      "FILTER_VALUE": "Filter value",
       "NEW_GROUP_NAME": "New group name",
       "CREATE_GROUP": "Create Group",
       "CREATE_GROUP_SUCCESS": "Group created successfully",

@@ -14,32 +14,30 @@ describe('AgentDetails selectors', () => {
       const detailsLoaded = true
       const editMode = true
       const isSubmitting = true
+      const coreState = {
+        details,
+        detailsLoadingIndicator,
+        detailsLoaded,
+        editMode,
+        isSubmitting,
+        backNavigationPossible
+      }
       expect(
         selectAgentDetailsViewModel.projector(
-          details,
-          detailsLoadingIndicator,
+          coreState,
           providersState,
           modelsState,
           scaffoldsState,
           toolsState,
-          groupsState,
-          backNavigationPossible,
-          detailsLoaded,
-          editMode,
-          isSubmitting
+          groupsState
         )
       ).toEqual({
-        details,
-        detailsLoadingIndicator,
+        ...coreState,
         ...providersState,
         ...modelsState,
         ...scaffoldsState,
         ...toolsState,
-        ...groupsState,
-        backNavigationPossible,
-        detailsLoaded,
-        editMode,
-        isSubmitting
+        ...groupsState
       })
     })
   })

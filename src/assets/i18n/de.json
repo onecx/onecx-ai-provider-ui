@@ -46,6 +46,7 @@
       "GROUPS": "Gruppenzuweisungen",
       "GROUPS_SECTION": "Gruppenzuweisungen",
       "FILTERS_SECTION": "Filter",
+      "FILTER_VALUE": "Filterwert",
       "NEW_GROUP_NAME": "Neuer Gruppenname",
       "CREATE_GROUP": "Gruppe erstellen",
       "CREATE_GROUP_SUCCESS": "Gruppe erfolgreich erstellt",

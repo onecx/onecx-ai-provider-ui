@@ -64,41 +64,43 @@ export const selectGroupsState = createSelector(
   })
 )
 
-export const selectAgentDetailsViewModel = createSelector(
+export const selectAgentDetailsCoreState = createSelector(
   agentDetailsSelectors.selectDetails,
   agentDetailsSelectors.selectDetailsLoadingIndicator,
+  agentDetailsSelectors.selectDetailsLoaded,
+  agentDetailsSelectors.selectEditMode,
+  agentDetailsSelectors.selectIsSubmitting,
+  selectBackNavigationPossible,
+  (details: Agent | undefined, detailsLoadingIndicator, detailsLoaded, editMode, isSubmitting, backNavigationPossible) => ({
+    details,
+    detailsLoadingIndicator,
+    detailsLoaded,
+    editMode,
+    isSubmitting,
+    backNavigationPossible
+  })
+)
+
+export const selectAgentDetailsViewModel = createSelector(
+  selectAgentDetailsCoreState,
   selectProvidersState,
   selectModelsState,
   selectScaffoldsState,
   selectToolsState,
   selectGroupsState,
-  selectBackNavigationPossible,
-  agentDetailsSelectors.selectDetailsLoaded,
-  agentDetailsSelectors.selectEditMode,
-  agentDetailsSelectors.selectIsSubmitting,
   (
-    details: Agent | undefined,
-    detailsLoadingIndicator: boolean,
+    coreState,
     providersState,
     modelsState,
     scaffoldsState,
     toolsState,
-    groupsState,
-    backNavigationPossible: boolean,
-    detailsLoaded: boolean,
-    editMode: boolean,
-    isSubmitting: boolean
+    groupsState
   ): AgentDetailsViewModel => ({
-    details,
-    detailsLoadingIndicator,
+    ...coreState,
     ...providersState,
     ...modelsState,
     ...scaffoldsState,
     ...toolsState,
-    ...groupsState,
-    backNavigationPossible,
-    detailsLoaded,
-    editMode,
-    isSubmitting
+    ...groupsState
   })
 )

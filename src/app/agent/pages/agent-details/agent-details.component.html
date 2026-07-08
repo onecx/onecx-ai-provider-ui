@@ -156,14 +156,19 @@
                 </p-floatlabel>
 
                 <div class="flex flex-column md:flex-row md:align-items-center gap-2">
-                  <input
-                    pInputText
-                    type="text"
-                    id="agent_detail_new_group_name"
-                    class="w-full md:flex-1"
-                    formControlName="newGroupName"
-                    [placeholder]="'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate"
-                  />
+                  <div class="flex flex-column w-full md:flex-1">
+                    <label for="agent_detail_new_group_name" class="mb-1">
+                      {{ 'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate }}
+                    </label>
+                    <input
+                      pInputText
+                      type="text"
+                      id="agent_detail_new_group_name"
+                      class="w-full"
+                      formControlName="newGroupName"
+                      [placeholder]="'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate"
+                    />
+                  </div>
                   <button
                     pButton
                     type="button"
@@ -203,11 +208,23 @@
                       [suggestions]="filterKeySuggestions"
                       (completeMethod)="searchFilterKeys($any($event))"
                       [dropdown]="true"
+                      [inputId]="'agent_detail_filter_key_' + i"
                       class="w-full"
                       [forceSelection]="true"
                     ></p-autoComplete>
                     <span class="font-medium">:</span>
-                    <input pInputText type="text" class="w-full" formControlName="value" />
+                    <div class="flex flex-column w-full">
+                      <label [for]="'agent_detail_filter_value_' + i" class="mb-1">
+                        {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTER_VALUE' | translate }}
+                      </label>
+                      <input
+                        pInputText
+                        type="text"
+                        class="w-full"
+                        [id]="'agent_detail_filter_value_' + i"
+                        formControlName="value"
+                      />
+                    </div>
                     <button
                       pButton
                       type="button"

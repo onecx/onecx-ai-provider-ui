@@ -186,7 +186,7 @@ export class AgentDetailsComponent implements OnInit {
   }
 
   save() {
-    const selectedFilters = this.filtersFormArray.controls
+    const selectedFilter = this.filtersFormArray.controls
       .map((entry) => {
         const key = entry.get('key')?.value as AgentFilterKeyEnum | null
         const value = entry.get('value')?.value as string | null
@@ -195,7 +195,7 @@ export class AgentDetailsComponent implements OnInit {
         }
         return { key, value } as AgentFilter
       })
-      .filter((entry): entry is AgentFilter => entry !== undefined)
+      .find((entry): entry is AgentFilter => entry !== undefined)
 
     const selectedProvider = this.formGroup.get('provider')?.value as Provider | null
     const selectedModel = this.formGroup.get('model')?.value as Model | null
@@ -209,7 +209,7 @@ export class AgentDetailsComponent implements OnInit {
       scaffold: (this.formGroup.get('scaffold')?.value as Scaffold | null) ?? undefined,
       tools: (this.formGroup.get('tools')?.value as Tool[]) ?? [],
       groups: (this.formGroup.get('groups')?.value as AgentGroup[]) ?? [],
-      filter: selectedFilters[0]
+      filter: selectedFilter
     }
 
     this.store.dispatch(
@@ -276,8 +276,8 @@ export class AgentDetailsComponent implements OnInit {
 
   private setFilters(filters: AgentFilter[]) {
     this.filtersFormArray.clear()
-    filters.forEach((filter) => {
+    for (const filter of filters) {
       this.filtersFormArray.push(this.createFilterFormGroup(filter))
-    })
+    }
   }
 }
