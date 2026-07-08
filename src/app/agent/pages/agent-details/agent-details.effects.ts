@@ -13,7 +13,16 @@ import { filterForNavigatedTo } from '@onecx/ngrx-accelerator'
 
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { Agent, AgentService, UpdateAgentRequest } from '../../../shared/generated'
+import {
+  Agent,
+  AgentGroupService,
+  AgentService,
+  ModelService,
+  ProviderService,
+  ScaffoldService,
+  ToolService,
+  UpdateAgentRequest
+} from '../../../shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { agentDetailsSelectors } from './agent-details.selectors'
@@ -22,6 +31,11 @@ import { agentDetailsSelectors } from './agent-details.selectors'
 export class AgentDetailsEffects {
   private readonly actions$ = inject(Actions)
   private readonly agentService = inject(AgentService)
+  private readonly providerService = inject(ProviderService)
+  private readonly modelService = inject(ModelService)
+  private readonly scaffoldService = inject(ScaffoldService)
+  private readonly toolService = inject(ToolService)
+  private readonly agentGroupService = inject(AgentGroupService)
   private readonly router = inject(Router)
   private readonly store = inject(Store)
   private readonly messageService = inject(PortalMessageService)
@@ -58,6 +72,138 @@ export class AgentDetailsEffects {
               })
             )
           )
+        )
+      })
+    )
+  })
+
+  loadProviders$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.navigatedToDetailsPage),
+      switchMap(() => {
+        return this.providerService.findProviderBySearchCriteria({}).pipe(
+          map(({ stream }) =>
+            agentDetailsActions.agentProvidersReceived({
+              providers: stream ?? []
+            })
+          ),
+          catchError((error) =>
+            of(
+              agentDetailsActions.agentProvidersLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      })
+    )
+  })
+
+  loadModels$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.navigatedToDetailsPage),
+      switchMap(() => {
+        return this.modelService.findModelByCriteria({}).pipe(
+          map(({ stream }) =>
+            agentDetailsActions.agentModelsReceived({
+              models: stream ?? []
+            })
+          ),
+          catchError((error) =>
+            of(
+              agentDetailsActions.agentModelsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      })
+    )
+  })
+
+  loadScaffolds$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.navigatedToDetailsPage),
+      switchMap(() => {
+        return this.scaffoldService.findScaffoldByCriteria({}).pipe(
+          map(({ stream }) =>
+            agentDetailsActions.agentScaffoldsReceived({
+              scaffolds: stream ?? []
+            })
+          ),
+          catchError((error) =>
+            of(
+              agentDetailsActions.agentScaffoldsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      })
+    )
+  })
+
+  loadTools$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.navigatedToDetailsPage),
+      switchMap(() => {
+        return this.toolService.findToolByCriteria({}).pipe(
+          map(({ stream }) =>
+            agentDetailsActions.agentToolsReceived({
+              tools: stream ?? []
+            })
+          ),
+          catchError((error) =>
+            of(
+              agentDetailsActions.agentToolsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      })
+    )
+  })
+
+  loadGroups$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.navigatedToDetailsPage),
+      switchMap(() => {
+        return this.agentGroupService.findAgentGroupByCriteria({}).pipe(
+          map(({ stream }) =>
+            agentDetailsActions.agentGroupsReceived({
+              groups: stream ?? []
+            })
+          ),
+          catchError((error) =>
+            of(
+              agentDetailsActions.agentGroupsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      })
+    )
+  })
+
+  createGroupInPlace$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.createGroupInPlaceClicked),
+      switchMap(({ name }) => {
+        return this.agentGroupService.createAgentGroup({ name }).pipe(
+          map((group) => {
+            this.messageService.success({
+              summaryKey: 'AGENT_DETAILS.ASSIGNMENTS.CREATE_GROUP_SUCCESS'
+            })
+            return agentDetailsActions.createGroupInPlaceSucceeded({ group })
+          }),
+          catchError((error) => {
+            this.messageService.error({
+              summaryKey: 'AGENT_DETAILS.ASSIGNMENTS.CREATE_GROUP_FAILED'
+            })
+            return of(agentDetailsActions.createGroupInPlaceFailed({ error }))
+          })
         )
       })
     )
@@ -210,6 +356,26 @@ export class AgentDetailsEffects {
   errorMessages: { action: Action; key: string }[] = [
     {
       action: agentDetailsActions.agentDetailsLoadingFailed,
+      key: 'AGENT_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+    },
+    {
+      action: agentDetailsActions.agentProvidersLoadingFailed,
+      key: 'PROVIDER_SEARCH.ERROR_MESSAGES.SEARCH_RESULTS_LOADING_FAILED'
+    },
+    {
+      action: agentDetailsActions.agentModelsLoadingFailed,
+      key: 'AGENT_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+    },
+    {
+      action: agentDetailsActions.agentScaffoldsLoadingFailed,
+      key: 'AGENT_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+    },
+    {
+      action: agentDetailsActions.agentToolsLoadingFailed,
+      key: 'AGENT_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+    },
+    {
+      action: agentDetailsActions.agentGroupsLoadingFailed,
       key: 'AGENT_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
     }
   ]

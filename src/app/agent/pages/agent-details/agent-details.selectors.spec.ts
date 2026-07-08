@@ -5,6 +5,11 @@ describe('AgentDetails selectors', () => {
     it('should combine the input to be the viewmodel', () => {
       const details = { id: '10' }
       const detailsLoadingIndicator = true
+      const providersState = { providers: [], providersLoadingIndicator: false, providersLoaded: true }
+      const modelsState = { models: [], modelsLoadingIndicator: false, modelsLoaded: true }
+      const scaffoldsState = { scaffolds: [], scaffoldsLoadingIndicator: false, scaffoldsLoaded: true }
+      const toolsState = { tools: [], toolsLoadingIndicator: false, toolsLoaded: true }
+      const groupsState = { groups: [], groupsLoadingIndicator: false, groupsLoaded: true }
       const backNavigationPossible = true
       const detailsLoaded = true
       const editMode = true
@@ -13,6 +18,11 @@ describe('AgentDetails selectors', () => {
         selectAgentDetailsViewModel.projector(
           details,
           detailsLoadingIndicator,
+          providersState,
+          modelsState,
+          scaffoldsState,
+          toolsState,
+          groupsState,
           backNavigationPossible,
           detailsLoaded,
           editMode,
@@ -21,6 +31,11 @@ describe('AgentDetails selectors', () => {
       ).toEqual({
         details,
         detailsLoadingIndicator,
+        ...providersState,
+        ...modelsState,
+        ...scaffoldsState,
+        ...toolsState,
+        ...groupsState,
         backNavigationPossible,
         detailsLoaded,
         editMode,

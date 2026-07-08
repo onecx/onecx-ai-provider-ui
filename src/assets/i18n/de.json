@@ -19,16 +19,37 @@
       "ID": "ID",
       "TENANT_ID": "Tenant ID",
       "NAME": "Name",
+      "DESCRIPTION": "Beschreibung",
       "MODEL_ID": "Model ID",
+      "MODEL": "Modell",
+      "PROVIDER": "Provider",
       "SCAFFOLD_ID": "Scaffold ID",
+      "SCAFFOLD": "Scaffold",
       "RUNTIME_CONFIG_ID": "Runtime Config ID",
       "ADDITIONAL_PROMPT": "Zusätzlicher Prompt",
+      "ADDITIONAL_TOOLS": "Zusätzliche Tools",
       "A2A_ENABLED": "A2A aktiviert",
       "VERSION": "Version",
       "STATUS": "Status",
+      "LAST_CHANGED": "Zuletzt geändert",
       "CREATION_USER": "Erstellt von",
       "MODIFICATION_USER": "Geändert von",
       "MODIFICATION_COUNT": "Änderungszähler"
+    },
+    "TABS": {
+      "GENERAL": "Allgemein",
+      "ASSIGNMENTS": "Zuweisungen"
+    },
+    "ASSIGNMENTS": {
+      "ADD_FILTER": "Filter hinzufügen",
+      "REMOVE_FILTER": "Filter entfernen",
+      "GROUPS": "Gruppenzuweisungen",
+      "GROUPS_SECTION": "Gruppenzuweisungen",
+      "FILTERS_SECTION": "Filter",
+      "NEW_GROUP_NAME": "Neuer Gruppenname",
+      "CREATE_GROUP": "Gruppe erstellen",
+      "CREATE_GROUP_SUCCESS": "Gruppe erfolgreich erstellt",
+      "CREATE_GROUP_FAILED": "Gruppe konnte nicht erstellt werden"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",
