@@ -54,10 +54,11 @@ describe('DashboardComponent', () => {
   })
 
   it('should provide navigation panels for all dashboard sections', () => {
-    expect(component.navigationPanels).toHaveLength(4)
+    expect(component.navigationPanels).toHaveLength(5)
     expect(component.navigationPanels.map((panel) => panel.route)).toEqual([
       '../agent',
       '../configuration',
+      '../skill',
       '../provider',
       '../mcpserver'
     ])

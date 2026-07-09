@@ -253,6 +253,11 @@
         "ARIA_LABEL": "Scaffold ID",
         "TOOLTIP": "Scaffold ID"
       },
+      "SKILL": {
+        "TITLE": "Skill",
+        "SUBTITLE": "Tool-Bibliothek",
+        "DESCRIPTION": "Verwalten Sie wiederverwendbare Skills, Anweisungen und Verhaltensbausteine."
+      },
       "RUNTIME_CONFIG_ID": {
         "LABEL": "Runtime Config ID",
         "ARIA_LABEL": "Runtime Config ID",

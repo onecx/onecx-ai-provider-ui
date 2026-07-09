@@ -287,6 +287,11 @@
         "SUBTITLE": "Prompt foundation",
         "DESCRIPTION": "Control reusable scaffold templates and baseline system prompts."
       },
+      "SKILL": {
+        "TITLE": "Skill",
+        "SUBTITLE": "Capability library",
+        "DESCRIPTION": "Manage reusable skills, instructions, and behavior building blocks."
+      },
       "PROVIDER": {
         "TITLE": "Provider",
         "SUBTITLE": "Model backends",

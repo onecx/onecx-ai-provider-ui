@@ -9,8 +9,7 @@ import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { SkillAPIService } from 'src/app/shared/generated'
-import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
+import { SkillService } from 'src/app/shared/generated'
 import { skillDetailsActions } from './skill-details.actions'
 import { SkillDetailsEffects } from './skill-details.effects'
 import { initialState } from './skill-details.reducers'
@@ -68,7 +67,7 @@ describe('SkillDetailsEffects', () => {
         provideMockActions(() => actions$),
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
-        { provide: SkillAPIService, useValue: skillService },
+        { provide: SkillService, useValue: skillService },
         { provide: PortalDialogService, useValue: portalDialogService },
         { provide: PortalMessageService, useValue: messageService }
       ]
@@ -98,14 +97,14 @@ describe('SkillDetailsEffects', () => {
     it('should dispatch skillDetailsReceived on success with id', async () => {
       const mockId = '123'
       const mockDetails = { id: mockId }
-      skillService.getSkillById.mockReturnValue(of({ resource: mockDetails }))
+      skillService.getSkillById.mockReturnValue(of(mockDetails))
 
       actions$.next(skillDetailsActions.navigatedToDetailsPage({ id: mockId }))
       const action = await firstValueFrom(effects.loadSkillById$)
 
       expect(action).toEqual(skillDetailsActions.skillDetailsReceived({ details: mockDetails }))
       expect(skillService.getSkillById).toHaveBeenCalledTimes(1)
-      expect(skillService.getSkillById).toHaveBeenCalledWith({ id: mockId })
+      expect(skillService.getSkillById).toHaveBeenCalledWith(mockId)
     })
 
     it('should dispatch skillDetailsLoadingFailedMissingId on error', async () => {
@@ -175,7 +174,7 @@ describe('SkillDetailsEffects', () => {
   describe('saveButtonClicked$', () => {
     it('should dispatch updateSkillSucceeded', async () => {
       const mockDetails = { id: '123' }
-      const mockResponse = { resource: mockDetails }
+      const mockResponse = mockDetails
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       skillService.updateSkillById.mockReturnValueOnce(of(mockResponse))
 
@@ -234,7 +233,7 @@ describe('SkillDetailsEffects', () => {
 
       expect(action).toEqual(skillDetailsActions.deleteSkillSucceeded())
       expect(selectSpy).toHaveBeenCalledTimes(1)
-      expect(skillService.deleteSkillById).toHaveBeenCalledWith({ id: '123' })
+      expect(skillService.deleteSkillById).toHaveBeenCalledWith('123')
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'SKILL_DETAILS.DELETE.SUCCESS'
       })
@@ -265,7 +264,7 @@ describe('SkillDetailsEffects', () => {
 
       expect(action).toEqual(skillDetailsActions.deleteSkillFailed({ error: mockError }))
       expect(selectSpy).toHaveBeenCalledTimes(1)
-      expect(skillService.deleteSkillById).toHaveBeenCalledWith({ id: '123' })
+      expect(skillService.deleteSkillById).toHaveBeenCalledWith('123')
       expect(messageService.error).toHaveBeenCalledWith({
         summaryKey: 'SKILL_DETAILS.DELETE.ERROR'
       })
@@ -322,7 +321,7 @@ describe('SkillDetailsEffects', () => {
 
   describe('navigateBack$', () => {
     it('should dispatch backNavigationStarted', async () => {
-      const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(selectBackNavigationPossible))
+      const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(true))
 
       actions$.next(skillDetailsActions.navigateBackButtonClicked())
       const action = await firstValueFrom(effects.navigateBack$)

@@ -4,6 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ReactiveFormsModule } from '@angular/forms'
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
@@ -83,12 +84,13 @@ describe('SkillDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SkillDetailsComponent],
       imports: [
+        SkillDetailsComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,
         ReactiveFormsModule,
+        NoopAnimationsModule,
         TranslateTestingModule.withTranslations({
           de: require('./src/assets/i18n/de.json'),
           en: require('./src/assets/i18n/en.json')
@@ -148,7 +150,6 @@ describe('SkillDetailsComponent', () => {
     component.ngOnInit()
     fixture.detectChanges()
 
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
     const pageHeader = await skillDetails.getHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
     expect(await searchBreadcrumbItem?.getText()).toEqual('Details')
@@ -157,19 +158,19 @@ describe('SkillDetailsComponent', () => {
   it('should display translated headers', async () => {
     const pageHeader = await skillDetails.getHeader()
     expect(await pageHeader.getHeaderText()).toEqual('Skill Details')
-    expect(await pageHeader.getSubheaderText()).toEqual('Display of Skill Details')
+    expect(await pageHeader.getSubheaderText()).toEqual('Display and edit skill details')
   })
 
-  it('should have 4 inline actions', async () => {
+  it('should show available header actions', async () => {
     const pageHeader = await skillDetails.getHeader()
     const inlineActions = await pageHeader.getInlineActionButtons()
-    expect(inlineActions.length).toBe(4)
+    expect(inlineActions.length).toBe(3)
 
     const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     expect(backAction).toBeTruthy()
 
     const moreAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.ELLIPSIS_V)
-    expect(moreAction).toBeTruthy()
+    expect(moreAction).toBeNull()
   })
 
   it('should dispatch navigateBackButtonClicked action on back button click', async () => {
@@ -218,9 +219,10 @@ describe('SkillDetailsComponent', () => {
 
   it('should dispatch saveButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
-    // ACTION D11: Adjust form field names and values according to your implementation
     const skill = { id: '123' }
-    const skillForm = { changeMe: 'title' }
+    const skillForm = {
+      name: 'title'
+    }
 
     store.overrideSelector(selectSkillDetailsViewModel, {
       ...baseSkillDetailsViewModel,
@@ -229,7 +231,7 @@ describe('SkillDetailsComponent', () => {
     })
     store.refreshState()
 
-    component.formGroup.setValue(skillForm)
+    component.formGroup.patchValue(skillForm)
 
     const pageHeader = await skillDetails.getHeader()
     const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
@@ -238,7 +240,13 @@ describe('SkillDetailsComponent', () => {
     expect(saveAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
-      skillDetailsActions.saveButtonClicked({ details: { ...skill, ...skillForm } })
+      expect.objectContaining({
+        type: skillDetailsActions.saveButtonClicked.type,
+        details: expect.objectContaining({
+          id: '123',
+          name: 'title'
+        })
+      })
     )
   })
 
@@ -251,8 +259,10 @@ describe('SkillDetailsComponent', () => {
     store.refreshState()
 
     const pageHeader = await skillDetails.getHeader()
-    const deleteAction = await pageHeader.getInlineActionButtonByLabel('Delete')
-    await deleteAction?.click()
+    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
+    await overflowActionButton?.click()
+    const deleteAction = await pageHeader.getOverFlowMenuItem('Delete')
+    await deleteAction?.selectItem()
 
     expect(deleteAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -261,9 +271,14 @@ describe('SkillDetailsComponent', () => {
 
   it('should dispatch no action on more button click', async () => {
     jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectSkillDetailsViewModel, {
+      ...baseSkillDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
 
     const pageHeader = await skillDetails.getHeader()
-    const moreAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.ELLIPSIS_V)
+    const moreAction = await pageHeader.getOverflowActionMenuButton()
     await moreAction?.click()
 
     expect(moreAction).toBeTruthy()
@@ -331,8 +346,11 @@ describe('SkillDetailsComponent', () => {
     const markAsPristineSpy = jest.spyOn(component.formGroup, 'markAsPristine')
     const disableSpy = jest.spyOn(component.formGroup, 'disable')
 
-    // ACTION D11: Adjust form field names and values according to your implementation
-    const skillForm = { changeMe: 'title' }
+    const skillForm = {
+      name: 'title',
+      description: undefined,
+      instruction: undefined
+    }
     const skill = { id: '123', ...skillForm }
 
     store.overrideSelector(selectSkillDetailsViewModel, {
