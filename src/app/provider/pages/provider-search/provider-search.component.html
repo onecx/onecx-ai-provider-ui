@@ -54,18 +54,6 @@
         <div class="col-12 md:col-3">
           <p-floatlabel variant="on">
             <input
-              id="modelName"
-              pInputText
-              type="text"
-              formControlName="modelName"
-              class="p-inputtext p-component"
-            />
-            <label for="modelName">{{ 'PROVIDER_SEARCH.CRITERIA.MODELNAME' | translate }}</label>
-          </p-floatlabel>
-        </div>
-        <div class="col-12 md:col-3">
-          <p-floatlabel variant="on">
-            <input
               id="type"
               pInputText
               type="text"
@@ -96,30 +84,7 @@
         "
         [supportedViewLayouts]="['table']"
         (displayedColumnsChange)="onDisplayedColumnsChange($event)"
-      >
-        <ng-template pTemplate="stringTableCell" let-rowObject="rowObject" let-column="column">
-          @if (column.id === 'status') {
-            @if (rowObject.status === 'HEALTHY') {
-              <span class="flex align-items-center gap-2 text-green-500">
-                <i class="pi pi-circle-on status-icon"></i>
-                <span>{{ 'PROVIDER_SEARCH.STATUS.ONLINE' | translate }}</span>
-              </span>
-            } @else if (rowObject.status === 'UNHEALTHY' || rowObject.status === 'OFFLINE') {
-              <span class="flex align-items-center gap-2 text-red-500">
-                <i class="pi pi-circle-on"></i>
-                <span>{{ 'PROVIDER_SEARCH.STATUS.OFFLINE' | translate }}</span>
-              </span>
-            } @else if (rowObject.status === 'NODATA') {
-              <span class="flex align-items-center gap-2 text-gray-500">
-                <i class="pi pi-circle-on"></i>
-                <span>{{ 'PROVIDER_SEARCH.STATUS.NODATA' | translate }}</span>
-              </span>
-            }
-          } @else {
-            {{ rowObject[column.id] }}
-          }
-        </ng-template>
-      </ocx-interactive-data-view>
+      ></ocx-interactive-data-view>
     </ocx-content>
     <ocx-content
       class="w-full lg:w-3"

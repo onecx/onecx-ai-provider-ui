@@ -57,41 +57,6 @@ describe('ProviderSearchReducer', () => {
     expect(state.results).toEqual([{ id: '1', name: 'Test', description: 'model' }])
   })
 
-  it('should initialize healthStatus if undefined', () => {
-    const prevState = {
-      ...initialState,
-      healthStatus: undefined
-    } as any
-    const action = ProviderSearchActions.providerHealthStatusUpdated({
-      id: '1',
-      status: 'ONLINE'
-    })
-    const state = ProviderSearchReducer(prevState, action)
-
-    expect(state.healthStatus).toEqual({
-      '1': 'ONLINE'
-    })
-  })
-
-  it('should update healthStatus on providerHealthStatusUpdated', () => {
-    const prevState = {
-      ...initialState,
-      healthStatus: {
-        '1': 'ONLINE'
-      }
-    } as any
-    const action = ProviderSearchActions.providerHealthStatusUpdated({
-      id: '2',
-      status: 'OFFLINE'
-    })
-    const state = ProviderSearchReducer(prevState, action)
-
-    expect(state.healthStatus).toEqual({
-      '1': 'ONLINE',
-      '2': 'OFFLINE'
-    })
-  })
-
   it('should clear results on providerSearchResultsLoadingFailed', () => {
     const prevState = { ...initialState, results: [{ id: '1', name: 'Test', description: 'model' }] }
     const action = ProviderSearchActions.providerSearchResultsLoadingFailed({ error: null })

@@ -43,7 +43,7 @@ export class ProviderSearchComponent implements OnInit {
   viewModel$!: Observable<ProviderSearchViewModel>
   headerActions$!: Observable<Action[]>
   public ProviderSearchFormGroup!: FormGroup
-  diagramColumnId = 'modelName'
+  diagramColumnId = 'type'
   diagramColumn$!: Observable<DataTableColumn>
 
   constructor(

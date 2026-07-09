@@ -78,6 +78,15 @@ app:
             IMPORT: Import Scaffold items
             EXPORT: Export Scaffold items
             BACK: Navigate back in details of Scaffold item
+          SKILL:
+            CREATE: Create Skill item
+            EDIT: Edit Skill item
+            DELETE: Delete Skill item
+            SEARCH: Search Skill items
+            VIEW: View Skill item details
+            IMPORT: Import Skill items
+            EXPORT: Export Skill items
+            BACK: Navigate back in details of Skill item
     keycloak:
       client:
         enabled: true

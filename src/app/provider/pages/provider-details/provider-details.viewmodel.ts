@@ -1,7 +1,11 @@
-import { Provider } from 'src/app/shared/generated'
+import { Model, Provider } from 'src/app/shared/generated'
 
 export interface ProviderDetailsViewModel {
-  details: Provider | undefined,
-  editMode: boolean,
+  details: Provider | undefined
+  models: Model[]
+  modelsLoadingIndicator: boolean
+  modelMutationInProgress: boolean
+  isSubmitting: boolean
+  editMode: boolean
   isApiKeyHidden: boolean
 }

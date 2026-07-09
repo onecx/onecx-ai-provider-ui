@@ -39,9 +39,14 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
       name: 'Test name',
       description: 'Test description',
       llmUrl: 'Test llmUrl',
-      modelName: 'Test modelName',
+      type: 'OPENAI',
+      authMode: 'API_KEY',
       apiKey: 'TestAPIKey'
     } as any,
+    models: [],
+    modelsLoadingIndicator: false,
+    modelMutationInProgress: false,
+    isSubmitting: false,
     editMode: false,
     isApiKeyHidden: false
   }
@@ -102,6 +107,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const deleteSpy = jest.spyOn(component, 'delete')
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: undefined,
+      models: [],
+      modelsLoadingIndicator: false,
+      modelMutationInProgress: false,
+      isSubmitting: false,
       editMode: false,
       isApiKeyHidden: false
     })
@@ -116,10 +125,14 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     expect(deleteSpy).toHaveBeenCalledWith('')
   })
 
-  it('should call edit with empty string if details.id is undefined', async () => {
-    const editSpy = jest.spyOn(component, 'edit')
+  it('should call save when Save action is clicked in edit mode', async () => {
+    const saveSpy = jest.spyOn(component, 'save')
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: undefined,
+      models: [],
+      modelsLoadingIndicator: false,
+      modelMutationInProgress: false,
+      isSubmitting: false,
       editMode: true,
       isApiKeyHidden: false
     })
@@ -129,12 +142,40 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const pageHeader = await ProviderDetails.getHeader()
     const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
     await saveAction?.click()
-    expect(editSpy).toHaveBeenCalledWith('')
+    expect(saveSpy).toHaveBeenCalled()
   })
 
-  it('should call edit and toggleEditMode(false) when Save action is clicked', async () => {
-    const editSpy = jest.spyOn(component, 'edit')
-    const toggleSpy = jest.spyOn(component, 'toggleEditMode')
+  it('should dispatch providerUpdateRequested when save() is called', () => {
+    const dispatchSpy = jest.spyOn(store, 'dispatch')
+
+    component.formGroup.patchValue({
+      name: 'Provider One',
+      description: 'Desc',
+      llmUrl: 'http://llm',
+      type: 'OPENAI',
+      authMode: 'API_KEY',
+      apiKey: 'secret'
+    })
+
+    component.save()
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      ProviderDetailsActions.providerUpdateRequested({
+        details: {
+          id: undefined,
+          name: 'Provider One',
+          description: 'Desc',
+          llmUrl: 'http://llm',
+          type: 'OPENAI',
+          authMode: 'API_KEY',
+          apiKey: 'secret'
+        } as any
+      })
+    )
+  })
+
+  it('should call save() when Save action is clicked', async () => {
+    const saveSpy = jest.spyOn(component, 'save')
 
     store.overrideSelector(selectProviderDetailsViewModel, {
       ...baseProviderDetaulsViewModel,
@@ -147,8 +188,7 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
     await saveAction?.click()
 
-    expect(editSpy).toHaveBeenCalledWith('1')
-    expect(toggleSpy).toHaveBeenCalledWith(false)
+    expect(saveSpy).toHaveBeenCalled()
   })
 
   it('should call delete with correct id when Delete action is triggered', async () => {
@@ -191,6 +231,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
   it('should patch form fields with empty string if details fields are undefined', async () => {
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: { id: '', name: '', description: '' },
+      models: [],
+      modelsLoadingIndicator: false,
+      modelMutationInProgress: false,
+      isSubmitting: false,
       editMode: false,
       isApiKeyHidden: false
     })
@@ -202,8 +246,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
       name: '',
       description: '',
       llmUrl: undefined,
-      modelName: null,
-      apiKey: undefined
+      type: undefined,
+      authMode: undefined,
+      apiKey: undefined,
+      newModelIdentifier: null
     })
   })
   it('should not throw when disabling apiKey field if formGroup or apiKey is missing', () => {

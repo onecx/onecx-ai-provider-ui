@@ -9,14 +9,26 @@ export const ProviderDetailsSelectors = createChildSelectors(ProviderFeature.sel
 
 export const selectProviderDetailsViewModel = createSelector(
   ProviderDetailsSelectors.selectDetails,
+  ProviderDetailsSelectors.selectModels,
+  ProviderDetailsSelectors.selectModelsLoadingIndicator,
+  ProviderDetailsSelectors.selectModelMutationInProgress,
+  ProviderDetailsSelectors.selectIsSubmitting,
   ProviderDetailsSelectors.selectEditMode,
   ProviderDetailsSelectors.selectIsApiKeyHidden,
   (
     details: Provider | undefined, 
+    models,
+    modelsLoadingIndicator,
+    modelMutationInProgress,
+    isSubmitting,
     editMode,
     isApiKeyHidden
   ): ProviderDetailsViewModel => ({
     details,
+    models,
+    modelsLoadingIndicator,
+    modelMutationInProgress,
+    isSubmitting,
     editMode,
     isApiKeyHidden
   })

@@ -43,13 +43,6 @@ export const ProviderSearchActions = createActionGroup({
       results: Provider[]
       totalNumberOfResults: number
     }>(),
-    'Provider health poll ticked': props<{
-      id: string
-    }>(),
-    'Provider health status updated': props<{
-      id: string
-      status: string
-    }>(),
     'provider search results loading failed': props<{ error: string | null }>(),
     'Displayed columns changed': props<{
       displayedColumns: DataTableColumn[]

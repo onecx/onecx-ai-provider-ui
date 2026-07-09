@@ -19,7 +19,12 @@ describe('ProviderDetailsReducer', () => {
   })
 
   it('should reset state on navigatedToDetailsPage', () => {
-    const prevState: ProviderDetailsState = { details: { id: '1' } as any, editMode: true, isApiKeyHidden: false }
+    const prevState: ProviderDetailsState = {
+      ...initialState,
+      details: { id: '1' } as any,
+      editMode: true,
+      isApiKeyHidden: false
+    }
     const action = ProviderDetailsActions.navigatedToDetailsPage({ id: undefined })
     const state = ProviderDetailsReducer(prevState, action)
     expect(state).toEqual(initialState)
@@ -37,5 +42,19 @@ describe('ProviderDetailsReducer', () => {
     const action = ProviderDetailsActions.apiKeyVisibilityToggled()
     const state = ProviderDetailsReducer(prevState, action)
     expect(state.isApiKeyHidden).toBe(false)
+  })
+
+  it('should set models on providerModelsReceived', () => {
+    const models = [{ id: 'm1', modelIdentifier: 'Opus-3.5' }] as any
+    const action = ProviderDetailsActions.providerModelsReceived({ models })
+    const state = ProviderDetailsReducer(initialState, action)
+    expect(state.models).toEqual(models)
+    expect(state.modelsLoaded).toBe(true)
+  })
+
+  it('should set isSubmitting on providerUpdateRequested', () => {
+    const action = ProviderDetailsActions.providerUpdateRequested({ details: { name: 'Test' } as any })
+    const state = ProviderDetailsReducer(initialState, action)
+    expect(state.isSubmitting).toBe(true)
   })
 })
