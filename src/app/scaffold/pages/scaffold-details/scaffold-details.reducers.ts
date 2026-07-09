@@ -10,7 +10,10 @@ export const initialState: ScaffoldDetailsState = {
   isSubmitting: false,
   skills: [],
   skillsLoadingIndicator: true,
-  skillsLoaded: false
+  skillsLoaded: false,
+  tools: [],
+  toolsLoadingIndicator: true,
+  toolsLoaded: false
 }
 
 export const scaffoldDetailsReducer = createReducer(
@@ -40,6 +43,24 @@ export const scaffoldDetailsReducer = createReducer(
       skills: [],
       skillsLoadingIndicator: false,
       skillsLoaded: false
+    })
+  ),
+  on(
+    scaffoldDetailsActions.scaffoldToolsReceived,
+    (state: ScaffoldDetailsState, { tools }): ScaffoldDetailsState => ({
+      ...state,
+      tools,
+      toolsLoadingIndicator: false,
+      toolsLoaded: true
+    })
+  ),
+  on(
+    scaffoldDetailsActions.scaffoldToolsLoadingFailed,
+    (state: ScaffoldDetailsState): ScaffoldDetailsState => ({
+      ...state,
+      tools: [],
+      toolsLoadingIndicator: false,
+      toolsLoaded: false
     })
   ),
   on(

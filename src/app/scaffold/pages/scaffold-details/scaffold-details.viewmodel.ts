@@ -1,4 +1,4 @@
-import { Scaffold, Skill } from 'src/app/shared/generated'
+import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 
 export interface ScaffoldDetailsViewModel {
   details: Scaffold | undefined
@@ -10,4 +10,7 @@ export interface ScaffoldDetailsViewModel {
   skills: Skill[]
   skillsLoadingIndicator: boolean
   skillsLoaded: boolean
+  tools: Tool[]
+  toolsLoadingIndicator: boolean
+  toolsLoaded: boolean
 }

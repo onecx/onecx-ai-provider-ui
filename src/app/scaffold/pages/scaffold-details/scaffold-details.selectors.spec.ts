@@ -12,6 +12,17 @@ describe('ScaffoldDetails selectors', () => {
       const skills = [{ id: 'skill-1' }]
       const skillsLoadingIndicator = false
       const skillsLoaded = true
+      const tools = [{ id: 'tool-1' }]
+      const toolsLoadingIndicator = false
+      const toolsLoaded = true
+      const collections = {
+        skills,
+        skillsLoadingIndicator,
+        skillsLoaded,
+        tools,
+        toolsLoadingIndicator,
+        toolsLoaded
+      }
       expect(
         selectScaffoldDetailsViewModel.projector(
           details,
@@ -20,9 +31,7 @@ describe('ScaffoldDetails selectors', () => {
           detailsLoaded,
           editMode,
           isSubmitting,
-          skills,
-          skillsLoadingIndicator,
-          skillsLoaded
+          collections
         )
       ).toEqual({
         details,
@@ -31,9 +40,7 @@ describe('ScaffoldDetails selectors', () => {
         detailsLoaded,
         editMode,
         isSubmitting,
-        skills,
-        skillsLoadingIndicator,
-        skillsLoaded
+        ...collections
       })
     })
   })

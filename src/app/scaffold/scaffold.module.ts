@@ -4,16 +4,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { EffectsModule } from '@ngrx/effects'
-import { providePortalDialogService } from '@onecx/angular-accelerator'
+import { AngularAcceleratorModule, providePortalDialogService } from '@onecx/angular-accelerator'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { MultiSelectModule } from 'primeng/multiselect'
+import { TabViewModule } from 'primeng/tabview'
 import { ScaffoldDetailsComponent } from './pages/scaffold-details/scaffold-details.component'
 import { ScaffoldDetailsEffects } from './pages/scaffold-details/scaffold-details.effects'
 
 import { StoreModule } from '@ngrx/store'
 import { TranslateModule } from '@ngx-translate/core'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { DatePickerModule } from 'primeng/datepicker'
 import { TooltipModule } from 'primeng/tooltip'
 import { SharedModule } from '../shared/shared.module'
@@ -45,6 +45,7 @@ import { routes } from './scaffold.routes'
     DatePickerModule,
     TooltipModule,
     MultiSelectModule,
+    TabViewModule,
     StoreModule.forFeature(scaffoldFeature),
     EffectsModule.forFeature([ScaffoldDetailsEffects, ScaffoldDetailsEffects, ScaffoldSearchEffects]),
     TranslateModule

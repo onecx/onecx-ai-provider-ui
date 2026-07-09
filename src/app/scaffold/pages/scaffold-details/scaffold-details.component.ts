@@ -7,10 +7,12 @@ import { Observable, map } from 'rxjs'
 
 import { Action, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
 
-import { Scaffold, Skill } from 'src/app/shared/generated'
+import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { selectScaffoldDetailsViewModel } from './scaffold-details.selectors'
 import { ScaffoldDetailsViewModel } from './scaffold-details.viewmodel'
+
+type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
 
 @Component({
   selector: 'app-scaffold-details',
@@ -116,7 +118,7 @@ export class ScaffoldDetailsComponent implements OnInit {
           show: 'always',
           btnClass: '',
           actionCallback: () => {
-            // TODO: add callback
+            return
           }
         }
       ]
@@ -125,27 +127,27 @@ export class ScaffoldDetailsComponent implements OnInit {
   )
 
   public formGroup: FormGroup
-  private currentDetails: Scaffold | undefined
+  private currentDetails: ScaffoldWithTools | undefined
 
   constructor() {
     this.formGroup = new FormGroup({
       //ACTION D1: Add form fields here
       name: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
       systemPrompt: new FormControl(null, [Validators.maxLength(4000)]),
-      sourceProduct: new FormControl(null, [Validators.maxLength(255)]),
-      skills: new FormControl<Skill[]>([])
+      skills: new FormControl<Skill[]>([]),
+      tools: new FormControl<Tool[]>([])
     })
     this.formGroup.disable()
 
     this.viewModel$.subscribe((vm) => {
-      this.currentDetails = vm.details
+      this.currentDetails = vm.details as ScaffoldWithTools | undefined
       if (!vm.editMode) {
         this.formGroup.patchValue({
           //ACTION D1: Add form fields here
           name: vm.details?.name,
           systemPrompt: vm.details?.systemPrompt,
-          sourceProduct: vm.details?.sourceProduct,
-          skills: vm.details?.skills ?? []
+          skills: vm.details?.skills ?? [],
+          tools: (vm.details as ScaffoldWithTools | undefined)?.tools ?? []
         })
         this.formGroup.markAsPristine()
       }
@@ -176,9 +178,15 @@ export class ScaffoldDetailsComponent implements OnInit {
   }
 
   save() {
+    const details: ScaffoldWithTools = {
+      ...this.currentDetails,
+      ...this.formGroup.value,
+      tools: (this.formGroup.get('tools')?.value as Tool[]) ?? []
+    }
+
     this.store.dispatch(
       scaffoldDetailsActions.saveButtonClicked({
-        details: { ...this.currentDetails, ...this.formGroup.value }
+        details
       })
     )
   }

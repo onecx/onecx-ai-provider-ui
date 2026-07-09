@@ -31,6 +31,35 @@ describe('scaffoldDetailsReducer', () => {
     })
   })
 
+  it('should set tools on scaffoldToolsReceived', () => {
+    const tools = [{ id: 'tool-1' }]
+    const action = scaffoldDetailsActions.scaffoldToolsReceived({
+      tools
+    })
+    const nextState = scaffoldDetailsReducer(initialState, action)
+
+    expect(nextState).toEqual({
+      ...initialState,
+      tools,
+      toolsLoadingIndicator: false,
+      toolsLoaded: true
+    })
+  })
+
+  it('should handle scaffoldToolsLoadingFailed action', () => {
+    const action = scaffoldDetailsActions.scaffoldToolsLoadingFailed({
+      error: null
+    })
+    const nextState = scaffoldDetailsReducer(initialState, action)
+
+    expect(nextState).toEqual({
+      ...initialState,
+      tools: [],
+      toolsLoadingIndicator: false,
+      toolsLoaded: false
+    })
+  })
+
   it('should handle navigatedToDetailsPage action', () => {
     const action = scaffoldDetailsActions.navigatedToDetailsPage({ id: '1' })
     const nextState = scaffoldDetailsReducer(initialState, action)

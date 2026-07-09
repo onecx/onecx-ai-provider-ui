@@ -23,7 +23,12 @@
       "SYSTEM_PROMPT": "System Prompt",
       "SOURCE": "Source",
       "SOURCE_PRODUCT": "Source Product",
-      "SKILLS": "Skills"
+      "SKILLS": "Skills",
+      "TOOLS": "Tools (MCP)"
+    },
+    "TABS": {
+      "GENERAL": "General",
+      "TOOLS": "Tools (MCP)"
     },
     "CANCEL": {
       "HEADER": "Confirm cancellation",

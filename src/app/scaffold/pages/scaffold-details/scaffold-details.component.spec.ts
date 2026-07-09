@@ -62,13 +62,13 @@ describe('ScaffoldDetailsComponent', () => {
   }
 
   window.postMessage = (m: unknown) => {
-    listeners.forEach((l) =>
+    for (const l of listeners) {
       (l as (event: { data: unknown; stopImmediatePropagation: () => void; stopPropagation: () => void }) => void)({
         data: m,
         stopImmediatePropagation: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
         stopPropagation: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
       })
-    )
+    }
   }
 
   afterAll(() => {
@@ -96,7 +96,10 @@ describe('ScaffoldDetailsComponent', () => {
     isSubmitting: false,
     skills: [],
     skillsLoadingIndicator: false,
-    skillsLoaded: true
+    skillsLoaded: true,
+    tools: [],
+    toolsLoadingIndicator: false,
+    toolsLoaded: true
   }
 
   beforeEach(async () => {
@@ -192,7 +195,7 @@ describe('ScaffoldDetailsComponent', () => {
   })
 
   it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    jest.spyOn(window.history, 'back')
+    jest.spyOn(globalThis.history, 'back')
     const doneFn = jest.fn()
 
     const pageHeader = await scaffoldDetails.getHeader()
@@ -239,7 +242,7 @@ describe('ScaffoldDetailsComponent', () => {
     jest.spyOn(store, 'dispatch')
     // ACTION D11: Adjust form field names and values according to your implementation
     const scaffold = { id: '123' }
-    const scaffoldForm = { name: 'title', systemPrompt: 'prompt', sourceProduct: 'product', skills: [] }
+    const scaffoldForm = { name: 'title', systemPrompt: 'prompt', skills: [], tools: [] }
 
     store.overrideSelector(selectScaffoldDetailsViewModel, {
       ...baseScaffoldDetailsViewModel,
@@ -351,7 +354,7 @@ describe('ScaffoldDetailsComponent', () => {
     const disableSpy = jest.spyOn(component.formGroup, 'disable')
 
     // ACTION D11: Adjust form field names and values according to your implementation
-    const scaffoldForm = { name: 'title', systemPrompt: 'prompt', sourceProduct: 'product', skills: [] }
+    const scaffoldForm = { name: 'title', systemPrompt: 'prompt', skills: [], tools: [] }
     const scaffold = { id: '123', ...scaffoldForm }
 
     store.overrideSelector(selectScaffoldDetailsViewModel, {

@@ -13,20 +13,23 @@ import { filterForNavigatedTo } from '@onecx/ngrx-accelerator'
 
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { Scaffold, ScaffoldService, SkillService, UpdateScaffoldRequest } from '../../../shared/generated'
+import { Scaffold, ScaffoldService, SkillService, Tool, ToolService, UpdateScaffoldRequest } from '../../../shared/generated'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { ScaffoldDetailsComponent } from './scaffold-details.component'
 import { scaffoldDetailsSelectors } from './scaffold-details.selectors'
 
+type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
+
 @Injectable()
 export class ScaffoldDetailsEffects {
-  private actions$ = inject(Actions)
-  private scaffoldService = inject(ScaffoldService)
-  private skillService = inject(SkillService)
-  private router = inject(Router)
-  private store = inject(Store)
-  private messageService = inject(PortalMessageService)
-  private portalDialogService = inject(PortalDialogService)
+  private readonly actions$ = inject(Actions)
+  private readonly scaffoldService = inject(ScaffoldService)
+  private readonly skillService = inject(SkillService)
+  private readonly toolService = inject(ToolService)
+  private readonly router = inject(Router)
+  private readonly store = inject(Store)
+  private readonly messageService = inject(PortalMessageService)
+  private readonly portalDialogService = inject(PortalDialogService)
 
   navigatedToDetailsPage$ = createEffect(() => {
     return this.actions$.pipe(
@@ -34,7 +37,7 @@ export class ScaffoldDetailsEffects {
       filterForNavigatedTo(this.router, ScaffoldDetailsComponent),
       concatLatestFrom(() => this.store.select(selectRouteParam('id'))),
       map(([, id]) => {
-        return scaffoldDetailsActions.navigatedToDetailsPage({ id: id as string | undefined })
+        return scaffoldDetailsActions.navigatedToDetailsPage({ id })
       })
     )
   })
@@ -86,6 +89,28 @@ export class ScaffoldDetailsEffects {
     )
   })
 
+  loadTools$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(scaffoldDetailsActions.navigatedToDetailsPage),
+      switchMap(() => {
+        return this.toolService.findToolByCriteria({}).pipe(
+          map(({ stream }) =>
+            scaffoldDetailsActions.scaffoldToolsReceived({
+              tools: stream ?? []
+            })
+          ),
+          catchError((error) =>
+            of(
+              scaffoldDetailsActions.scaffoldToolsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      })
+    )
+  })
+
   cancelButtonNotDirty$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(scaffoldDetailsActions.cancelButtonClicked),
@@ -122,7 +147,7 @@ export class ScaffoldDetailsEffects {
       concatLatestFrom(() => this.store.select(scaffoldDetailsSelectors.selectDetails)),
       switchMap(([action, details]) => {
         const itemToEditId = details?.id
-        const updatedItem = {
+        const updatedItem: ScaffoldWithTools = {
           ...details,
           ...action.details
         }
@@ -135,7 +160,8 @@ export class ScaffoldDetailsEffects {
           name: updatedItem.name,
           systemPrompt: updatedItem.systemPrompt,
           sourceProduct: updatedItem.sourceProduct,
-          skills: updatedItem.skills
+          skills: updatedItem.skills,
+          ...(updatedItem.tools ? { tools: updatedItem.tools } : {})
         }
         return this.scaffoldService.updateScaffoldById(itemToEditId, itemToEdit).pipe(
           map((response) => {
@@ -143,7 +169,7 @@ export class ScaffoldDetailsEffects {
               summaryKey: 'SCAFFOLD_DETAILS.UPDATE.SUCCESS'
             })
             return scaffoldDetailsActions.updateScaffoldSucceeded({
-              details: response
+              details: { ...response, ...(updatedItem.tools ? { tools: updatedItem.tools } : {}) }
             })
           }),
           catchError((error) => {
@@ -189,7 +215,7 @@ export class ScaffoldDetailsEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(scaffoldDetailsActions.deleteScaffoldCancelled())
         }
-        if (!itemToDelete || !itemToDelete.id) {
+        if (!itemToDelete?.id) {
           throw new Error('Item to delete not found!')
         }
 
@@ -221,7 +247,7 @@ export class ScaffoldDetailsEffects {
         ofType(scaffoldDetailsActions.deleteScaffoldSucceeded),
         concatLatestFrom(() => this.store.select(selectUrl)),
         tap(([, currentUrl]) => {
-          const urlTree = this.router.parseUrl(currentUrl as string)
+          const urlTree = this.router.parseUrl(currentUrl)
           urlTree.queryParams = {}
           urlTree.fragment = null
 
@@ -240,6 +266,10 @@ export class ScaffoldDetailsEffects {
     },
     {
       action: scaffoldDetailsActions.scaffoldSkillsLoadingFailed,
+      key: 'SCAFFOLD_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+    },
+    {
+      action: scaffoldDetailsActions.scaffoldToolsLoadingFailed,
       key: 'SCAFFOLD_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
     }
   ]
@@ -266,7 +296,7 @@ export class ScaffoldDetailsEffects {
         if (!backNavigationPossible) {
           return of(scaffoldDetailsActions.backNavigationFailed())
         }
-        window.history.back()
+        globalThis.history.back()
         return of(scaffoldDetailsActions.backNavigationStarted())
       })
     )

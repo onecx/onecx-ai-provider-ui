@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
-import { Scaffold, Skill } from 'src/app/shared/generated'
+import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 
 export const scaffoldDetailsActions = createActionGroup({
   source: 'ScaffoldDetails',
@@ -10,6 +10,8 @@ export const scaffoldDetailsActions = createActionGroup({
     'Scaffold details loading failed missing id': props<{ error: string | null }>(),
     'Scaffold skills received': props<{ skills: Skill[] }>(),
     'Scaffold skills loading failed': props<{ error: string | null }>(),
+    'Scaffold tools received': props<{ tools: Tool[] }>(),
+    'Scaffold tools loading failed': props<{ error: string | null }>(),
     'Edit mode set': props<{ editMode: boolean }>(),
     'Update Scaffold cancelled': emptyProps(),
     'Update Scaffold succeeded': props<{ details: Scaffold | undefined }>(),

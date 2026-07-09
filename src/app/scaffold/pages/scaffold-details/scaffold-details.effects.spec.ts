@@ -9,7 +9,7 @@ import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { ScaffoldService, SkillService } from 'src/app/shared/generated'
+import { ScaffoldService, SkillService, ToolService } from 'src/app/shared/generated'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { ScaffoldDetailsEffects } from './scaffold-details.effects'
@@ -34,6 +34,7 @@ describe('ScaffoldDetailsEffects', () => {
   let portalDialogService: Partial<jest.Mocked<PortalDialogService>>
   const scaffoldService = { getScaffoldById: jest.fn(), updateScaffoldById: jest.fn(), deleteScaffoldById: jest.fn() }
   const skillService = { findSkillByCriteria: jest.fn().mockReturnValue(of({ stream: [] })) }
+  const toolService = { findToolByCriteria: jest.fn().mockReturnValue(of({ stream: [] })) }
 
   beforeEach(async () => {
     jest.resetAllMocks()
@@ -71,6 +72,7 @@ describe('ScaffoldDetailsEffects', () => {
         { provide: Router, useValue: router },
         { provide: ScaffoldService, useValue: scaffoldService },
         { provide: SkillService, useValue: skillService },
+        { provide: ToolService, useValue: toolService },
         { provide: PortalDialogService, useValue: portalDialogService },
         { provide: PortalMessageService, useValue: messageService }
       ]
@@ -139,6 +141,31 @@ describe('ScaffoldDetailsEffects', () => {
       const action = await firstValueFrom(effects.cancelButtonNotDirty$)
 
       expect(action).toEqual(scaffoldDetailsActions.cancelEditNotDirty())
+    })
+  })
+
+  describe('loadTools$', () => {
+    it('should dispatch scaffoldToolsReceived on success', async () => {
+      const mockTools = [{ id: 'tool-1' }]
+      toolService.findToolByCriteria.mockReturnValueOnce(of({ stream: mockTools }))
+
+      actions$.next(scaffoldDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadTools$)
+
+      expect(action).toEqual(scaffoldDetailsActions.scaffoldToolsReceived({ tools: mockTools }))
+      expect(toolService.findToolByCriteria).toHaveBeenCalledTimes(1)
+      expect(toolService.findToolByCriteria).toHaveBeenCalledWith({})
+    })
+
+    it('should dispatch scaffoldToolsLoadingFailed on error', async () => {
+      const mockError = 'tools failed'
+      toolService.findToolByCriteria.mockReturnValueOnce(throwError(() => mockError))
+
+      actions$.next(scaffoldDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadTools$)
+
+      expect(action).toEqual(scaffoldDetailsActions.scaffoldToolsLoadingFailed({ error: mockError }))
+      expect(toolService.findToolByCriteria).toHaveBeenCalledTimes(1)
     })
   })
 
