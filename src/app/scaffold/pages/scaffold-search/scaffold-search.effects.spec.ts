@@ -45,7 +45,7 @@ describe('ScaffoldSearchEffects', () => {
   let messageService: jest.Mocked<PortalMessageService>
   let exportDataService: jest.Mocked<ExportDataService>
 
-  const mockCriteria: ScaffoldSearchCriteria = { changeMe: 'test' }
+  const mockCriteria: ScaffoldSearchCriteria = { name: 'test' }
 
   beforeEach(async () => {
     actions$ = new ReplaySubject(1)
@@ -161,8 +161,8 @@ describe('ScaffoldSearchEffects', () => {
 
       scaffoldService.searchScaffoldItems.mockReturnValue(
         of({
-          stream: [{ id: '1', changeMe: 'Item 1' }],
-          content: [{ id: '1', changeMe: 'Item 1', imagePath: '' }],
+          stream: [{ id: '1', name: 'Item 1' }],
+          content: [{ id: '1', name: 'Item 1', imagePath: '' }],
           size: 10,
           number: 0,
           totalElements: 1,
@@ -204,7 +204,7 @@ describe('ScaffoldSearchEffects', () => {
     })
 
     it('should use latest criteria from store and call performSearch on routerNavigatedAction', (done) => {
-      const criteriaFromStore = { changeMe: 'fromStore' }
+      const criteriaFromStore = { name: 'fromStore' }
       store.overrideSelector(scaffoldSearchSelectors.selectCriteria, criteriaFromStore)
       store.refreshState()
 
@@ -256,8 +256,8 @@ describe('ScaffoldSearchEffects', () => {
       const mockColumns: DataTableColumn[] = [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME'
+          id: 'source',
+          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE'
         }
       ]
       const mockResults: Partial<RowListGridData>[] = [
@@ -279,8 +279,8 @@ describe('ScaffoldSearchEffects', () => {
       const mockColumns: DataTableColumn[] = [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME'
+          id: 'source',
+          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE'
         }
       ]
       const mockViewModel = {

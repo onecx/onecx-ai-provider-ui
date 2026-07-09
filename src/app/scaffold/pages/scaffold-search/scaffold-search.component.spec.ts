@@ -82,7 +82,7 @@ describe('ScaffoldSearchComponent', () => {
   // ACTION S11: Change test data in the whole document
   const baseScaffoldSearchViewModel: ScaffoldSearchViewModel = {
     columns: scaffoldSearchColumns,
-    searchCriteria: { changeMe: '0' },
+    searchCriteria: { name: '0' },
     searchExecuted: true,
     results: [],
     searchLoadingIndicator: false,
@@ -225,7 +225,7 @@ describe('ScaffoldSearchComponent', () => {
   })
 
   it('should display chosen column in the diagram', async () => {
-    component.diagramColumnId = 'changeMe'
+    component.diagramColumnId = 'source'
     store.overrideSelector(selectScaffoldSearchViewModel, {
       ...baseScaffoldSearchViewModel,
       chartVisible: true,
@@ -233,24 +233,24 @@ describe('ScaffoldSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          source: 'val_1'
         },
         {
           id: '2',
           imagePath: '',
-          changeMe: 'val_2'
+          source: 'val_2'
         },
         {
           id: '3',
           imagePath: '',
-          changeMe: 'val_2'
+          source: 'val_2'
         }
       ],
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+          id: 'source',
+          nameKey: 'SCAFFOLD_SEARCH.RESULTS.NAME',
           filterable: true,
           sortable: true,
           predefinedGroupKeys: [
@@ -287,12 +287,12 @@ describe('ScaffoldSearchComponent', () => {
 
   it('should dispatch searchButtonClicked action on search', (done) => {
     const formValue = formBuilder.group({
-      changeMe: '123'
+      name: '123'
     })
     component.scaffoldSearchFormGroup = formValue
 
     store.scannedActions$.pipe(ofType(scaffoldSearchActions.searchButtonClicked)).subscribe((a) => {
-      expect(a.searchCriteria).toEqual({ changeMe: '123' })
+      expect(a.searchCriteria).toEqual({ name: '123' })
       done()
     })
 
@@ -316,8 +316,8 @@ describe('ScaffoldSearchComponent', () => {
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
-        nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+        id: 'source',
+        nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
         filterable: true,
         sortable: true,
         predefinedGroupKeys: [
@@ -391,8 +391,8 @@ describe('ScaffoldSearchComponent', () => {
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
-        nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+        id: 'source',
+        nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
         filterable: true,
         sortable: true,
         predefinedGroupKeys: [
@@ -423,7 +423,7 @@ describe('ScaffoldSearchComponent', () => {
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
-    component.diagramColumnId = 'changeMe'
+    component.diagramColumnId = 'source'
 
     store.overrideSelector(selectScaffoldSearchViewModel, {
       ...baseScaffoldSearchViewModel,
@@ -432,8 +432,8 @@ describe('ScaffoldSearchComponent', () => {
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+          id: 'source',
+          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
           filterable: true,
           sortable: true,
           predefinedGroupKeys: [
@@ -456,15 +456,15 @@ describe('ScaffoldSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          source: 'val_1'
         }
       ],
       chartVisible: false,
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+          id: 'source',
+          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
           filterable: true,
           sortable: true,
           predefinedGroupKeys: [
@@ -487,15 +487,15 @@ describe('ScaffoldSearchComponent', () => {
         {
           id: '1',
           imagePath: '',
-          changeMe: 'val_1'
+          source: 'val_1'
         }
       ],
       chartVisible: true,
       columns: [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+          id: 'source',
+          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
           filterable: true,
           sortable: true,
           predefinedGroupKeys: [
@@ -520,14 +520,14 @@ describe('ScaffoldSearchComponent', () => {
       {
         id: '1',
         imagePath: '',
-        changeMe: 'val_1'
+        source: 'val_1'
       }
     ]
     const columns = [
       {
         columnType: ColumnType.STRING,
-        id: 'changeMe',
-        nameKey: 'SCAFFOLD_SEARCH.RESULTS.CHANGE_ME',
+        id: 'source',
+        nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
         filterable: true,
         sortable: true,
         predefinedGroupKeys: [
@@ -560,18 +560,18 @@ describe('ScaffoldSearchComponent', () => {
     const cases = [
       {
         desc: 'should convert Date values to UTC and dispatch searchButtonClicked',
-        formValue: { changeMe: new Date(2024, 4, 15) },
-        expected: { changeMe: new Date(Date.UTC(2024, 4, 15)) }
+        formValue: { name: new Date(2024, 4, 15) },
+        expected: { name: new Date(Date.UTC(2024, 4, 15)) }
       },
       {
         desc: 'should pass through non-date, non-empty values unchanged',
-        formValue: { changeMe: 'testName' },
-        expected: { changeMe: 'testName' }
+        formValue: { name: 'testName' },
+        expected: { name: 'testName' }
       },
       {
         desc: 'should set searchCriteria property to undefined for null values',
-        formValue: { changeMe: null },
-        expected: { changeMe: undefined }
+        formValue: { name: null },
+        expected: { name: undefined }
       }
     ]
 

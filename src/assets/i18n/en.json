@@ -24,7 +24,6 @@
       "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
       "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
     },
-    "CHANGE_ME": "ACTION S4: Adjust translation keys for search header",
     "HEADER_ARIA_LABEL": "Page Header with Search",
     "PREDEFINED_GROUP": {
       "DEFAULT": "Default",
@@ -33,15 +32,21 @@
     },
     "RESULTS_ARIA_LABEL": "Search Results",
     "RESULTS": {
-      "OUTPUT_FIELDS": "ACTION S8: Adjust translation keys for result columns",
-      "CHANGE_ME": "Change Me"
+      "NAME": "Name",
+      "SOURCE": "Source",
+      "SOURCE_PRODUCT": "Source Product",
+      "SYSTEM_PROMPT": "System Prompt"
     },
     "CRITERIA": {
-      "INPUT_FIELDS": "ACTION S4: Adjust translation keys for input fields",
-      "CHANGE_ME": {
-        "LABEL": "Change Me",
-        "ARIA_LABEL": "Change Me",
-        "TOOLTIP": "Change Me"
+      "NAME": {
+        "LABEL": "Name",
+        "ARIA_LABEL": "Name",
+        "TOOLTIP": "Name"
+      },
+      "SOURCE_PRODUCT": {
+        "LABEL": "Source Product",
+        "ARIA_LABEL": "Source Product",
+        "TOOLTIP": "Source Product"
       }
     }
   },

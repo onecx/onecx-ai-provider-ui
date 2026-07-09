@@ -11,7 +11,7 @@ import * as reducers from './scaffold-search.reducers'
 // ACTION S11: Change test data in the whole document
 describe('scaffoldSearchReducer', () => {
   it('should reset results and criteria on resetButtonClicked', () => {
-    const preState = { ...reducers.initialState, results: [{ id: '1' }], criteria: { changeMe: 'val' } }
+    const preState = { ...reducers.initialState, results: [{ id: '1' }], criteria: { name: 'val' } }
     const action = scaffoldSearchActions.resetButtonClicked()
     const nextState = reducers.scaffoldSearchReducer(preState, action)
 
@@ -20,7 +20,7 @@ describe('scaffoldSearchReducer', () => {
   })
 
   it('should set searchLoadingIndicator and criteria on searchButtonClicked', () => {
-    const searchCriteria = { changeMe: 'foo' }
+    const searchCriteria = { name: 'foo' }
     const action = scaffoldSearchActions.searchButtonClicked({ searchCriteria })
     const nextState = reducers.scaffoldSearchReducer(reducers.initialState, action)
 
@@ -123,7 +123,7 @@ describe('scaffoldSearchReducer', () => {
     jest.spyOn(mockSchema.scaffoldSearchCriteriasSchema, 'safeParse').mockReturnValue({
       success: false
     })
-    const preState = { ...reducers.initialState, criteria: { changeMe: 'bar' }, searchLoadingIndicator: true }
+    const preState = { ...reducers.initialState, criteria: { name: 'bar' }, searchLoadingIndicator: true }
     const action = routerNavigatedAction({ payload: { routerState: { root: { queryParams: { foo: 'bar' } } } } })
     const nextState = reducers.scaffoldSearchReducer(preState, action)
 

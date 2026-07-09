@@ -8,25 +8,25 @@ describe('ScaffoldSearch selectors', () => {
       {
         desc: 'should map results to RowListGridData[]',
         input: [
-          { id: '1', changeMe: 'A' },
-          { id: '2', changeMe: 'B' }
+          { id: '1', name: 'A' },
+          { id: '2', name: 'B' }
         ] as never[],
         expected: [
-          { imagePath: '', id: '1', changeMe: 'A' },
-          { imagePath: '', id: '2', changeMe: 'B' }
+          { imagePath: '', id: '1', name: 'A' },
+          { imagePath: '', id: '2', name: 'B' }
         ]
       },
       {
         desc: 'should use empty string fallback when item.id is falsy',
         input: [
-          { id: '', changeMe: 'A' },
-          { id: '', changeMe: 'B' },
-          { id: '', changeMe: 'C' }
+          { id: '', name: 'A' },
+          { id: '', name: 'B' },
+          { id: '', name: 'C' }
         ] as never[],
         expected: [
-          { imagePath: '', id: '', changeMe: 'A' },
-          { imagePath: '', id: '', changeMe: 'B' },
-          { imagePath: '', id: '', changeMe: 'C' }
+          { imagePath: '', id: '', name: 'A' },
+          { imagePath: '', id: '', name: 'B' },
+          { imagePath: '', id: '', name: 'C' }
         ]
       }
     ]
@@ -40,13 +40,13 @@ describe('ScaffoldSearch selectors', () => {
 
   it('selectScaffoldSearchViewModel should combine all selector results', () => {
     // ACTION S11: Adjust test data
-    const columns = [{ id: 'changeMe', nameKey: 'Col 1', columnType: ColumnType.STRING }]
+    const columns = [{ id: 'name', nameKey: 'Col 1', columnType: ColumnType.STRING }]
     const searchCriteria = {
       pageNumber: 1,
       pageSize: 10,
-      changeMe: 'A'
+      name: 'A'
     }
-    const results = [{ imagePath: '', id: '1', changeMe: 'A test' }]
+    const results = [{ imagePath: '', id: '1', name: 'A test' }]
     const chartVisible = true
 
     const result = selectors.selectScaffoldSearchViewModel.projector(

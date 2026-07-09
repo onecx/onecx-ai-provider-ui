@@ -24,7 +24,6 @@
       "SEARCH_CONFIG_UPDATE_FAILED": "Suchkonfiguration konnte nicht aktualisiert werden.",
       "SEARCH_CONFIGS_LOADING_FAILED": "Suchkonfigurationen konnten nicht geladen werden."
     },
-    "CHANGE_ME": "ACTION S4: Adjust translation keys for search header",
     "HEADER_ARIA_LABEL": "Seitenkopf mit Suche",
     "PREDEFINED_GROUP": {
       "DEFAULT": "Standard",
@@ -33,15 +32,21 @@
     },
     "RESULTS_ARIA_LABEL": "Suchergebnisse",
     "RESULTS": {
-      "OUTPUT_FIELDS": "ACTION S8: Adjust translation keys for result columns",
-      "CHANGE_ME": "Ändere mich"
+      "NAME": "Name",
+      "SOURCE": "Quelle",
+      "SOURCE_PRODUCT": "Quellprodukt",
+      "SYSTEM_PROMPT": "System-Prompt"
     },
     "CRITERIA": {
-      "INPUT_FIELDS": "ACTION S4: Adjust translation keys for input fields",
-      "CHANGE_ME": {
-        "LABEL": "Ändere mich",
-        "ARIA_LABEL": "Ändere mich",
-        "TOOLTIP": "Ändere mich"
+      "NAME": {
+        "LABEL": "Name",
+        "ARIA_LABEL": "Name",
+        "TOOLTIP": "Name"
+      },
+      "SOURCE_PRODUCT": {
+        "LABEL": "Quellprodukt",
+        "ARIA_LABEL": "Quellprodukt",
+        "TOOLTIP": "Quellprodukt"
       }
     }
   },

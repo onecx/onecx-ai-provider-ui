@@ -17,7 +17,6 @@ export const selectResults = createSelector(
       imagePath: '',
       id: item.id ?? '',
       ...item
-
       // ACTION S7: Create a mapping of the items and their corresponding translation keys
     }))
   }

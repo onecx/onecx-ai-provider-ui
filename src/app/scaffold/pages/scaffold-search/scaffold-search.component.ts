@@ -71,7 +71,7 @@ export class ScaffoldSearchComponent implements OnInit {
   defaultDiagramType = DiagramType.PIE
 
   // ACTION S9: Select the column to be displayed in the diagram
-  diagramColumnId = 'id'
+  diagramColumnId = 'source'
   diagramColumn$: Observable<DataTableColumn> = this.viewModel$.pipe(
     map((vm) => vm.columns.find((e) => e.id === this.diagramColumnId) as DataTableColumn)
   )
