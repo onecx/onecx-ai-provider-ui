@@ -1,4 +1,5 @@
 import { selectProviderSearchViewModel, selectDisplayedColumns, selectResults } from "./provider-search.selectors"
+import { AuthMode, ProviderType } from "src/app/shared/generated"
 
 describe('ProviderSearch selectors', () => {
   it('should map results to RowListGridData', () => {
@@ -6,22 +7,26 @@ describe('ProviderSearch selectors', () => {
       {
         id: '1',
         name: 'Test',
+        type: ProviderType.Openai,
         description: 'Desc',
-        llmUrl: 'url'
+        llmUrl: 'url',
+        authMode: AuthMode.ApiKey,
+        creationDate: '2026-01-01T00:00:00.000Z',
+        modificationDate: '2026-01-02T00:00:00.000Z'
       }
     ]
-    const healthStatus = {
-      '1': 'ONLINE'
-    }
-    const mapped = selectResults.projector(results, healthStatus)
+    const mapped = selectResults.projector(results)
     expect(mapped).toEqual([
       {
         imagePath: '',
         id: '1',
         name: 'Test',
+        type: ProviderType.Openai,
         description: 'Desc',
         llmUrl: 'url',
-        status: 'ONLINE'
+        authMode: AuthMode.ApiKey,
+        creationDate: '2026-01-01T00:00:00.000Z',
+        modificationDate: '2026-01-02T00:00:00.000Z'
       }
     ])
   })
@@ -42,15 +47,14 @@ describe('ProviderSearch selectors', () => {
   it('should build ProviderSearchViewModel', () => {
     const columns = [{ id: 'col1', nameKey: 'Col1' }] as any
     const searchCriteria = { name: 'Test' }
-    const results = [{ id: '1', name: 'Test', modelName: 'model' }]
-    const healthStatus = { '1': 'ONLINE' }
+    const results = [{ id: '1', name: 'Test', type: ProviderType.Openai }]
     const viewMode = 'basic'
     const chartVisible = true
 
     const vm = selectProviderSearchViewModel.projector(
       columns,
       searchCriteria,
-      selectResults.projector(results, healthStatus),
+      selectResults.projector(results),
       selectDisplayedColumns.projector(columns, ['col1']),
       viewMode,
       chartVisible
@@ -63,9 +67,12 @@ describe('ProviderSearch selectors', () => {
           imagePath: '',
           id: '1',
           name: 'Test',
+          type: ProviderType.Openai,
           description: undefined,
           llmUrl: undefined,
-          status: 'ONLINE'
+          authMode: undefined,
+          creationDate: undefined,
+          modificationDate: undefined
         }
       ],
       displayedColumns: [{ id: 'col1', nameKey: 'Col1' }],
@@ -94,26 +101,6 @@ describe('ProviderSearch selectors', () => {
     expect(mapped).toEqual([])
   })
 
-  it('should set NODATA when healthStatus is undefined', () => {
-    const results = [{ id: '1', name: 'Test', modelName: 'model' }]
-    const mapped = selectResults.projector(results, undefined as any)
-
-    expect(mapped[0]['status']).toBe('NODATA')
-  })
-
-  it('should use empty id and return NODATA when id is undefined', () => {
-    const results = [{ id: undefined, name: 'Test', modelName: 'model' }]
-    const healthStatus = {}
-    const mapped = selectResults.projector(results, healthStatus)
-
-    expect(mapped[0]).toEqual(
-      expect.objectContaining({
-        id: '',
-        status: 'NODATA'
-      })
-    )
-  })
-
   it('should fallback to empty string when id is undefined', () => {
     const results = [
       {
@@ -123,16 +110,19 @@ describe('ProviderSearch selectors', () => {
         llmUrl: 'url'
       }
     ]
-    const mapped = selectResults.projector(results as any, undefined)
+    const mapped = selectResults.projector(results as any)
 
     expect(mapped).toEqual([
       {
         imagePath: '',
         id: '',
         name: 'Test',
+        type: undefined,
         description: 'Desc',
         llmUrl: 'url',
-        status: 'NODATA'
+        authMode: undefined,
+        creationDate: undefined,
+        modificationDate: undefined
       }
     ])
   })

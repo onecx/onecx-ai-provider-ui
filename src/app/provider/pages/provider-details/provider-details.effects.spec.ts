@@ -39,9 +39,14 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
       name: 'Test name',
       description: 'Test description',
       llmUrl: 'Test llmUrl',
-      modelName: 'Test modelName',
+      type: 'OPENAI',
+      authMode: 'API_KEY',
       apiKey: 'TestAPIKey'
     } as any,
+    models: [],
+    modelsLoadingIndicator: false,
+    modelMutationInProgress: false,
+    isSubmitting: false,
     editMode: false,
     isApiKeyHidden: false
   }
@@ -102,6 +107,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const deleteSpy = jest.spyOn(component, 'delete')
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: undefined,
+      models: [],
+      modelsLoadingIndicator: false,
+      modelMutationInProgress: false,
+      isSubmitting: false,
       editMode: false,
       isApiKeyHidden: false
     })
@@ -120,6 +129,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const editSpy = jest.spyOn(component, 'edit')
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: undefined,
+      models: [],
+      modelsLoadingIndicator: false,
+      modelMutationInProgress: false,
+      isSubmitting: false,
       editMode: true,
       isApiKeyHidden: false
     })
@@ -191,6 +204,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
   it('should patch form fields with empty string if details fields are undefined', async () => {
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: { id: '', name: '', description: '' },
+      models: [],
+      modelsLoadingIndicator: false,
+      modelMutationInProgress: false,
+      isSubmitting: false,
       editMode: false,
       isApiKeyHidden: false
     })
@@ -202,8 +219,10 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
       name: '',
       description: '',
       llmUrl: undefined,
-      modelName: null,
-      apiKey: undefined
+      type: undefined,
+      authMode: undefined,
+      apiKey: undefined,
+      newModelIdentifier: null
     })
   })
   it('should not throw when disabling apiKey field if formGroup or apiKey is missing', () => {

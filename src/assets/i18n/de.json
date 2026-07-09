@@ -434,7 +434,16 @@
     "HEADER": "Provider Details",
     "SUB_HEADER": "Anzeigen von Provider Details",
     "ERROR_MESSAGES": {
-      "DETAILS_LOADING_FAILED": "Details konnten nicht geladen werden."
+      "DETAILS_LOADING_FAILED": "Details konnten nicht geladen werden.",
+      "UPDATE_FAILED": "Provider konnte nicht aktualisiert werden.",
+      "MODELS_LOADING_FAILED": "Modelle konnten nicht geladen werden.",
+      "MODEL_CREATE_FAILED": "Modell konnte nicht erstellt werden.",
+      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden."
+    },
+    "SUCCESS_MESSAGES": {
+      "UPDATE_SUCCEEDED": "Provider wurde erfolgreich aktualisiert.",
+      "MODEL_CREATE_SUCCEEDED": "Modell wurde erfolgreich erstellt.",
+      "MODEL_DELETE_SUCCEEDED": "Modell wurde erfolgreich gelöscht."
     },
     "GENERAL": {
       "BACK": "Zurück",
@@ -443,11 +452,23 @@
       "SAVE": "Speichern",
       "CANCEL": "Abbrechen"
     },
+    "TABS": {
+      "GENERAL": "Allgemein",
+      "MODELS": "Modelle"
+    },
+    "MODELS": {
+      "NEW_MODEL": "Neuer Modell-Identifikator",
+      "CREATE": "Modell erstellen",
+      "DELETE": "Modell loeschen",
+      "LOADING": "Modelle werden geladen...",
+      "EMPTY": "Keine Modelle zugewiesen."
+    },
     "FORM": {
       "NAME": "Name",
       "DESCRIPTION": "Beschreibung",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
+      "TYPE": "Typ",
+      "AUTH_MODE": "Auth-Modus",
       "APIKEY": "API Key"
     }
   },
@@ -479,15 +500,16 @@
       "NAME": "Name",
       "DESCRIPTION": "Beschreibung",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
       "TYPE": "Typ"
     },
     "COLUMNS": {
       "NAME": "Name",
+      "TYPE": "Typ",
       "DESCRIPTION": "Beschreibung",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
-      "STATUS": "Status"
+      "AUTH_MODE": "Auth-Modus",
+      "CREATION_DATE": "Erstellt am",
+      "MODIFICATION_DATE": "Geaendert am"
     },
     "PREDEFINED_GROUP": {
       "DEFAULT": "Standard",

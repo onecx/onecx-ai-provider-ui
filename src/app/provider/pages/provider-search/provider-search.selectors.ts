@@ -9,19 +9,18 @@ export const ProviderSearchSelectors = createChildSelectors(ProviderFeature.sele
 
 export const selectResults = createSelector(
   ProviderSearchSelectors.selectResults,
-  ProviderSearchSelectors.selectHealthStatus,
-  (results, healthStatus): RowListGridData[] => {
+  (results): RowListGridData[] => {
     return results.map((item) => {
-      const raw = healthStatus ? healthStatus[item.id ?? ''] : undefined
-      const statusKey = (raw ?? 'NODATA').toString().toUpperCase()
-
       return {
         imagePath: '',
         id: item.id ?? '',
         name: item.name,
+        type: item.type,
         description: item.description,
         llmUrl: item.llmUrl,
-        status: statusKey
+        authMode: item.authMode,
+        creationDate: item.creationDate,
+        modificationDate: item.modificationDate
       }
     })
   }

@@ -15,11 +15,24 @@ export const ProviderSearchColumns: DataTableColumn[] = [
     },
     {
         columnType: ColumnType.STRING,
+        id: 'type',
+        nameKey: 'PROVIDER_SEARCH.COLUMNS.TYPE',
+        filterable: true,
+        sortable: true,
+        predefinedGroupKeys: [
+            'PROVIDER_SEARCH.PREDEFINED_GROUP.DEFAULT',
+            'PROVIDER_SEARCH.PREDEFINED_GROUP.EXTENDED',
+            'PROVIDER_SEARCH.PREDEFINED_GROUP.FULL'
+        ]
+    },
+    {
+        columnType: ColumnType.STRING,
         id: 'description',
         nameKey: 'PROVIDER_SEARCH.COLUMNS.DESCRIPTION',
         filterable: true,
         sortable: true,
         predefinedGroupKeys: [
+            'PROVIDER_SEARCH.PREDEFINED_GROUP.DEFAULT',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.EXTENDED',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.FULL'
         ]
@@ -31,34 +44,40 @@ export const ProviderSearchColumns: DataTableColumn[] = [
         filterable: true,
         sortable: true,
         predefinedGroupKeys: [
-            'PROVIDER_SEARCH.PREDEFINED_GROUP.DEFAULT',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.EXTENDED',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.FULL'
         ]
     },
     {
         columnType: ColumnType.STRING,
-        id: 'modelName',
-        nameKey: 'PROVIDER_SEARCH.COLUMNS.MODELNAME',
+        id: 'authMode',
+        nameKey: 'PROVIDER_SEARCH.COLUMNS.AUTH_MODE',
         filterable: true,
         sortable: true,
         predefinedGroupKeys: [
-            'PROVIDER_SEARCH.PREDEFINED_GROUP.DEFAULT',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.EXTENDED',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.FULL'
         ]
     },
     {
-        columnType: ColumnType.STRING,
-        id: 'status',
-        nameKey: 'PROVIDER_SEARCH.COLUMNS.STATUS',
-        filterable: false,
-        sortable: false,
+        columnType: ColumnType.DATE,
+        id: 'creationDate',
+        nameKey: 'PROVIDER_SEARCH.COLUMNS.CREATION_DATE',
+        filterable: true,
+        sortable: true,
         predefinedGroupKeys: [
-            'PROVIDER_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'PROVIDER_SEARCH.PREDEFINED_GROUP.EXTENDED',
             'PROVIDER_SEARCH.PREDEFINED_GROUP.FULL'
         ]
     },
+    {
+        columnType: ColumnType.DATE,
+        id: 'modificationDate',
+        nameKey: 'PROVIDER_SEARCH.COLUMNS.MODIFICATION_DATE',
+        filterable: true,
+        sortable: true,
+        predefinedGroupKeys: [
+            'PROVIDER_SEARCH.PREDEFINED_GROUP.FULL'
+        ]
+    }
 ]
 

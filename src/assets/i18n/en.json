@@ -446,7 +446,16 @@
     "HEADER": "Provider Details",
     "SUB_HEADER": "Display of Provider Details",
     "ERROR_MESSAGES": {
-      "DETAILS_LOADING_FAILED": "Loading details failed."
+      "DETAILS_LOADING_FAILED": "Loading details failed.",
+      "UPDATE_FAILED": "Updating provider failed.",
+      "MODELS_LOADING_FAILED": "Loading models failed.",
+      "MODEL_CREATE_FAILED": "Creating model failed.",
+      "MODEL_DELETE_FAILED": "Deleting model failed."
+    },
+    "SUCCESS_MESSAGES": {
+      "UPDATE_SUCCEEDED": "Provider updated successfully.",
+      "MODEL_CREATE_SUCCEEDED": "Model created successfully.",
+      "MODEL_DELETE_SUCCEEDED": "Model deleted successfully."
     },
     "GENERAL": {
       "BACK": "Back",
@@ -455,11 +464,23 @@
       "SAVE": "Save",
       "CANCEL": "Cancel"
     },
+    "TABS": {
+      "GENERAL": "General",
+      "MODELS": "Models"
+    },
+    "MODELS": {
+      "NEW_MODEL": "New model identifier",
+      "CREATE": "Create model",
+      "DELETE": "Delete model",
+      "LOADING": "Loading models...",
+      "EMPTY": "No models assigned."
+    },
     "FORM": {
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
+      "TYPE": "Type",
+      "AUTH_MODE": "Auth Mode",
       "APIKEY": "API Key"
     }
   },
@@ -491,15 +512,16 @@
       "NAME": "Name",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
       "TYPE": "Type"
     },
     "COLUMNS": {
       "NAME": "Name",
+      "TYPE": "Type",
       "DESCRIPTION": "Description",
       "LLMURL": "LlmUrl",
-      "MODELNAME": "Modelname",
-      "STATUS": "Status"
+      "AUTH_MODE": "Auth Mode",
+      "CREATION_DATE": "Creation Date",
+      "MODIFICATION_DATE": "Modification Date"
     },
     "PREDEFINED_GROUP": {
       "DEFAULT": "Default",

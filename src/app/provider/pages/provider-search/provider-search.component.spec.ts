@@ -40,7 +40,6 @@ describe('ProviderSearchComponent', () => {
       name: undefined,
       description: undefined,
       llmUrl: undefined,
-      modelName: undefined,
       id: undefined
     },
     results: [],

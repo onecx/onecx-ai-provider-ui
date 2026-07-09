@@ -7,8 +7,7 @@ import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
-import { BreadcrumbService } from '@onecx/angular-accelerator'
+import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ProviderDetailsComponent } from './provider-details.component'
 import { ProviderDetailsHarness } from './provider-details.harness'
@@ -35,13 +34,13 @@ describe('ProviderDetailsComponent', () => {
   }
 
   window.postMessage = (m: any) => {
-    listeners.forEach((l) =>
-      l({
+    for (const listener of listeners) {
+      listener({
         data: m,
         stopImmediatePropagation: () => {},
         stopPropagation: () => {}
       })
-    )
+    }
   }
   /* eslint-enable @typescript-eslint/no-explicit-any */
   /* eslint-enable @typescript-eslint/no-empty-function */
@@ -68,9 +67,14 @@ describe('ProviderDetailsComponent', () => {
       name: 'Test name',
       description: 'Test description',
       llmUrl: 'Test llmUrl',
-      modelName: 'Test modelName',
+      type: 'OPENAI',
+      authMode: 'API_KEY',
       apiKey: 'TestAPIKey'
     } as any,
+    models: [],
+    modelsLoadingIndicator: false,
+    modelMutationInProgress: false,
+    isSubmitting: false,
     editMode: false,
     isApiKeyHidden: false
   }
@@ -156,13 +160,13 @@ describe('ProviderDetailsComponent', () => {
     })
 
     it('should navigate back on back button click', async () => {
-      jest.spyOn(window.history, 'back')
+      jest.spyOn(globalThis.history, 'back')
 
       const pageHeader = await ProviderDetails.getHeader()
       const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
       await backAction?.click()
 
-      expect(window.history.back).toHaveBeenCalledTimes(1)
+      expect(globalThis.history.back).toHaveBeenCalledTimes(1)
     })
 
     it('should display item details in form fields', async () => {
@@ -174,8 +178,10 @@ describe('ProviderDetailsComponent', () => {
         name: 'Test name',
         description: 'Test description',
         llmUrl: 'Test llmUrl',
-        modelName: null,
-        apiKey: 'TestAPIKey'
+        type: 'OPENAI',
+        authMode: 'API_KEY',
+        apiKey: 'TestAPIKey',
+        newModelIdentifier: null
       })
     })
   })

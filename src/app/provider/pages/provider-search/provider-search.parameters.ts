@@ -4,7 +4,6 @@ export const ProviderSearchCriteriasSchema = z.object({
   id: z.string().optional(),
   name: z.string().optional(),
   description: z.string().optional(),
-  modelName: z.string().optional(),
   llmUrl: z.string().optional(),
   type: z.string().optional(),
   apiKey: z.string().optional(),

@@ -16,6 +16,10 @@ import { PortalPageComponent } from '@onecx/angular-utils'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
 import { FloatLabelModule } from 'primeng/floatlabel'
+import { SelectModule } from 'primeng/select'
+import { TabViewModule } from 'primeng/tabview'
+import { ButtonModule } from 'primeng/button'
+import { AuthMode, Model, Provider, ProviderType } from 'src/app/shared/generated'
 
 @Component({
   selector: 'app-provider-details',
@@ -31,13 +35,18 @@ import { FloatLabelModule } from 'primeng/floatlabel'
     LetDirective,
     InputTextModule,
     PortalPageComponent,
-    TooltipModule
+    TooltipModule,
+    SelectModule,
+    TabViewModule,
+    ButtonModule
   ]
 })
 export class ProviderDetailsComponent implements OnInit {
   viewModel$!: Observable<ProviderDetailsViewModel>
   headerActions$!: Observable<Action[]>
   public formGroup: FormGroup
+  readonly providerTypeOptions = Object.values(ProviderType)
+  readonly authModeOptions = Object.values(AuthMode)
 
   constructor(
     private readonly store: Store,
@@ -48,8 +57,10 @@ export class ProviderDetailsComponent implements OnInit {
       name: new FormControl(null, [Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.maxLength(255)]),
       llmUrl: new FormControl(null, [Validators.maxLength(255)]),
-      modelName: new FormControl(null, [Validators.maxLength(255)]),
-      apiKey: new FormControl(null, [Validators.maxLength(255)])
+      type: new FormControl<ProviderType | null>(null),
+      authMode: new FormControl<AuthMode | null>(null),
+      apiKey: new FormControl(null, [Validators.maxLength(255)]),
+      newModelIdentifier: new FormControl<string | null>(null, [Validators.maxLength(255)])
     })
   }
 
@@ -110,10 +121,10 @@ export class ProviderDetailsComponent implements OnInit {
             show: 'always',
             icon: PrimeIcons.SAVE,
             conditional: true,
+            disabled: vm.isSubmitting,
             showCondition: vm.editMode,
             actionCallback: () => {
-              this.edit(vm.details?.id ?? '')
-              this.toggleEditMode(false)
+              this.save()
             }
           }
         ]
@@ -127,6 +138,7 @@ export class ProviderDetailsComponent implements OnInit {
         description: Provider.details?.description,
         llmUrl: Provider.details?.llmUrl,
         type: Provider.details?.type,
+        authMode: Provider.details?.authMode,
         apiKey: Provider.details?.apiKey
       })
     })
@@ -145,8 +157,38 @@ export class ProviderDetailsComponent implements OnInit {
     this.store.dispatch(ProviderSearchActions.editProviderDetailsButtonClicked({ id }))
   }
 
+  save() {
+    const currentDetails = this.formGroup.getRawValue()
+    const details: Provider = {
+      id: undefined,
+      name: currentDetails.name ?? '',
+      description: currentDetails.description ?? undefined,
+      type: currentDetails.type ?? undefined,
+      llmUrl: currentDetails.llmUrl ?? undefined,
+      apiKey: currentDetails.apiKey ?? undefined,
+      authMode: currentDetails.authMode ?? undefined
+    }
+    this.store.dispatch(ProviderDetailsActions.providerUpdateRequested({ details }))
+  }
+
   delete(id: string) {
     this.store.dispatch(ProviderSearchActions.deleteProviderButtonClicked({ id }))
+  }
+
+  createModelInPlace() {
+    const modelIdentifier = this.formGroup.get('newModelIdentifier')?.value?.trim()
+    if (!modelIdentifier) {
+      return
+    }
+    this.store.dispatch(ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier }))
+    this.formGroup.get('newModelIdentifier')?.setValue(null)
+  }
+
+  deleteModel(model: Model) {
+    if (!model.id) {
+      return
+    }
+    this.store.dispatch(ProviderDetailsActions.providerModelDeleteClicked({ modelId: model.id }))
   }
 
   toggleEditMode(value: boolean) {
@@ -156,9 +198,18 @@ export class ProviderDetailsComponent implements OnInit {
     } else {
       this.formGroup.disable()
     }
-    if (!this.user.hasPermission('PROVIDER#CHANGE_API_KEY')) {
-      this.formGroup.get('apiKey')?.disable()
+    const hasApiKeyPermission = this.user.hasPermission('PROVIDER#CHANGE_API_KEY')
+    if (typeof hasApiKeyPermission === 'boolean') {
+      if (!hasApiKeyPermission) {
+        this.formGroup.get('apiKey')?.disable()
+      }
+      return
     }
+    void hasApiKeyPermission.then((hasPermission) => {
+      if (!hasPermission) {
+        this.formGroup.get('apiKey')?.disable()
+      }
+    })
   }
 
   toggleApiKeyVisibility() {
