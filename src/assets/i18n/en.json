@@ -401,7 +401,7 @@
   },
   "DASHBOARD": {
     "HEADER": "Agent Plane Dashboard",
-    "SUBHEADER": "Navigate to primary agent scaffold entities",
+    "SUBHEADER": "Navigate to primary agent components",
     "ACTIONS": {
       "OPEN_SEARCH": "Manage"
     },

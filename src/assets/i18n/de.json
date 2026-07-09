@@ -355,11 +355,6 @@
         "ARIA_LABEL": "Scaffold ID",
         "TOOLTIP": "Scaffold ID"
       },
-      "SKILL": {
-        "TITLE": "Skill",
-        "SUBTITLE": "Tool-Bibliothek",
-        "DESCRIPTION": "Verwalten Sie wiederverwendbare Skills, Anweisungen und Verhaltensbausteine."
-      },
       "RUNTIME_CONFIG_ID": {
         "LABEL": "Runtime Config ID",
         "ARIA_LABEL": "Runtime Config ID",
@@ -406,7 +401,7 @@
   },
   "DASHBOARD": {
     "HEADER": "Agent Plane Dashboard",
-    "SUBHEADER": "Navigation zu den primären Scaffold-Entitäten",
+    "SUBHEADER": "Navigation zu den primären Komponenten.",
     "ACTIONS": {
       "OPEN_SEARCH": "Verwalten"
     },
@@ -421,11 +416,16 @@
         "SUBTITLE": "Prompt-Grundlage",
         "DESCRIPTION": "Steuern Sie wiederverwendbare Scaffold-Vorlagen und Basis-Systemprompts."
       },
+      "SKILL": {
+        "TITLE": "Skill",
+        "SUBTITLE": "Tool-Bibliothek",
+        "DESCRIPTION": "Verwalten Sie wiederverwendbare Skills, Anweisungen und Verhaltensbausteine."
+      },
       "PROVIDER": {
         "TITLE": "Provider",
         "SUBTITLE": "Modell-Backends",
         "DESCRIPTION": "Konfigurieren Sie externe Modell-Provider und deren Konnektivität."
-      },
+      },      
       "TOOL": {
         "TITLE": "Tools (MCP)",
         "SUBTITLE": "Ausführungserweiterungen",
