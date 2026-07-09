@@ -8,9 +8,14 @@ import { StoreModule } from '@ngrx/store'
 import { TranslateModule } from '@ngx-translate/core'
 import { AngularAcceleratorModule, providePortalDialogService } from '@onecx/angular-accelerator'
 import { PermissionService, PortalPageComponent } from '@onecx/angular-utils'
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
 import { DatePickerModule } from 'primeng/datepicker'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { SelectModule } from 'primeng/select'
+import { TabViewModule } from 'primeng/tabview'
 import { AgentDetailsComponent } from './pages/agent-details/agent-details.component'
 import { AgentDetailsEffects } from './pages/agent-details/agent-details.effects'
 import { TooltipModule } from 'primeng/tooltip'
@@ -26,6 +31,11 @@ import { routes } from './agent.routes'
   declarations: [AgentDetailsComponent, AgentSearchComponent],
   imports: [
     FloatLabelModule,
+    TabViewModule,
+    SelectModule,
+    MultiSelectModule,
+    AutoCompleteModule,
+    ButtonModule,
     InputTextModule,
     CommonModule,
     SharedModule,

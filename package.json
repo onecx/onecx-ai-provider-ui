@@ -10,7 +10,7 @@
     "lint": "nx lint",
     "lint:fix": "nx lint --fix",
     "test": "nx test",
-    "test:ci": "nx test --watch=false --browsers=ChromeHeadless --code-coverage",
+    "test:ci": "NO_COLOR=1 FORCE_COLOR=0 nx test --watch=false --browsers=ChromeHeadless --code-coverage",
     "prepare": "husky || true",
     "sonar": "npx sonarqube-scanner -Dproject.settings=sonar-local-project.properties",
     "postbuild": "mv \"$(find dist/onecx-ai-provider-ui -maxdepth 1 -type f -name 'styles.*.css' | head -n 1)\" dist/onecx-ai-provider-ui/styles.css"

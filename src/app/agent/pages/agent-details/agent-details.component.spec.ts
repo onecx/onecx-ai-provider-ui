@@ -14,6 +14,12 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { PrimeIcons } from 'primeng/api'
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { ButtonModule } from 'primeng/button'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { SelectModule } from 'primeng/select'
+import { TabViewModule } from 'primeng/tabview'
+import { AgentFilterKeyEnum, AgentGroupService } from 'src/app/shared/generated'
 
 import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
@@ -34,6 +40,20 @@ import { selectAgentDetailsViewModel } from './agent-details.selectors'
 import { AgentDetailsViewModel } from './agent-details.viewmodel'
 
 describe('AgentDetailsComponent', () => {
+  beforeAll(() => {
+    ;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = class {
+      observe() {
+        // no-op for jsdom
+      }
+      unobserve() {
+        // no-op for jsdom
+      }
+      disconnect() {
+        // no-op for jsdom
+      }
+    }
+  })
+
   const origAddEventListener = window.addEventListener
   const origPostMessage = window.postMessage
 
@@ -66,6 +86,10 @@ describe('AgentDetailsComponent', () => {
   let store: MockStore<Store>
   let breadcrumbService: BreadcrumbService
   let agentDetails: AgentDetailsHarness
+  const agentGroupService = {
+    findAgentGroupByCriteria: jest.fn(),
+    createAgentGroup: jest.fn()
+  }
 
   const mockActivatedRoute = {
     snapshot: {
@@ -75,6 +99,21 @@ describe('AgentDetailsComponent', () => {
   const baseAgentDetailsViewModel: AgentDetailsViewModel = {
     details: undefined,
     detailsLoadingIndicator: false,
+    providers: [],
+    providersLoadingIndicator: false,
+    providersLoaded: true,
+    models: [],
+    modelsLoadingIndicator: false,
+    modelsLoaded: true,
+    scaffolds: [],
+    scaffoldsLoadingIndicator: false,
+    scaffoldsLoaded: true,
+    tools: [],
+    toolsLoadingIndicator: false,
+    toolsLoaded: true,
+    groups: [],
+    groupsLoadingIndicator: false,
+    groupsLoaded: true,
     detailsLoaded: true,
     backNavigationPossible: true,
     editMode: true,
@@ -88,6 +127,11 @@ describe('AgentDetailsComponent', () => {
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,
+        TabViewModule,
+        SelectModule,
+        MultiSelectModule,
+        AutoCompleteModule,
+        ButtonModule,
         ReactiveFormsModule,
         TranslateTestingModule.withTranslations({
           de: require('./src/assets/i18n/de.json'),
@@ -112,7 +156,8 @@ describe('AgentDetailsComponent', () => {
         {
           provide: TranslationConnectionService,
           useValue: { init: jest.fn(), destroy: jest.fn() }
-        }
+        },
+        { provide: AgentGroupService, useValue: agentGroupService }
       ]
     }).compileComponents()
 
@@ -218,15 +263,16 @@ describe('AgentDetailsComponent', () => {
     // ACTION D11: Adjust form field names and values according to your implementation
     const agent = { id: '123' }
     const agentForm = {
-      tenantId: 'tenant-1',
       name: 'title',
-      modelId: 'model-1',
-      scaffoldId: 'scaffold-1',
-      runtimeConfigId: 'runtime-1',
+      description: 'description',
       additionalPrompt: 'prompt',
-      a2aEnabled: true,
-      version: 1,
-      status: 'LIVE' as any
+      provider: null,
+      model: null,
+      scaffold: null,
+      tools: [],
+      groups: [],
+      newGroupName: null,
+      filters: []
     }
 
     store.overrideSelector(selectAgentDetailsViewModel, {
@@ -245,7 +291,19 @@ describe('AgentDetailsComponent', () => {
     expect(saveAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
-      agentDetailsActions.saveButtonClicked({ details: { ...agent, ...agentForm } })
+      agentDetailsActions.saveButtonClicked({
+        details: {
+          id: '123',
+          name: 'title',
+          description: 'description',
+          additionalPrompt: 'prompt',
+          model: undefined,
+          scaffold: undefined,
+          tools: [],
+          groups: [],
+          filter: undefined
+        }
+      })
     )
   })
 
@@ -337,10 +395,12 @@ describe('AgentDetailsComponent', () => {
     const agent = {
       id: '123',
       name: 'title',
+      description: 'description',
       model: { id: 'model-1' },
       scaffold: { id: 'scaffold-1' },
+      filter: { key: AgentFilterKeyEnum.AppId, value: 'my-app' },
+      modificationCount: 7,
       additionalPrompt: 'prompt',
-      a2aEnabled: true,
       status: 'LIVE' as any
     }
 
@@ -358,12 +418,20 @@ describe('AgentDetailsComponent', () => {
     expect(component.formGroup.getRawValue()).toEqual(
       expect.objectContaining({
         name: 'title',
-        modelId: 'model-1',
-        scaffoldId: 'scaffold-1',
+        description: 'description',
         additionalPrompt: 'prompt',
-        a2aEnabled: true,
-        status: 'LIVE'
+        provider: null,
+        model: { id: 'model-1' },
+        scaffold: { id: 'scaffold-1' },
+        tools: [],
+        groups: [],
+        newGroupName: null
       })
     )
+
+    const translatedVersionLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.VERSION')
+    const pageHeader = await agentDetails.getHeader()
+    const versionDetailItem = await pageHeader.getObjectInfoByLabel(translatedVersionLabel)
+    expect(await versionDetailItem?.getValue()).toEqual('7')
   })
 })

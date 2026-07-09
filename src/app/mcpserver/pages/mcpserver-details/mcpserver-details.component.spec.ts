@@ -144,8 +144,8 @@ describe('MCPServerDetailsComponent', () => {
 
   it('should display translated headers', async () => {
     const pageHeader = await mcpserverDetails.getHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('MCPServer Details')
-    expect(await pageHeader.getSubheaderText()).toEqual('Display of MCPServer Details')
+    expect(await pageHeader.getHeaderText()).toEqual('Tools (MCP) Details')
+    expect(await pageHeader.getSubheaderText()).toEqual('Display Tools (MCP) details')
   })
 
   it('should have 2 inline actions', async () => {

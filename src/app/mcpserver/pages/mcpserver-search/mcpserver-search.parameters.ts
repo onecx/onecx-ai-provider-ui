@@ -1,4 +1,4 @@
-import { MCPServerSearchCriteria as _MCPServerSearchCriteria} from 'src/app/shared/generated'
+import { ToolSearchCriteria as _MCPServerSearchCriteria } from 'src/app/shared/generated'
 import { z, ZodTypeAny } from 'zod'
 
 export const mcpserverSearchCriteriasSchema = z.object({

@@ -19,16 +19,38 @@
       "ID": "ID",
       "TENANT_ID": "Tenant ID",
       "NAME": "Name",
+      "DESCRIPTION": "Beschreibung",
       "MODEL_ID": "Model ID",
+      "MODEL": "Modell",
+      "PROVIDER": "Provider",
       "SCAFFOLD_ID": "Scaffold ID",
+      "SCAFFOLD": "Scaffold",
       "RUNTIME_CONFIG_ID": "Runtime Config ID",
       "ADDITIONAL_PROMPT": "Zusätzlicher Prompt",
+      "ADDITIONAL_TOOLS": "Zusätzliche Tools",
       "A2A_ENABLED": "A2A aktiviert",
       "VERSION": "Version",
       "STATUS": "Status",
+      "LAST_CHANGED": "Zuletzt geändert",
       "CREATION_USER": "Erstellt von",
       "MODIFICATION_USER": "Geändert von",
       "MODIFICATION_COUNT": "Änderungszähler"
+    },
+    "TABS": {
+      "GENERAL": "Allgemein",
+      "ASSIGNMENTS": "Zuweisungen"
+    },
+    "ASSIGNMENTS": {
+      "ADD_FILTER": "Filter hinzufügen",
+      "REMOVE_FILTER": "Filter entfernen",
+      "GROUPS": "Gruppenzuweisungen",
+      "GROUPS_SECTION": "Gruppenzuweisungen",
+      "FILTERS_SECTION": "Filter",
+      "FILTER_VALUE": "Filterwert",
+      "NEW_GROUP_NAME": "Neuer Gruppenname",
+      "CREATE_GROUP": "Gruppe erstellen",
+      "CREATE_GROUP_SUCCESS": "Gruppe erfolgreich erstellt",
+      "CREATE_GROUP_FAILED": "Gruppe konnte nicht erstellt werden"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",
@@ -181,9 +203,9 @@
         "DESCRIPTION": "Konfigurieren Sie externe Modell-Provider und deren Konnektivität."
       },
       "TOOL": {
-        "TITLE": "Tool (MCP)",
+        "TITLE": "Tools (MCP)",
         "SUBTITLE": "Ausführungserweiterungen",
-        "DESCRIPTION": "Verwalten Sie MCP-Tool-Endpunkte und Integrationspunkte für die Ausführung."
+        "DESCRIPTION": "Verwalten Sie Tools (MCP)-Endpunkte und Integrationspunkte für die Ausführung."
       },
       "RUNTIME_CONFIG": {
         "TITLE": "Runtime Config",
@@ -198,8 +220,8 @@
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "BREADCRUMB": "Details",
-    "HEADER": "MCPServer Details",
-    "SUB_HEADER": "Anzeigen von MCPServer Details",
+    "HEADER": "Details zu Tools (MCP)",
+    "SUB_HEADER": "Anzeige der Details zu Tools (MCP)",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Details konnten nicht geladen werden."
     },
@@ -229,17 +251,17 @@
       "ERROR": "Speichern fehlgeschlagen"
     },
     "DELETE": {
-      "HEADER": "MCPServer löschen",
-      "MESSAGE": "Bitte bestätigen Sie, dass Sie dieses MCPServer löschen möchten.",
+      "HEADER": "Tools (MCP) löschen",
+      "MESSAGE": "Bitte bestätigen Sie, dass Sie diesen Tools (MCP)-Eintrag löschen möchten.",
       "CONFIRM": "Bestätigen",
       "CANCEL": "Abbrechen",
-      "SUCCESS": "MCPServer erfolgreich gelöscht",
-      "ERROR": "Konnte MCPServer nicht löschen"
+      "SUCCESS": "Tools (MCP)-Eintrag erfolgreich gelöscht",
+      "ERROR": "Konnte Tools (MCP)-Eintrag nicht löschen"
     }
   },
   "MCPSERVER_SEARCH": {
-    "HEADER": "MCPServer Suche",
-    "SUB_HEADER": "Suchen und Anzeigen von MCPServer",
+    "HEADER": "Tools (MCP)-Suche",
+    "SUB_HEADER": "Suchen und Anzeigen von Tools (MCP)",
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "EMPTY_RESULTS": "Keine Ergebnisse.",
     "BREADCRUMB": "Suche",
@@ -298,9 +320,9 @@
       "ID": "ID",
       "NAME": "Name",
       "DESCRIPTION": "Beschreibung",
-      "MCP_SERVER": "MCP Servers",
+      "MCP_SERVER": "Tools (MCP)",
       "PROVIDER": "Provider",
-      "MCP_SERVERS_PLACEHOLDER": "Wählen Sie MCP Server aus"
+      "MCP_SERVERS_PLACEHOLDER": "Wählen Sie Tools (MCP) aus"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",
@@ -344,7 +366,7 @@
       "DIALOG_CONFIRM": "Bestätigen",
       "DIALOG_CANCEL": "Abbrechen",
       "NAVIGATE_TO_PROVIDERS": "Provider",
-      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
+      "NAVIGATE_TO_MCP_SERVERS": "Tools (MCP)"
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Suchergebnisse konnten nicht geladen werden.",
