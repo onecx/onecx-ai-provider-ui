@@ -29,7 +29,7 @@ export const routes: Routes = [
   },
   {
     matcher: startsWith(''),
-    loadChildren: () => import('./dashboard/dashboard.module').then((mod) => mod.DashboardModule)
+    redirectTo: 'dashboard',
   },
   {
     matcher: startsWith('provider'),
