@@ -71,32 +71,17 @@
               </p-floatlabel>
 
               <div *ocxIfPermission="'PROVIDER#CHANGE_API_KEY'">
-                <div class="p-inputgroup">
-                  <p-floatlabel class="w-full" variant="on" controlErrorAnchor>
-                    <input
-                      pInputText
-                      [type]="vm.isApiKeyHidden ? 'password' : 'text'"
-                      id="Provider_detail_apiKey"
-                      class="w-full pt-3 pb-2 text-responsive"
-                      formControlName="apiKey"
-                    />
-                    <label for="Provider_detail_apiKey">{{ 'PROVIDER_DETAILS.FORM.APIKEY' | translate }} </label>
-                  </p-floatlabel>
-                  <a
-                    class="p-inputgroup-addon bg-primary pseudo-button pi pi-eye"
-                    [ngClass]="{
-                      'pi-eye': vm.isApiKeyHidden,
-                      'pi-eye-slash': !vm.isApiKeyHidden,
-                      'cursor-pointer': vm.editMode,
-                      'p-disabled': !vm.editMode
-                    }"
-                    tabindex="0"
-                    (click)="toggleApiKeyVisibility()"
-                    (keydown.enter)="toggleApiKeyVisibility()"
-                    [attr.aria-label]="'VIEW_API_KEY' | translate"
-                  >
-                  </a>
-                </div>
+                <p-floatlabel variant="on" controlErrorAnchor>
+                  <p-password
+                    id="Provider_detail_apiKey"
+                    formControlName="apiKey"
+                    [toggleMask]="true"
+                    [feedback]="false"
+                    styleClass="w-full"
+                    inputStyleClass="w-full pt-3 pb-2 text-responsive"
+                  ></p-password>
+                  <label for="Provider_detail_apiKey">{{ 'PROVIDER_DETAILS.FORM.APIKEY' | translate }}</label>
+                </p-floatlabel>
               </div>
 
               <p-floatlabel variant="on" controlErrorAnchor>

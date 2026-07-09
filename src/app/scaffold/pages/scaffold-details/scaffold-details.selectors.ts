@@ -55,7 +55,7 @@ export const selectScaffoldDetailsViewModel = createSelector(
       tools: Tool[]
       toolsLoadingIndicator: boolean
       toolsLoaded: boolean
-    }
+    },
   ): ScaffoldDetailsViewModel => ({
     details,
     detailsLoadingIndicator,

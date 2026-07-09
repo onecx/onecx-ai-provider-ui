@@ -31,7 +31,7 @@ describe('ScaffoldDetails selectors', () => {
           detailsLoaded,
           editMode,
           isSubmitting,
-          collections
+          collections,
         )
       ).toEqual({
         details,
@@ -40,7 +40,10 @@ describe('ScaffoldDetails selectors', () => {
         detailsLoaded,
         editMode,
         isSubmitting,
-        ...collections
+        ...collections,
+        skills,
+        skillsLoadingIndicator,
+        skillsLoaded
       })
     })
   })

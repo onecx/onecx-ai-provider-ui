@@ -215,7 +215,7 @@ export class ScaffoldDetailsEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(scaffoldDetailsActions.deleteScaffoldCancelled())
         }
-        if (!itemToDelete?.id) {
+        if (!itemToDelete || !itemToDelete.id) {
           throw new Error('Item to delete not found!')
         }
 
@@ -247,7 +247,7 @@ export class ScaffoldDetailsEffects {
         ofType(scaffoldDetailsActions.deleteScaffoldSucceeded),
         concatLatestFrom(() => this.store.select(selectUrl)),
         tap(([, currentUrl]) => {
-          const urlTree = this.router.parseUrl(currentUrl)
+          const urlTree = this.router.parseUrl(currentUrl as string)
           urlTree.queryParams = {}
           urlTree.fragment = null
 

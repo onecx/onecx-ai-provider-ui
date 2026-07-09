@@ -1,9 +1,13 @@
+import { CommonModule } from '@angular/common'
 import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
+import { TranslateModule } from '@ngx-translate/core'
 import { getUTCDateWithoutTimezoneIssues, isValidDate } from '@onecx/accelerator'
 import {
   Action,
+  AngularAcceleratorModule,
   BreadcrumbService,
   DataSortDirection,
   DataTableColumn,
@@ -12,22 +16,18 @@ import {
   ExportDataService,
   InteractiveDataViewComponentState,
   RowListGridData,
-  SearchHeaderComponentState,
-  AngularAcceleratorModule
+  SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 import { PrimeIcons } from 'primeng/api'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
 import { map, Observable } from 'rxjs'
 import { MCPServerSearchActions } from './mcpserver-search.actions'
 import { MCPServerSearchCriteria, mcpserverSearchCriteriasSchema } from './mcpserver-search.parameters'
 import { selectMCPServerSearchViewModel } from './mcpserver-search.selectors'
 import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
-import { TranslateModule } from '@ngx-translate/core'
-import { CommonModule } from '@angular/common'
-import { PortalPageComponent } from '@onecx/angular-utils'
-import { LetDirective } from '@ngrx/component'
-import { TooltipModule } from 'primeng/tooltip'
-import { InputTextModule } from 'primeng/inputtext'
-import { FloatLabelModule } from 'primeng/floatlabel'
 
 @Component({
   selector: 'app-mcpserver-search',
@@ -56,6 +56,12 @@ export class MCPServerSearchComponent implements OnInit {
   headerActions$: Observable<Action[]> = this.viewModel$.pipe(
     map((vm) => {
       const actions: Action[] = [
+        {
+          labelKey: 'MCPSERVER_CREATE_UPDATE.ACTION.CREATE',
+          icon: PrimeIcons.PLUS,
+          show: 'always',
+          actionCallback: () => this.create()
+        },
         {
           labelKey: 'MCPSERVER_SEARCH.HEADER_ACTIONS.EXPORT_ALL',
           icon: PrimeIcons.DOWNLOAD,
@@ -142,6 +148,14 @@ export class MCPServerSearchComponent implements OnInit {
 
   details({ id }: RowListGridData) {
     this.store.dispatch(MCPServerSearchActions.detailsButtonClicked({ id }))
+  }
+
+  create() {
+    this.store.dispatch(MCPServerSearchActions.createMcpserverButtonClicked())
+  }
+
+  edit({ id }: RowListGridData) {
+    this.store.dispatch(MCPServerSearchActions.editMcpserverButtonClicked({ id }))
   }
 
   resetSearch() {

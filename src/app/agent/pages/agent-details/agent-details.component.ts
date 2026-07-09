@@ -161,6 +161,10 @@ export class AgentDetailsComponent implements OnInit {
       }
       if (vm.editMode) {
         this.formGroup.enable()
+        const provider = this.formGroup.get('provider')?.value as Provider | null
+        if (!provider) {
+          this.formGroup.get('model')?.disable()
+        }
       } else {
         this.formGroup.disable()
       }
@@ -245,8 +249,14 @@ export class AgentDetailsComponent implements OnInit {
   onProviderChanged() {
     const selectedProvider = this.formGroup.get('provider')?.value as Provider | null
     const selectedModel = this.formGroup.get('model')?.value as Model | null
-    if (selectedProvider && selectedModel && selectedModel.provider?.id !== selectedProvider.id) {
+    if (selectedProvider) {
+      this.formGroup.get('model')?.enable()
+      if (selectedModel && selectedModel.provider?.id !== selectedProvider.id) {
+        this.formGroup.get('model')?.setValue(null)
+      }
+    } else {
       this.formGroup.get('model')?.setValue(null)
+      this.formGroup.get('model')?.disable()
     }
   }
 
@@ -262,7 +272,7 @@ export class AgentDetailsComponent implements OnInit {
   getFilteredModels(allModels: Model[]): Model[] {
     const selectedProvider = this.formGroup.get('provider')?.value as Provider | null
     if (!selectedProvider?.id) {
-      return allModels
+      return []
     }
     return allModels.filter((model) => model.provider?.id === selectedProvider.id)
   }

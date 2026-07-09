@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common'
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { PasswordModule } from 'primeng/password'
 import { LetDirective } from '@ngrx/component'
 
 @Component({
@@ -25,6 +26,7 @@ import { LetDirective } from '@ngrx/component'
     LetDirective,
     FloatLabelModule,
     InputTextModule,
+    PasswordModule,
     TranslateModule,
     ReactiveFormsModule,
     PortalPageComponent

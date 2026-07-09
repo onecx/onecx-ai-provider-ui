@@ -1,4 +1,31 @@
 {
+  "MCPSERVER_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Erstellen"
+    },
+    "CREATE": {
+      "HEADER": "Neues Tool (MCP) erstellen",
+      "SUCCESS": "Erstellung erfolgreich",
+      "ERROR": "Erstellung fehlgeschlagen",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "UPDATE": {
+      "SUCCESS": "Aktualisierung erfolgreich",
+      "ERROR": "Aktualisierung fehlgeschlagen",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      },
+      "HEADER": "Tool (MCP) bearbeiten"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "DESCRIPTION": "Beschreibung"
+    }
+  },
  "SCAFFOLD_DETAILS": {
     "CHANGE_ME": "ACTION D3: Adjust translation keys for details header",
     "HEADER": "Scaffold Details",
@@ -725,6 +752,7 @@
       "LLMURL": "LlmUrl",
       "TYPE": "Typ",
       "AUTH_MODE": "Auth-Modus",
+      "VIEW_API_KEY": "API-Schlüssel anzeigen",
       "APIKEY": "API Key"
     }
   },

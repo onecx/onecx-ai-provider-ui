@@ -7,22 +7,27 @@ import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { TranslateModule } from '@ngx-translate/core'
 import { AngularAcceleratorModule, providePortalDialogService } from '@onecx/angular-accelerator'
-import { DatePickerModule } from 'primeng/datepicker'
-import { TooltipModule } from 'primeng/tooltip'
-import { MultiSelectModule } from 'primeng/multiselect'
-import { SharedModule } from 'src/app/shared/shared.module'
 import { providePermissionService } from '@onecx/angular-utils'
+import { DatePickerModule } from 'primeng/datepicker'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { TooltipModule } from 'primeng/tooltip'
+import { SharedModule } from 'src/app/shared/shared.module'
 import { mcpserverFeature } from './mcpserver.reducers'
 import { routes } from './mcpserver.routes'
 import { MCPServerDetailsComponent } from './pages/mcpserver-details/mcpserver-details.component'
-import { MCPServerSearchComponent } from './pages/mcpserver-search/mcpserver-search.component'
 import { MCPServerDetailsEffects } from './pages/mcpserver-details/mcpserver-details.effects'
+import { McpserverCreateUpdateComponent } from './pages/mcpserver-search/dialogs/mcpserver-create-update/mcpserver-create-update.component'
+import { MCPServerSearchComponent } from './pages/mcpserver-search/mcpserver-search.component'
 import { MCPServerSearchEffects } from './pages/mcpserver-search/mcpserver-search.effects'
 
 @NgModule({
   providers: [providePortalDialogService(), ...providePermissionService()],
-  declarations: [],
+  declarations: [McpserverCreateUpdateComponent],
   imports: [
+    FloatLabelModule,
+    InputTextModule,
     CommonModule,
     SharedModule,
     LetDirective,
@@ -37,7 +42,7 @@ import { MCPServerSearchEffects } from './pages/mcpserver-search/mcpserver-searc
     MCPServerSearchComponent,
     StoreModule.forFeature(mcpserverFeature),
     EffectsModule.forFeature([MCPServerDetailsEffects, MCPServerSearchEffects]),
-    TranslateModule,
+    TranslateModule
   ]
 })
 export class MCPServerModule {}

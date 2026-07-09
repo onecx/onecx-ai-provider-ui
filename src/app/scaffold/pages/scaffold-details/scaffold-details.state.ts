@@ -6,11 +6,9 @@ export interface ScaffoldDetailsState {
   detailsLoaded: boolean
   editMode: boolean
   isSubmitting: boolean
-
   skills: Skill[]
   skillsLoadingIndicator: boolean
   skillsLoaded: boolean
-
   tools: Tool[]
   toolsLoadingIndicator: boolean
   toolsLoaded: boolean
