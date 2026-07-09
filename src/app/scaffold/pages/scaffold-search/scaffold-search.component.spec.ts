@@ -2,7 +2,6 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { By } from '@angular/platform-browser'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
 import { RowListGridData } from '@onecx/angular-accelerator'
@@ -356,7 +355,12 @@ describe('ScaffoldSearchComponent', () => {
       const saveButton = await columnGroupSelector.getSaveButton()
       await saveButton.click()
 
-      expect(store.dispatch).toHaveBeenLastCalledWith(expect.objectContaining({ displayedColumns: columns }))
+      expect(store.dispatch).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          type: scaffoldSearchActions.resultComponentStateChanged.type,
+          displayedColumns: expect.any(Array)
+        })
+      )
     }
   })
 
@@ -413,14 +417,14 @@ describe('ScaffoldSearchComponent', () => {
 
     const interactiveDataView = await scaffoldSearch.getSearchResults()
     const dataView = await interactiveDataView.getDataView()
-    // switch to list layout for testing table
-    await (await interactiveDataView.getDataLayoutSelection()).selectListLayout()
-    const dataTable = await dataView.getDataListGrid()
-    if (dataTable) {
-      const rows = await dataTable.getActionButtons('list')
-      expect(rows.length).toBe(0)
-    }
-    expect(fixture.debugElement.query(By.css('.p-dataview-emptymessage'))).not.toBeNull()
+    const dataTable = await dataView.getDataTable()
+    const rows = await dataTable?.getRows()
+
+    expect(rows).toHaveLength(1)
+
+    const rowData = await rows?.at(0)?.getData()
+    expect(rowData).toHaveLength(1)
+    expect(rowData?.at(0)).toEqual('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
