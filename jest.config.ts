@@ -25,6 +25,7 @@ const config: Config = {
   coverageDirectory: '<rootDir>/reports/coverage/',
   coveragePathIgnorePatterns: ['src/app/shared/generated'],
   coverageReporters: ['json', 'lcov', 'text', 'text-summary', 'html'],
+  testTimeout: 15000,
   testResultsProcessor: 'jest-sonar-reporter',
   testPathIgnorePatterns: ['<rootDir>/src/app/shared/generated'],
   reporters: [
