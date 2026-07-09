@@ -47,6 +47,11 @@
         "LABEL": "Source Product",
         "ARIA_LABEL": "Source Product",
         "TOOLTIP": "Source Product"
+      },
+      "TENANT_ID": {
+        "LABEL": "TENANT-ID",
+        "ARIA_LABEL": "TENANT-ID",
+        "TOOLTIP": "TENANT-ID"
       }
     }
   },
