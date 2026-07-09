@@ -2,7 +2,6 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { By } from '@angular/platform-browser'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
 import { RowListGridData } from '@onecx/angular-accelerator'
@@ -413,15 +412,8 @@ describe('AgentSearchComponent', () => {
     store.refreshState()
 
     const interactiveDataView = await agentSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    // switch to list layout for testing table
-    await (await interactiveDataView.getDataLayoutSelection()).selectListLayout()
-    const dataTable = await dataView.getDataListGrid()
-    if (dataTable) {
-      const rows = await dataTable.getActionButtons('list')
-      expect(rows).toHaveLength(0)
-    }
-    expect(fixture.debugElement.query(By.css('.p-dataview-emptymessage'))).not.toBeNull()
+    expect(interactiveDataView).toBeTruthy()
+    expect(fixture.nativeElement.textContent).toContain('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {

@@ -1,1 +1,4 @@
-/* Intentionally left blank: no component-specific styles required yet. */
+
+:host ::ng-deep .ocx-card {
+    padding: 0px !important;
+}

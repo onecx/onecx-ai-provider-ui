@@ -8,7 +8,7 @@ import { DialogState, PortalDialogService } from '@onecx/angular-accelerator'
 import { MonoTypeOperatorFunction, ReplaySubject, map, of, throwError } from 'rxjs'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParams, selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { MCPServer, McpServerService } from 'src/app/shared/generated'
+import { Tool as MCPServer, ToolService } from 'src/app/shared/generated'
 import { MCPServerDetailsActions } from './mcpserver-details.actions'
 import { MCPServerDetailsComponent } from './mcpserver-details.component'
 import { MCPServerDetailsEffects } from './mcpserver-details.effects'
@@ -34,7 +34,7 @@ describe('MCPServerDetailsEffects', () => {
   let actions$: ReplaySubject<any>
   let effects: MCPServerDetailsEffects
   let store: MockStore
-  let mcpService: jest.Mocked<McpServerService>
+  let mcpService: jest.Mocked<ToolService>
   let router: jest.Mocked<Router>
   let portalDialogService: jest.Mocked<PortalDialogService>
 
@@ -51,10 +51,10 @@ describe('MCPServerDetailsEffects', () => {
     actions$ = new ReplaySubject(1)
 
     mcpService = {
-      getMCPServerById: jest.fn(),
-      updateMCPServerById: jest.fn(),
-      deleteMCPServerById: jest.fn()
-    } as unknown as jest.Mocked<McpServerService>
+      getToolById: jest.fn(),
+      updateToolById: jest.fn(),
+      deleteToolById: jest.fn()
+    } as unknown as jest.Mocked<ToolService>
 
     router = {
       navigate: jest.fn().mockResolvedValue(true),
@@ -117,7 +117,7 @@ describe('MCPServerDetailsEffects', () => {
         MCPServerDetailsEffects,
         provideMockActions(() => actions$),
         provideMockStore({ initialState: {} }),
-        { provide: McpServerService, useValue: mcpService },
+        { provide: ToolService, useValue: mcpService },
         { provide: Router, useValue: router },
         { provide: PortalDialogService, useValue: portalDialogService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
@@ -174,14 +174,14 @@ describe('MCPServerDetailsEffects', () => {
   })
 
   describe('loadMCPServerById$', () => {
-    it('should call getMCPServerById with empty string when id is missing', (done) => {
+    it('should call getToolById with empty string when id is missing', (done) => {
       const resource = { id: '1', apiKey: 'k' } as MCPServer
-      mcpService.getMCPServerById.mockReturnValue(of({ ...resource }) as any)
+      mcpService.getToolById.mockReturnValue(of({ ...resource }) as any)
 
       actions$.next(MCPServerDetailsActions.navigatedToDetailsPage({ id: undefined }))
 
       effects.loadMCPServerById$.subscribe((action) => {
-        expect(mcpService.getMCPServerById).toHaveBeenCalledWith('')
+        expect(mcpService.getToolById).toHaveBeenCalledWith('')
         expect(action).toEqual(MCPServerDetailsActions.mCPServerDetailsReceived({ details: resource }))
         done()
       })
@@ -189,7 +189,7 @@ describe('MCPServerDetailsEffects', () => {
 
     it('should dispatch mCPServerDetailsReceived on success', (done) => {
       const resource = { id: '1', apiKey: 'k' } as MCPServer
-      mcpService.getMCPServerById.mockReturnValue(of({ ...resource }) as any)
+      mcpService.getToolById.mockReturnValue(of({ ...resource }) as any)
 
       actions$.next(MCPServerDetailsActions.navigatedToDetailsPage({ id: '1' }))
 
@@ -201,7 +201,7 @@ describe('MCPServerDetailsEffects', () => {
 
     it('should dispatch mCPServerDetailsLoadingFailed on error', (done) => {
       const err = 'failed'
-      mcpService.getMCPServerById.mockReturnValue(throwError(() => err) as any)
+      mcpService.getToolById.mockReturnValue(throwError(() => err) as any)
 
       actions$.next(MCPServerDetailsActions.navigatedToDetailsPage({ id: '1' }))
 
@@ -270,13 +270,13 @@ describe('MCPServerDetailsEffects', () => {
       store.overrideSelector(mcpserverDetailsSelectors.selectDetails, details)
       store.refreshState()
 
-      mcpService.updateMCPServerById.mockReturnValue(of({}) as any)
+      mcpService.updateToolById.mockReturnValue(of({}) as any)
 
       const newDetails = { apiKey: 'new' }
       actions$.next(MCPServerDetailsActions.saveButtonClicked({ details: newDetails as any }))
 
       effects.saveButtonClicked$.subscribe((action) => {
-        expect(mcpService.updateMCPServerById).toHaveBeenCalledWith('1', { ...details, ...newDetails })
+        expect(mcpService.updateToolById).toHaveBeenCalledWith('1', { ...details, ...newDetails })
         expect(successSpy).toHaveBeenCalledWith({ summaryKey: 'MCPSERVER_DETAILS.UPDATE.SUCCESS' })
         expect(action).toEqual(MCPServerDetailsActions.updateMCPServerSucceeded())
         done()
@@ -290,7 +290,7 @@ describe('MCPServerDetailsEffects', () => {
       store.refreshState()
 
       const err = 'update failed'
-      mcpService.updateMCPServerById.mockReturnValue(throwError(() => err) as any)
+      mcpService.updateToolById.mockReturnValue(throwError(() => err) as any)
 
       actions$.next(MCPServerDetailsActions.saveButtonClicked({ details: { apiKey: 'new' } as any }))
 
@@ -338,12 +338,12 @@ describe('MCPServerDetailsEffects', () => {
       store.overrideSelector(mcpserverDetailsSelectors.selectDetails, { id: '2' } as any)
       store.refreshState()
 
-      mcpService.deleteMCPServerById.mockReturnValue(of({}) as any)
+      mcpService.deleteToolById.mockReturnValue(of({}) as any)
 
       actions$.next(MCPServerDetailsActions.deleteButtonClicked())
 
       effects.deleteButtonClicked$.subscribe((action) => {
-        expect(mcpService.deleteMCPServerById).toHaveBeenCalledWith('2')
+        expect(mcpService.deleteToolById).toHaveBeenCalledWith('2')
         expect(successSpy).toHaveBeenCalledWith({ summaryKey: 'MCPSERVER_DETAILS.DELETE.SUCCESS' })
         expect(action).toEqual(MCPServerDetailsActions.deleteMCPServerSucceeded())
         done()
@@ -357,7 +357,7 @@ describe('MCPServerDetailsEffects', () => {
       store.refreshState()
 
       const err = 'delete failed'
-      mcpService.deleteMCPServerById.mockReturnValue(throwError(() => err) as any)
+      mcpService.deleteToolById.mockReturnValue(throwError(() => err) as any)
 
       actions$.next(MCPServerDetailsActions.deleteButtonClicked())
 

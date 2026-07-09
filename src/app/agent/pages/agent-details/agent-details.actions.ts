@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
-import { Agent } from 'src/app/shared/generated'
+import { Agent, AgentGroup, Model, Provider, Scaffold, Tool } from 'src/app/shared/generated'
 
 export const agentDetailsActions = createActionGroup({
   source: 'AgentDetails',
@@ -8,6 +8,19 @@ export const agentDetailsActions = createActionGroup({
     'Agent details received': props<{ details: Agent | undefined }>(),
     'Agent details loading failed': props<{ error: string | null }>(),
     'Agent details loading failed missing id': props<{ error: string | null }>(),
+    'Agent providers received': props<{ providers: Provider[] }>(),
+    'Agent providers loading failed': props<{ error: string | null }>(),
+    'Agent models received': props<{ models: Model[] }>(),
+    'Agent models loading failed': props<{ error: string | null }>(),
+    'Agent scaffolds received': props<{ scaffolds: Scaffold[] }>(),
+    'Agent scaffolds loading failed': props<{ error: string | null }>(),
+    'Agent tools received': props<{ tools: Tool[] }>(),
+    'Agent tools loading failed': props<{ error: string | null }>(),
+    'Agent groups received': props<{ groups: AgentGroup[] }>(),
+    'Agent groups loading failed': props<{ error: string | null }>(),
+    'Create group in place clicked': props<{ name: string }>(),
+    'Create group in place succeeded': props<{ group: AgentGroup }>(),
+    'Create group in place failed': props<{ error: string | null }>(),
     'Edit mode set': props<{ editMode: boolean }>(),
     'Update Agent cancelled': emptyProps(),
     'Update Agent succeeded': props<{ details: Agent | undefined }>(),
