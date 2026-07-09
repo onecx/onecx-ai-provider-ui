@@ -1,4 +1,55 @@
 {
+  "SCAFFOLD_DETAILS": {
+    "CHANGE_ME": "ACTION D3: Adjust translation keys for details header",
+    "HEADER": "Scaffold Details",
+    "SUB_HEADER": "Display of Scaffold Details",
+    "HELP_ARTICLE_ID": "Help Article",
+    "BREADCRUMB": "Details",
+    "ARIA_LABEL": "Page Header with Details",
+    "ERROR_MESSAGES": {
+      "DETAILS_LOADING_FAILED": "Loading details failed."
+    },
+    "GENERAL": {
+      "BACK": "Back",
+      "MORE": "More",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "CANCEL": "Cancel",
+      "SAVE": "Save"
+    },
+    "FORM": {
+      "FORM_FIELDS": "ACTION D3: Adjust translation keys for the form",
+      "NAME": "Name",
+      "SYSTEM_PROMPT": "System Prompt",
+      "SOURCE": "Source",
+      "SOURCE_PRODUCT": "Source Product",
+      "SKILLS": "Skills"
+    },
+    "CANCEL": {
+      "HEADER": "Confirm cancellation",
+      "MESSAGE": "Please confirm that you want to cancel editing and reset changes.",
+      "CONFIRM": "Confirm"
+    },
+    "UPDATE": {
+      "CHANGE_ME": "ACTION D3: Adjust translation keys for update dialog",
+      "HEADER": "Update Scaffold",
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "DELETE": {
+      "CHANGE_ME": "ACTION D3: Adjust translation keys for delete dialog",
+      "HEADER": "Delete Scaffold",
+      "MESSAGE": "Please confirm that you want to delete this Scaffold item.",
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel",
+      "SUCCESS": "Scaffold deleted successfully",
+      "ERROR": "Could not delete Scaffold"
+    }
+  },
   "SCAFFOLD_SEARCH": {
     "HEADER": "Scaffold Search",
     "SUB_HEADER": "Searching and displaying of Scaffolds",
@@ -47,11 +98,6 @@
         "LABEL": "Source Product",
         "ARIA_LABEL": "Source Product",
         "TOOLTIP": "Source Product"
-      },
-      "TENANT_ID": {
-        "LABEL": "TENANT-ID",
-        "ARIA_LABEL": "TENANT-ID",
-        "TOOLTIP": "TENANT-ID"
       }
     }
   },

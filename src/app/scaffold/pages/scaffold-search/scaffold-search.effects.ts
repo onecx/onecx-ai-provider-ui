@@ -7,6 +7,7 @@ import { ExportDataService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
 import { catchError, map, of, switchMap, tap } from 'rxjs'
+import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { ScaffoldService } from '../../../shared/generated'
 
 import { Injectable, inject } from '@angular/core'
@@ -47,6 +48,22 @@ export class ScaffoldSearchEffects {
               onSameUrlNavigation: 'ignore'
             })
           }
+        })
+      )
+    },
+    { dispatch: false }
+  )
+
+  navigateToOrderDetailsPage$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(scaffoldSearchActions.detailsButtonClicked),
+        concatLatestFrom(() => this.store.select(selectUrl)),
+        tap(([action, currentUrl]) => {
+          const urlTree = this.router.parseUrl(currentUrl as string)
+          urlTree.queryParams = {}
+          urlTree.fragment = null
+          this.router.navigate([urlTree.toString(), 'details', action.id])
         })
       )
     },

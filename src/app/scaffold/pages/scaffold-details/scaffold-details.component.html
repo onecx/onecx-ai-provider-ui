@@ -1,0 +1,88 @@
+<ocx-portal-page
+  permission="SCAFFOLD#VIEW"
+  [helpArticleId]="'SCAFFOLD_DETAILS.HELP_ARTICLE_ID' | translate"
+  *ngrxLet="viewModel$; let vm"
+>
+  @if (vm.detailsLoadingIndicator) {
+  <ocx-loading-indicator> </ocx-loading-indicator>
+  } @if (!vm.detailsLoaded && !vm.detailsLoadingIndicator) {
+  <ocx-error> </ocx-error>
+  } @if (vm.detailsLoaded && !vm.detailsLoadingIndicator) {
+  <div>
+    <ocx-page-header
+      [header]="'SCAFFOLD_DETAILS.HEADER' | translate"
+      [subheader]="'SCAFFOLD_DETAILS.SUB_HEADER' | translate"
+      [attr.aria-label]="'SCAFFOLD_DETAILS.HEADER' | translate"
+      [objectDetails]="(objectDetails$ | async) ?? []"
+      [actions]="(headerActions$ | async) ?? []"
+      [disableDefaultActions]="true"
+      [manualBreadcrumbs]="true"
+    >
+    </ocx-page-header>
+    <ocx-content role="main" [attr.aria-label]="'SCAFFOLD_DETAILS.ARIA_LABEL' | translate">
+      <div class="surface-section mt-3 mb-1 mx-3">
+        <form [formGroup]="formGroup" class="flex flex-column gap-4" errorTailor>
+          <!-- ACTION D2: Add form fields here -->
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="scaffold_detail_name"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="name"
+              required
+              aria-required="true"
+            />
+            <label class="ocx-required-label" for="scaffold_detail_name">
+              {{ 'SCAFFOLD_DETAILS.FORM.NAME' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <textarea
+              pInputText
+              id="scaffold_detail_system_prompt"
+              class="w-full pt-3 pb-2 text-responsive"
+              rows="4"
+              formControlName="systemPrompt"
+            ></textarea>
+            <label for="scaffold_detail_system_prompt">
+              {{ 'SCAFFOLD_DETAILS.FORM.SYSTEM_PROMPT' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <input
+              pInputText
+              type="text"
+              id="scaffold_detail_source_product"
+              class="w-full pt-3 pb-2 text-responsive"
+              formControlName="sourceProduct"
+            />
+            <label for="scaffold_detail_source_product">
+              {{ 'SCAFFOLD_DETAILS.FORM.SOURCE_PRODUCT' | translate }}
+            </label>
+          </p-floatlabel>
+
+          <p-floatlabel variant="on" controlErrorAnchor>
+            <p-multiSelect
+              id="scaffold_detail_skills"
+              formControlName="skills"
+              [options]="vm.skills"
+              optionLabel="name"
+              dataKey="id"
+              [filter]="true"
+              [defaultLabel]="'SCAFFOLD_DETAILS.FORM.SKILLS' | translate"
+              class="w-full"
+            >
+            </p-multiSelect>
+            <label for="scaffold_detail_skills">
+              {{ 'SCAFFOLD_DETAILS.FORM.SKILLS' | translate }}
+            </label>
+          </p-floatlabel>
+        </form>
+      </div>
+    </ocx-content>
+  </div>
+  }
+</ocx-portal-page>

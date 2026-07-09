@@ -15,8 +15,8 @@ export const scaffoldSearchColumns: DataTableColumn[] = [
   },
   {
     columnType: ColumnType.STRING,
-    id: 'tenantId',
-    nameKey: 'SCAFFOLD_SEARCH.RESULTS.TENANT_ID',
+    id: 'source',
+    nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
     filterable: true,
     sortable: true,
     predefinedGroupKeys: [

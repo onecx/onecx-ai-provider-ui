@@ -16,7 +16,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { ScaffoldAPIService, SearchScaffoldResponse } from 'src/app/shared/generated'
+import { ScaffoldPageResult, ScaffoldService } from 'src/app/shared/generated'
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchEffects } from './scaffold-search.effects'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
@@ -40,7 +40,7 @@ describe('ScaffoldSearchEffects', () => {
   let store: MockStore<Store>
   let router: jest.Mocked<Router>
   let route: ActivatedRoute
-  let scaffoldService: jest.Mocked<ScaffoldAPIService>
+  let scaffoldService: jest.Mocked<ScaffoldService>
   let portalDialogService: jest.Mocked<PortalDialogService>
   let messageService: jest.Mocked<PortalMessageService>
   let exportDataService: jest.Mocked<ExportDataService>
@@ -54,8 +54,8 @@ describe('ScaffoldSearchEffects', () => {
       createScaffold: jest.fn(),
       updateScaffoldById: jest.fn(),
       deleteScaffoldById: jest.fn(),
-      searchScaffoldItems: jest.fn()
-    } as unknown as jest.Mocked<ScaffoldAPIService>
+      findScaffoldByCriteria: jest.fn()
+    } as unknown as jest.Mocked<ScaffoldService>
 
     router = {
       navigate: jest.fn().mockReturnValue(Promise.resolve(true)),
@@ -91,7 +91,7 @@ describe('ScaffoldSearchEffects', () => {
         provideMockActions(() => actions$),
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
-        { provide: ScaffoldAPIService, useValue: scaffoldService },
+        { provide: ScaffoldService, useValue: scaffoldService },
         { provide: PortalDialogService, useValue: portalDialogService },
         { provide: PortalMessageService, useValue: messageService },
         { provide: ExportDataService, useValue: exportDataService }
@@ -159,7 +159,7 @@ describe('ScaffoldSearchEffects', () => {
       store.overrideSelector(scaffoldSearchSelectors.selectCriteria, mockCriteria)
       store.refreshState()
 
-      scaffoldService.searchScaffoldItems.mockReturnValue(
+      scaffoldService.findScaffoldByCriteria.mockReturnValue(
         of({
           stream: [{ id: '1', name: 'Item 1' }],
           content: [{ id: '1', name: 'Item 1', imagePath: '' }],
@@ -167,13 +167,13 @@ describe('ScaffoldSearchEffects', () => {
           number: 0,
           totalElements: 1,
           totalPages: 1
-        } as unknown as HttpEvent<SearchScaffoldResponse>)
+        } as unknown as HttpEvent<ScaffoldPageResult>)
       )
     })
 
     it('should dispatch resultsLoadingFailed on search error', (done) => {
       const mockError = 'Search failed'
-      scaffoldService.searchScaffoldItems.mockReturnValueOnce(throwError(() => mockError))
+      scaffoldService.findScaffoldByCriteria.mockReturnValueOnce(throwError(() => mockError))
 
       effects
         .performSearch(mockCriteria)
@@ -187,7 +187,7 @@ describe('ScaffoldSearchEffects', () => {
 
     it('should convert Date objects in search criteria before calling scaffoldService', (done) => {
       const criteriaWithDate = { ...mockCriteria, startDate: new Date('2023-01-01'), endDate: new Date('2023-12-31') }
-      const searchSpy = jest.spyOn(scaffoldService, 'searchScaffoldItems')
+      const searchSpy = jest.spyOn(scaffoldService, 'findScaffoldByCriteria')
 
       effects
         .performSearch(criteriaWithDate)
@@ -306,6 +306,50 @@ describe('ScaffoldSearchEffects', () => {
       })
 
       actions$.next(scaffoldSearchActions.scaffoldSearchResultsLoadingFailed({ error: 'Test error' }))
+    })
+  })
+
+  describe('navigateToOrderDetailsPage$', () => {
+    it('should navigate to details page with correct URL structure', (done) => {
+      const testId = 'test-123'
+      const navigateSpy = router
+        ? jest.spyOn(router, 'navigate')
+        : // eslint-disable-next-line @typescript-eslint/no-empty-function
+          { mock: { calls: [] }, toHaveBeenCalledWith: () => {} }
+
+      effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
+        if (router) {
+          expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
+        }
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.detailsButtonClicked({ id: testId }))
+    })
+
+    it('should dynamically clear query params and fragment from URL on navigateToOrderDetailsPage$', (done) => {
+      const testId = 'test-456'
+      const mockUrlTree = {
+        toString: jest.fn(() => '/search'),
+        queryParams: { a: 1 },
+        fragment: 'frag'
+      }
+      ;(router.parseUrl as jest.Mock).mockReturnValue(mockUrlTree)
+
+      const emissions: { queryParams: unknown; fragment: unknown }[] = []
+      emissions.push({ queryParams: { ...mockUrlTree.queryParams }, fragment: mockUrlTree.fragment })
+
+      effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
+        emissions.push({ queryParams: { ...mockUrlTree.queryParams }, fragment: mockUrlTree.fragment })
+
+        expect(emissions).toEqual([
+          { queryParams: { a: 1 }, fragment: 'frag' },
+          { queryParams: {}, fragment: null }
+        ])
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.detailsButtonClicked({ id: testId }))
     })
   })
 

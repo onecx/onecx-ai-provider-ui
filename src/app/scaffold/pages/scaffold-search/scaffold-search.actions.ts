@@ -10,6 +10,7 @@ import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
 export const scaffoldSearchActions = createActionGroup({
   source: 'ScaffoldSearch',
   events: {
+    'Details button clicked': props<{ id: number | string }>(),
     'Search button clicked': props<{
       searchCriteria: ScaffoldSearchCriteria
     }>(),

@@ -1,4 +1,55 @@
 {
+  "SCAFFOLD_DETAILS": {
+    "CHANGE_ME": "ACTION D3: Adjust translation keys for details header",
+    "HEADER": "Scaffold Details",
+    "SUB_HEADER": "Anzeigen von Scaffold Details",
+    "HELP_ARTICLE_ID": "Hilfeartikel",
+    "BREADCRUMB": "Details",
+    "ARIA_LABEL": "Seitenkopf mit Details",
+    "ERROR_MESSAGES": {
+      "DETAILS_LOADING_FAILED": "Details konnten nicht geladen werden."
+    },
+    "GENERAL": {
+      "BACK": "Zurück",
+      "MORE": "Mehr",
+      "EDIT": "Bearbeiten",
+      "DELETE": "Löschen",
+      "CANCEL": "Abbrechen",
+      "SAVE": "Speichern"
+    },
+    "FORM": {
+      "FORM_FIELDS": "ACTION D3: Adjust translation keys for the form",
+      "NAME": "Name",
+      "SYSTEM_PROMPT": "System-Prompt",
+      "SOURCE": "Quelle",
+      "SOURCE_PRODUCT": "Quellprodukt",
+      "SKILLS": "Fähigkeiten"
+    },
+    "CANCEL": {
+      "HEADER": "Abbruch bestätigen",
+      "MESSAGE": "Bitte bestätigen Sie, dass Sie die Bearbeitung abbrechen und die Änderungen zurücksetzen möchten.",
+      "CONFIRM": "Bestätigen"
+    },
+    "UPDATE": {
+      "CHANGE_ME": "ACTION D3: Adjust translation keys for update dialog",
+      "HEADER": "Scaffold ändern",
+      "SUCCESS": "Speichern erfolgreich",
+      "ERROR": "Speichern fehlgeschlagen",
+      "FORM": {
+        "SAVE": "Speichern",
+        "CANCEL": "Abbrechen"
+      }
+    },
+    "DELETE": {
+      "CHANGE_ME": "ACTION D3: Adjust translation keys for delete confirmation dialog",
+      "HEADER": "Scaffold löschen",
+      "MESSAGE": "Bitte bestätigen Sie, dass Sie Scaffold löschen möchten.",
+      "CONFIRM": "Bestätigen",
+      "CANCEL": "Abbrechen",
+      "SUCCESS": "Scaffold erfolgreich gelöscht",
+      "ERROR": "Konnte Scaffold nicht löschen"
+    }
+  },
   "SCAFFOLD_SEARCH": {
     "HEADER": "Suche",
     "SUB_HEADER": "Suchen und Anzeigen von ...",
@@ -47,11 +98,6 @@
         "LABEL": "Quellprodukt",
         "ARIA_LABEL": "Quellprodukt",
         "TOOLTIP": "Quellprodukt"
-      },
-      "TENANT_ID": {
-        "LABEL": "TENANT-ID",
-        "ARIA_LABEL": "TENANT-ID",
-        "TOOLTIP": "TENANT-ID"
       }
     }
   },

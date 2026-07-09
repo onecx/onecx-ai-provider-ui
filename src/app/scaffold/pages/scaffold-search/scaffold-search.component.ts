@@ -1,6 +1,7 @@
 import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormGroup } from '@angular/forms'
 import { Store } from '@ngrx/store'
+import { RowListGridData } from '@onecx/angular-accelerator'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
 import { map, Observable } from 'rxjs'
@@ -109,6 +110,10 @@ export class ScaffoldSearchComponent implements OnInit {
   search(formValue: FormGroup) {
     const searchCriteria = buildSearchCriteria(formValue.getRawValue(), this.calendars, { removeNullValues: true })
     this.store.dispatch(scaffoldSearchActions.searchButtonClicked({ searchCriteria }))
+  }
+
+  details({ id }: RowListGridData) {
+    this.store.dispatch(scaffoldSearchActions.detailsButtonClicked({ id }))
   }
 
   resetSearch() {

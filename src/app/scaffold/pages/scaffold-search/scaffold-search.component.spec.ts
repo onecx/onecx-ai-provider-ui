@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { By } from '@angular/platform-browser'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
+import { RowListGridData } from '@onecx/angular-accelerator'
 
 import { provideHttpClient } from '@angular/common/http'
 import { LetDirective } from '@ngrx/component'
@@ -625,5 +626,11 @@ describe('ScaffoldSearchComponent', () => {
     })
   })
 
+  it('should dispatch detailsButtonClicked action on details', () => {
+    jest.spyOn(store, 'dispatch')
+    const row: RowListGridData = { id: 'test-id', imagePath: '' }
+    component.details(row)
+    expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.detailsButtonClicked({ id: 'test-id' }))
+  })
   // <<SPEC-EXTENSIONS-MARKER-!!!-DO-NOT-REMOVE-!!!>>
 })
