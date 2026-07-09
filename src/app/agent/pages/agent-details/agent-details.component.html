@@ -121,8 +121,7 @@
                     formControlName="tools"
                     [options]="vm.tools"
                     [optionLabel]="'name'"
-                    [filter]="true"
-                    [defaultLabel]="'AGENT_DETAILS.FORM.ADDITIONAL_TOOLS' | translate"
+                    [filter]="true"                    
                     class="w-full"
                   >
                   </p-multiSelect>
@@ -145,8 +144,7 @@
                     formControlName="groups"
                     [options]="vm.groups"
                     [optionLabel]="'name'"
-                    [filter]="true"
-                    [defaultLabel]="'AGENT_DETAILS.ASSIGNMENTS.GROUPS' | translate"
+                    [filter]="true"                    
                     class="w-full"
                   >
                   </p-multiSelect>
@@ -155,24 +153,23 @@
                   </label>
                 </p-floatlabel>
 
-                <div class="flex flex-column md:flex-row md:align-items-center gap-2">
-                  <div class="flex flex-column w-full md:flex-1">
-                    <label for="agent_detail_new_group_name" class="mb-1">
-                      {{ 'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate }}
-                    </label>
+                <div class="flex align-items-center gap-2">
+                  <p-floatlabel variant="on" controlErrorAnchor class="flex-1">
                     <input
                       pInputText
                       type="text"
                       id="agent_detail_new_group_name"
-                      class="w-full"
+                      class="w-full pt-3 pb-2 text-responsive"
                       formControlName="newGroupName"
-                      [placeholder]="'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate"
                     />
-                  </div>
+                    <label for="agent_detail_new_group_name">
+                      {{ 'AGENT_DETAILS.ASSIGNMENTS.NEW_GROUP_NAME' | translate }}
+                    </label>
+                  </p-floatlabel>
                   <button
                     pButton
                     type="button"
-                    class="w-full md:w-auto flex-shrink-0"
+                    class="flex-shrink-0"
                     icon="pi pi-plus"
                     [disabled]="!vm.editMode"
                     (click)="createGroupInPlace()"
@@ -213,18 +210,18 @@
                       [forceSelection]="true"
                     ></p-autoComplete>
                     <span class="font-medium">:</span>
-                    <div class="flex flex-column w-full">
-                      <label [for]="'agent_detail_filter_value_' + i" class="mb-1">
-                        {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTER_VALUE' | translate }}
-                      </label>
+                    <p-floatlabel variant="on" controlErrorAnchor class="flex-1">
                       <input
                         pInputText
                         type="text"
-                        class="w-full"
                         [id]="'agent_detail_filter_value_' + i"
+                        class="w-full pt-3 pb-2 text-responsive"
                         formControlName="value"
                       />
-                    </div>
+                      <label [for]="'agent_detail_filter_value_' + i">
+                        {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTER_VALUE' | translate }}
+                      </label>
+                    </p-floatlabel>
                     <button
                       pButton
                       type="button"

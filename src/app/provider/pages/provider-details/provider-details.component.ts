@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common'
 import { LetDirective } from '@ngrx/component'
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { InputTextModule } from 'primeng/inputtext'
+import { PasswordModule } from 'primeng/password'
 import { TooltipModule } from 'primeng/tooltip'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { SelectModule } from 'primeng/select'
@@ -34,6 +35,7 @@ import { AuthMode, Model, Provider, ProviderType } from 'src/app/shared/generate
     ReactiveFormsModule,
     LetDirective,
     InputTextModule,
+    PasswordModule,
     PortalPageComponent,
     TooltipModule,
     SelectModule,

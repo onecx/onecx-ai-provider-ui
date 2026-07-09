@@ -5,8 +5,8 @@ import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
+import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageServiceMock, providePortalMessageServiceMock } from '@onecx/angular-integration-interface/mocks'
-import { ExportDataService } from '@onecx/angular-accelerator'
 import { MonoTypeOperatorFunction, ReplaySubject, map, of, throwError } from 'rxjs'
 import { ToolService, ToolType } from 'src/app/shared/generated'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
@@ -93,6 +93,7 @@ describe('MCPServerSearchEffects', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
+        { provide: PortalDialogService, useValue: { openDialog: jest.fn() } },
         MCPServerSearchEffects,
         provideMockStore({
           initialState: { mcpserver: { search: initialState } }
@@ -116,6 +117,7 @@ describe('MCPServerSearchEffects', () => {
       ngrxActions,
       route as any,
       mcpService as any,
+      TestBed.inject(PortalDialogService) as any,
       router as any,
       TestBed.inject(MockStore),
       messageService as any,

@@ -10,6 +10,21 @@ import { MCPServerSearchCriteria } from './mcpserver-search.parameters'
 export const MCPServerSearchActions = createActionGroup({
   source: 'MCPServerSearch',
   events: {
+    'Create mcpserver button clicked': emptyProps(),
+    'Edit mcpserver button clicked': props<{
+      id: number | string
+    }>(),
+    'Create mcpserver cancelled': emptyProps(),
+    'Update mcpserver cancelled': emptyProps(),
+    'Create mcpserver succeeded': emptyProps(),
+    'Update mcpserver succeeded': emptyProps(),
+    'Create mcpserver failed': props<{
+      error: string | null
+    }>(),
+    'Update mcpserver failed': props<{
+      error: string | null
+    }>(),
+
     'Details button clicked': props<{
       id: number | string
     }>(),
