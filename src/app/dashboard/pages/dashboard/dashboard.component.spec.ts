@@ -57,7 +57,7 @@ describe('DashboardComponent', () => {
     expect(component.navigationPanels).toHaveLength(5)
     expect(component.navigationPanels.map((panel) => panel.route)).toEqual([
       '../agent',
-      '../configuration',
+      '../scaffold',
       '../skill',
       '../provider',
       '../mcpserver'
