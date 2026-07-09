@@ -70,6 +70,8 @@
   <ocx-content-container layout="horizontal">
     <ocx-content class="w-full">
       <ocx-interactive-data-view
+        (editItem)="edit($event)"
+        editPermission="MCPSERVER#EDIT"
         (viewItem)="details($any($event))"
         viewPermission="MCPSERVER#VIEW"
         [data]="vm.results"

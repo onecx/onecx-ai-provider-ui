@@ -1,4 +1,31 @@
 {
+  "MCPSERVER_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Create"
+    },
+    "CREATE": {
+      "HEADER": "Create Tool (MCP)",
+      "SUCCESS": "Creation succesful",
+      "ERROR": "Creation failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "UPDATE": {
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      },
+      "HEADER": "Update Tool (MCP)"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description"
+    }
+  },
   "SKILL_CREATE_UPDATE": {
     "ACTION": {
       "CREATE": "Create"
