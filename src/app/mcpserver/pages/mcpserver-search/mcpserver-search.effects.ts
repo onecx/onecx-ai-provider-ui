@@ -9,7 +9,7 @@ import { ExportDataService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import equal from 'fast-deep-equal'
 import { catchError, map, of, switchMap, tap } from 'rxjs'
-import { McpServerService } from 'src/app/shared/generated'
+import { ToolService, ToolType } from 'src/app/shared/generated'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { MCPServerSearchActions } from './mcpserver-search.actions'
 import { MCPServerSearchComponent } from './mcpserver-search.component'
@@ -21,7 +21,7 @@ export class MCPServerSearchEffects {
   constructor(
     private readonly actions$: Actions,
     @SkipSelf() private readonly route: ActivatedRoute,
-    private readonly mcpserverService: McpServerService,
+    private readonly toolService: ToolService,
     private readonly router: Router,
     private readonly store: Store,
     private readonly messageService: PortalMessageService,
@@ -82,8 +82,9 @@ export class MCPServerSearchEffects {
   })
 
   performSearch(searchCriteria: Record<string, any>) {
-    return this.mcpserverService
-      .findMCPServerByCriteria({
+    return this.toolService
+      .findToolByCriteria({
+        type: ToolType.Mcp,
         ...Object.entries(searchCriteria).reduce(
           (acc, [key, value]) => ({
             ...acc,
@@ -95,11 +96,11 @@ export class MCPServerSearchEffects {
       .pipe(
         map(({ stream, size, number, totalElements, totalPages }) =>
           MCPServerSearchActions.mcpserverSearchResultsReceived({
-            stream,
-            size,
-            number,
-            totalElements,
-            totalPages
+            stream: stream ?? [],
+            size: size ?? 0,
+            number: number ?? 0,
+            totalElements: totalElements ?? 0,
+            totalPages: totalPages ?? 0
           })
         ),
         catchError((error) =>

@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
-import { MCPServer } from '../../../shared/generated'
+import { Tool as MCPServer } from '../../../shared/generated'
 
 export const MCPServerDetailsActions = createActionGroup({
   source: 'MCPServerDetails',

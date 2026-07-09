@@ -65,16 +65,38 @@
       "ID": "ID",
       "TENANT_ID": "Tenant ID",
       "NAME": "Name",
+      "DESCRIPTION": "Description",
       "MODEL_ID": "Model ID",
+      "MODEL": "Model",
+      "PROVIDER": "Provider",
       "SCAFFOLD_ID": "Scaffold ID",
+      "SCAFFOLD": "Scaffold",
       "RUNTIME_CONFIG_ID": "Runtime Config ID",
       "ADDITIONAL_PROMPT": "Additional Prompt",
+      "ADDITIONAL_TOOLS": "Additional Tools",
       "A2A_ENABLED": "A2A Enabled",
       "VERSION": "Version",
       "STATUS": "Status",
+      "LAST_CHANGED": "Last Changed",
       "CREATION_USER": "Created By",
       "MODIFICATION_USER": "Modified By",
       "MODIFICATION_COUNT": "Modification Count"
+    },
+    "TABS": {
+      "GENERAL": "General",
+      "ASSIGNMENTS": "Assignments"
+    },
+    "ASSIGNMENTS": {
+      "ADD_FILTER": "Add Filter",
+      "REMOVE_FILTER": "Remove Filter",
+      "GROUPS": "Group Assignments",
+      "GROUPS_SECTION": "Group Assignments",
+      "FILTERS_SECTION": "Filters",
+      "FILTER_VALUE": "Filter value",
+      "NEW_GROUP_NAME": "New group name",
+      "CREATE_GROUP": "Create Group",
+      "CREATE_GROUP_SUCCESS": "Group created successfully",
+      "CREATE_GROUP_FAILED": "Group could not be created"
     },
     "CANCEL": {
       "HEADER": "Confirm cancellation",
@@ -177,6 +199,33 @@
       }
     }
   },
+  "AGENT_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Create"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description"
+    },
+    "CREATE": {
+      "HEADER": "Create Agent",
+      "SUCCESS": "Agent created successfully",
+      "ERROR": "Could not create Agent",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "UPDATE": {
+      "HEADER": "Update Agent",
+      "SUCCESS": "Agent updated successfully",
+      "ERROR": "Could not update Agent",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    }
+  },
   "DASHBOARD": {
     "HEADER": "Agent Plane Dashboard",
     "SUBHEADER": "Navigate to primary agent scaffold entities",
@@ -200,9 +249,9 @@
         "DESCRIPTION": "Configure external model providers and their connectivity."
       },
       "TOOL": {
-        "TITLE": "Tool (MCP)",
+        "TITLE": "Tools (MCP)",
         "SUBTITLE": "Execution extensions",
-        "DESCRIPTION": "Manage MCP tool endpoints and execution integration points."
+        "DESCRIPTION": "Manage Tools (MCP) endpoints and execution integration points."
       },
       "RUNTIME_CONFIG": {
         "TITLE": "Runtime Config",
@@ -217,8 +266,8 @@
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
-    "HEADER": "MCPServer Details",
-    "SUB_HEADER": "Display of MCPServer Details",
+    "HEADER": "Tools (MCP) Details",
+    "SUB_HEADER": "Display Tools (MCP) details",
     "ERROR_MESSAGES": {
       "DETAILS_LOADING_FAILED": "Loading details failed."
     },
@@ -250,20 +299,20 @@
         "SAVE": "Save",
         "CANCEL": "Cancel"
       },
-      "HEADER": "Update MCPServer"
+      "HEADER": "Update Tools (MCP)"
     },
     "DELETE": {
-      "HEADER": "Delete MCPServer",
-      "MESSAGE": "Please confirm that you want to delete this MCPServer.",
+      "HEADER": "Delete Tools (MCP)",
+      "MESSAGE": "Please confirm that you want to delete this Tools (MCP) entry.",
       "CONFIRM": "Confirm",
       "CANCEL": "Cancel",
-      "SUCCESS": "MCPServer deleted successfully",
-      "ERROR": "Could not delete MCPServer"
+      "SUCCESS": "Tools (MCP) entry deleted successfully",
+      "ERROR": "Could not delete Tools (MCP) entry"
     }
   },
   "MCPSERVER_SEARCH": {
-    "HEADER": "MCPServer Search",
-    "SUB_HEADER": "Searching and displaying of MCPServer",
+    "HEADER": "Tools (MCP) Search",
+    "SUB_HEADER": "Search and display Tools (MCP)",
     "HELP_ARTICLE_ID": "Help Article",
     "EMPTY_RESULTS": "No results.",
     "BREADCRUMB": "Search",
@@ -279,7 +328,7 @@
       "DIALOG_CONFIRM": "Confirm",
       "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
-      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
+      "NAVIGATE_TO_MCP_SERVERS": "Tools (MCP)"
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
@@ -324,9 +373,9 @@
       "ID": "ID",
       "NAME": "Name",
       "DESCRIPTION": "Description",
-      "MCP_SERVER": "MCP Server",
+      "MCP_SERVER": "Tools (MCP)",
       "PROVIDER": "Provider",
-      "MCP_SERVERS_PLACEHOLDER": "Select MCP Servers"
+      "MCP_SERVERS_PLACEHOLDER": "Select Tools (MCP)"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",
@@ -375,7 +424,7 @@
       "DIALOG_CONFIRM": "Confirm",
       "DIALOG_CANCEL": "Cancel",
       "NAVIGATE_TO_PROVIDERS": "Provider",
-      "NAVIGATE_TO_MCP_SERVERS": "MCP Server"
+      "NAVIGATE_TO_MCP_SERVERS": "Tools (MCP)"
     },
     "ERROR_MESSAGES": {
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",

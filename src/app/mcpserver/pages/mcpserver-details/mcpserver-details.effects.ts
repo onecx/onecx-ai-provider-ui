@@ -11,7 +11,7 @@ import { PrimeIcons } from 'primeng/api'
 import { catchError, filter, map, mergeMap, of, switchMap, tap } from 'rxjs'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { MCPServer, McpServerService, UpdateMCPServerRequest } from 'src/app/shared/generated'
+import { Tool as MCPServer, ToolService, UpdateToolRequest } from 'src/app/shared/generated'
 import { MCPServerDetailsActions } from './mcpserver-details.actions'
 import { MCPServerDetailsComponent } from './mcpserver-details.component'
 import { mcpserverDetailsSelectors } from './mcpserver-details.selectors'
@@ -20,7 +20,7 @@ import { mcpserverDetailsSelectors } from './mcpserver-details.selectors'
 export class MCPServerDetailsEffects {
   constructor(
     private readonly actions$: Actions,
-    private readonly mcpserverService: McpServerService,
+    private readonly toolService: ToolService,
     private readonly router: Router,
     private readonly store: Store,
     private readonly messageService: PortalMessageService,
@@ -44,7 +44,7 @@ export class MCPServerDetailsEffects {
     return this.actions$.pipe(
       ofType(MCPServerDetailsActions.navigatedToDetailsPage),
       switchMap(({ id }) =>
-        this.mcpserverService.getMCPServerById(id ?? '').pipe(
+        this.toolService.getToolById(id ?? '').pipe(
           map((resource) =>
             MCPServerDetailsActions.mCPServerDetailsReceived({
               details: resource
@@ -98,8 +98,8 @@ export class MCPServerDetailsEffects {
         }
         const itemToEdit = {
           ...updatedItem
-        } as UpdateMCPServerRequest
-        return this.mcpserverService.updateMCPServerById(itemToEditId, itemToEdit).pipe(
+        } as UpdateToolRequest
+        return this.toolService.updateToolById(itemToEditId, itemToEdit).pipe(
           map(() => {
             this.messageService.success({
               summaryKey: 'MCPSERVER_DETAILS.UPDATE.SUCCESS'
@@ -152,7 +152,7 @@ export class MCPServerDetailsEffects {
           throw new Error('Item to delete not found!')
         }
 
-        return this.mcpserverService.deleteMCPServerById(itemToDelete.id).pipe(
+        return this.toolService.deleteToolById(itemToDelete.id).pipe(
           map(() => {
             this.messageService.success({
               summaryKey: 'MCPSERVER_DETAILS.DELETE.SUCCESS'
