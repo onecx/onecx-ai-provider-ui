@@ -133,6 +133,32 @@
       }
     }
   },
+  "SCAFFOLD_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Erstellen"
+    },
+    "CREATE": {
+      "HEADER": "Neues Scaffold erstellen",
+      "SUCCESS": "Erstellung erfolgreich",
+      "ERROR": "Erstellung fehlgeschlagen",
+      "FORM": {
+        "SAVE": "Speichern",
+        "CANCEL": "Abbrechen"
+      }
+    },
+    "UPDATE": {
+      "HEADER": "Scaffold bearbeiten",
+      "SUCCESS": "Aktualisierung erfolgreich",
+      "ERROR": "Aktualisierung fehlgeschlagen",
+      "FORM": {
+        "SAVE": "Speichern",
+        "CANCEL": "Abbrechen"
+      }
+    },
+    "FORM": {
+      "NAME": "Name"
+    }
+  },
   "SKILL_CREATE_UPDATE": {
     "ACTION": {
       "CREATE": "Erstellen"

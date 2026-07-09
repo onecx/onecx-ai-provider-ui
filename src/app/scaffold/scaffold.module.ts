@@ -21,12 +21,13 @@ import { ScaffoldSearchComponent } from './pages/scaffold-search/scaffold-search
 import { ScaffoldSearchEffects } from './pages/scaffold-search/scaffold-search.effects'
 
 import { PermissionService, PortalPageComponent } from '@onecx/angular-utils'
+import { ScaffoldCreateUpdateComponent } from './pages/scaffold-search/dialogs/scaffold-create-update/scaffold-create-update.component'
 import { scaffoldFeature } from './scaffold.reducers'
 import { routes } from './scaffold.routes'
 
 @NgModule({
   providers: [providePortalDialogService(), PermissionService],
-  declarations: [ScaffoldDetailsComponent, ScaffoldDetailsComponent, ScaffoldSearchComponent],
+  declarations: [ScaffoldCreateUpdateComponent, ScaffoldDetailsComponent, ScaffoldDetailsComponent, ScaffoldSearchComponent],
   imports: [
     FloatLabelModule,
     InputTextModule,

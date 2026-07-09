@@ -3,12 +3,13 @@ import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
-import { ExportDataService } from '@onecx/angular-accelerator'
+import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
-import { catchError, map, of, switchMap, tap } from 'rxjs'
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { ScaffoldService } from '../../../shared/generated'
+import { CreateScaffoldRequest, Scaffold, ScaffoldService, UpdateScaffoldRequest } from '../../../shared/generated'
+import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
 
 import { Injectable, inject } from '@angular/core'
 import equal from 'fast-deep-equal'
@@ -23,6 +24,7 @@ export class ScaffoldSearchEffects {
   private readonly actions$ = inject(Actions)
   private readonly route = inject(ActivatedRoute)
   private readonly scaffoldService = inject(ScaffoldService)
+  private readonly portalDialogService = inject(PortalDialogService)
   private readonly router = inject(Router)
   private readonly store = inject(Store)
   private readonly messageService = inject(PortalMessageService)
@@ -38,8 +40,6 @@ export class ScaffoldSearchEffects {
           if (results.success && !equal(criteria, results.data)) {
             const params = {
               ...criteria
-              //TODO: Move to docs to explain how to only put the date part in the URL in case you have date and not datetime
-              //exampleDate: criteria.exampleDate?.toISOString()?.slice(0, 10)
             }
             this.router.navigate([], {
               relativeTo: this.route,
@@ -60,7 +60,7 @@ export class ScaffoldSearchEffects {
         ofType(scaffoldSearchActions.detailsButtonClicked),
         concatLatestFrom(() => this.store.select(selectUrl)),
         tap(([action, currentUrl]) => {
-          const urlTree = this.router.parseUrl(currentUrl as string)
+          const urlTree = this.router.parseUrl(currentUrl)
           urlTree.queryParams = {}
           urlTree.fragment = null
           this.router.navigate([urlTree.toString(), 'details', action.id])
@@ -69,6 +69,129 @@ export class ScaffoldSearchEffects {
     },
     { dispatch: false }
   )
+
+  refreshSearchAfterCreateUpdate$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(scaffoldSearchActions.createScaffoldSucceeded, scaffoldSearchActions.updateScaffoldSucceeded),
+      concatLatestFrom(() => this.store.select(scaffoldSearchSelectors.selectCriteria)),
+      switchMap(([, searchCriteria]) => this.performSearch(searchCriteria))
+    )
+  })
+
+  editButtonClicked$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(scaffoldSearchActions.editScaffoldButtonClicked),
+      concatLatestFrom(() => this.store.select(scaffoldSearchSelectors.selectResults)),
+      map(([action, results]) => {
+        return results.find((item) => item.id == action.id)
+      }),
+      mergeMap((itemToEdit) => {
+        return this.portalDialogService.openDialog<Scaffold | undefined>(
+          'SCAFFOLD_CREATE_UPDATE.UPDATE.HEADER',
+          {
+            type: ScaffoldCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit
+              }
+            }
+          },
+          'SCAFFOLD_CREATE_UPDATE.UPDATE.FORM.SAVE',
+          'SCAFFOLD_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+          {
+            baseZIndex: 100
+          }
+        )
+      }),
+      switchMap((dialogResult) => {
+        if (!dialogResult || dialogResult.button == 'secondary') {
+          return of(scaffoldSearchActions.updateScaffoldCancelled())
+        }
+        if (!dialogResult?.result) {
+          throw new Error('DialogResult was not set as expected!')
+        }
+        if (!dialogResult.result.id) {
+          throw new Error('Item id was not set as expected!')
+        }
+        const itemToEditId = dialogResult.result.id
+        const itemToEdit: UpdateScaffoldRequest = {
+          modificationCount: dialogResult.result.modificationCount ?? 0,
+          name: dialogResult.result.name
+        }
+        return this.scaffoldService.updateScaffoldById(itemToEditId, itemToEdit).pipe(
+          map(() => {
+            this.messageService.success({
+              summaryKey: 'SCAFFOLD_CREATE_UPDATE.UPDATE.SUCCESS'
+            })
+            return scaffoldSearchActions.updateScaffoldSucceeded()
+          })
+        )
+      }),
+      catchError((error) => {
+        this.messageService.error({
+          summaryKey: 'SCAFFOLD_CREATE_UPDATE.UPDATE.ERROR'
+        })
+        return of(
+          scaffoldSearchActions.updateScaffoldFailed({
+            error
+          })
+        )
+      })
+    )
+  })
+
+  createButtonClicked$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(scaffoldSearchActions.createScaffoldButtonClicked),
+      switchMap(() => {
+        return this.portalDialogService.openDialog<Scaffold | undefined>(
+          'SCAFFOLD_CREATE_UPDATE.CREATE.HEADER',
+          {
+            type: ScaffoldCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: {}
+              }
+            }
+          },
+          'SCAFFOLD_CREATE_UPDATE.CREATE.FORM.SAVE',
+          'SCAFFOLD_CREATE_UPDATE.CREATE.FORM.CANCEL',
+          {
+            baseZIndex: 100
+          }
+        )
+      }),
+      switchMap((dialogResult) => {
+        if (!dialogResult || dialogResult.button == 'secondary') {
+          return of(scaffoldSearchActions.createScaffoldCancelled())
+        }
+        if (!dialogResult?.result) {
+          throw new Error('DialogResult was not set as expected!')
+        }
+        const toCreateItem: CreateScaffoldRequest = {
+          name: dialogResult.result.name
+        }
+        return this.scaffoldService.createScaffold(toCreateItem).pipe(
+          map(() => {
+            this.messageService.success({
+              summaryKey: 'SCAFFOLD_CREATE_UPDATE.CREATE.SUCCESS'
+            })
+            return scaffoldSearchActions.createScaffoldSucceeded()
+          })
+        )
+      }),
+      catchError((error) => {
+        this.messageService.error({
+          summaryKey: 'SCAFFOLD_CREATE_UPDATE.CREATE.ERROR'
+        })
+        return of(
+          scaffoldSearchActions.createScaffoldFailed({
+            error
+          })
+        )
+      })
+    )
+  })
 
   searchByUrl$ = createEffect(() => {
     return this.actions$.pipe(

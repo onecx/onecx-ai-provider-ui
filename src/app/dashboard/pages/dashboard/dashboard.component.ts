@@ -34,7 +34,7 @@ export class DashboardComponent {
       titleKey: 'DASHBOARD.PANELS.SCAFFOLD.TITLE',
       subtitleKey: 'DASHBOARD.PANELS.SCAFFOLD.SUBTITLE',
       descriptionKey: 'DASHBOARD.PANELS.SCAFFOLD.DESCRIPTION',
-      route: '../configuration',
+      route: '../scaffold',
       icon: 'pi pi-file-edit'
     },
     {

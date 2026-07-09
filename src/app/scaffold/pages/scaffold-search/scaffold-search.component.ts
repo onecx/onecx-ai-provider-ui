@@ -1,7 +1,6 @@
 import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormGroup } from '@angular/forms'
 import { Store } from '@ngrx/store'
-import { RowListGridData } from '@onecx/angular-accelerator'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
 import { map, Observable } from 'rxjs'
@@ -16,6 +15,7 @@ import {
   DiagramType,
   ExportDataService,
   InteractiveDataViewComponentState,
+  RowListGridData,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
 
@@ -45,6 +45,12 @@ export class ScaffoldSearchComponent implements OnInit {
   headerActions$: Observable<Action[]> = this.viewModel$.pipe(
     map((vm) => {
       const actions: Action[] = [
+        {
+          labelKey: 'SCAFFOLD_CREATE_UPDATE.ACTION.CREATE',
+          icon: PrimeIcons.PLUS,
+          show: 'always',
+          actionCallback: () => this.create()
+        },
         {
           labelKey: 'SCAFFOLD_SEARCH.HEADER_ACTIONS.EXPORT_ALL',
           icon: PrimeIcons.DOWNLOAD,
@@ -114,6 +120,14 @@ export class ScaffoldSearchComponent implements OnInit {
 
   details({ id }: RowListGridData) {
     this.store.dispatch(scaffoldSearchActions.detailsButtonClicked({ id }))
+  }
+
+  create() {
+    this.store.dispatch(scaffoldSearchActions.createScaffoldButtonClicked())
+  }
+
+  edit({ id }: RowListGridData) {
+    this.store.dispatch(scaffoldSearchActions.editScaffoldButtonClicked({ id }))
   }
 
   resetSearch() {
