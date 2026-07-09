@@ -42,9 +42,7 @@ describe('SkillSearch selectors', () => {
     // ACTION S11: Adjust test data
     const columns = [{ id: 'changeMe', nameKey: 'Col 1', columnType: ColumnType.STRING }]
     const searchCriteria = {
-      pageNumber: 1,
-      pageSize: 10,
-      changeMe: 'A'
+      name: 'A'
     }
     const results = [{ imagePath: '', id: '1', changeMe: 'A test' }]
     const chartVisible = true

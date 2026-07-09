@@ -34,8 +34,8 @@ describe('SkillCreateUpdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SkillCreateUpdateComponent],
       imports: [
+        SkillCreateUpdateComponent,
         AngularAcceleratorModule,
         FloatLabelModule,
         InputTextModule,
@@ -80,11 +80,11 @@ describe('SkillCreateUpdateComponent', () => {
       })
 
     // Start with invalid form
-    component.formGroup.setValue({ changeMe: 'x'.repeat(256) })
+    component.formGroup.setValue({ name: 'x'.repeat(256), description: '' })
     component.formGroup.updateValueAndValidity()
 
     // Then make it valid
-    component.formGroup.setValue({ changeMe: 'valid value' })
+    component.formGroup.setValue({ name: 'valid value', description: '' })
     component.formGroup.updateValueAndValidity()
   })
 
@@ -96,17 +96,17 @@ describe('SkillCreateUpdateComponent', () => {
 
     tick()
 
-    component.formGroup.setValue({ changeMe: 'initial valid' })
+    component.formGroup.setValue({ name: 'initial valid', description: '' })
     component.formGroup.updateValueAndValidity()
     tick()
 
     // Make invalid
-    component.formGroup.setValue({ changeMe: 'x'.repeat(256) })
+    component.formGroup.setValue({ name: 'x'.repeat(256), description: '' })
     component.formGroup.updateValueAndValidity()
     tick()
 
     // Make valid
-    component.formGroup.setValue({ changeMe: 'valid' })
+    component.formGroup.setValue({ name: 'valid', description: '' })
     component.formGroup.updateValueAndValidity()
     tick()
 
@@ -114,32 +114,30 @@ describe('SkillCreateUpdateComponent', () => {
   }))
 
   it('should set dialogResult with merged values on ocxDialogButtonClicked', () => {
-    component.vm.itemToEdit = { id: '1', appId: 'oldId', name: 'oldName', description: 'oldDesc' } as Skill
-    component.formGroup.setValue({ changeMe: 'newVal' })
+    component.vm.itemToEdit = { id: '1', name: 'oldName', description: 'oldDesc' } as Skill
+    component.formGroup.setValue({ name: 'newVal', description: 'newDesc' })
 
     component.ocxDialogButtonClicked()
 
     expect(component.dialogResult).toEqual({
       id: '1',
-      appId: 'oldId',
-      name: 'oldName',
-      description: 'oldDesc',
-      changeMe: 'newVal'
+      name: 'newVal',
+      description: 'newDesc'
     })
   })
 
   it('should patch formGroup values from vm.itemToEdit on ngOnInit', () => {
-    component.vm.itemToEdit = { id: '1', changeMe: 'editVal' } as Skill
+    component.vm.itemToEdit = { id: '1', name: 'editVal', description: 'desc' } as Skill
     component.ngOnInit()
-    expect(component.formGroup.value).toEqual({ changeMe: 'editVal' })
+    expect(component.formGroup.value).toEqual({ name: 'editVal', description: 'desc' })
   })
 
   it('should set dialogResult to form values when creating (no itemToEdit)', () => {
     component.vm.itemToEdit = undefined
-    component.formGroup.setValue({ changeMe: 'createVal' })
+    component.formGroup.setValue({ name: 'createVal', description: 'desc' })
 
     component.ocxDialogButtonClicked()
 
-    expect(component.dialogResult).toEqual({ changeMe: 'createVal' })
+    expect(component.dialogResult).toEqual({ name: 'createVal', description: 'desc' })
   })
 })
