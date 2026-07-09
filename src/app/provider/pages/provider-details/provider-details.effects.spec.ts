@@ -125,8 +125,8 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     expect(deleteSpy).toHaveBeenCalledWith('')
   })
 
-  it('should call edit with empty string if details.id is undefined', async () => {
-    const editSpy = jest.spyOn(component, 'edit')
+  it('should call save when Save action is clicked in edit mode', async () => {
+    const saveSpy = jest.spyOn(component, 'save')
     store.overrideSelector(selectProviderDetailsViewModel, {
       details: undefined,
       models: [],
@@ -142,12 +142,40 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const pageHeader = await ProviderDetails.getHeader()
     const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
     await saveAction?.click()
-    expect(editSpy).toHaveBeenCalledWith('')
+    expect(saveSpy).toHaveBeenCalled()
   })
 
-  it('should call edit and toggleEditMode(false) when Save action is clicked', async () => {
-    const editSpy = jest.spyOn(component, 'edit')
-    const toggleSpy = jest.spyOn(component, 'toggleEditMode')
+  it('should dispatch providerUpdateRequested when save() is called', () => {
+    const dispatchSpy = jest.spyOn(store, 'dispatch')
+
+    component.formGroup.patchValue({
+      name: 'Provider One',
+      description: 'Desc',
+      llmUrl: 'http://llm',
+      type: 'OPENAI',
+      authMode: 'API_KEY',
+      apiKey: 'secret'
+    })
+
+    component.save()
+
+    expect(dispatchSpy).toHaveBeenCalledWith(
+      ProviderDetailsActions.providerUpdateRequested({
+        details: {
+          id: undefined,
+          name: 'Provider One',
+          description: 'Desc',
+          llmUrl: 'http://llm',
+          type: 'OPENAI',
+          authMode: 'API_KEY',
+          apiKey: 'secret'
+        } as any
+      })
+    )
+  })
+
+  it('should call save() when Save action is clicked', async () => {
+    const saveSpy = jest.spyOn(component, 'save')
 
     store.overrideSelector(selectProviderDetailsViewModel, {
       ...baseProviderDetaulsViewModel,
@@ -160,8 +188,7 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
     const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
     await saveAction?.click()
 
-    expect(editSpy).toHaveBeenCalledWith('1')
-    expect(toggleSpy).toHaveBeenCalledWith(false)
+    expect(saveSpy).toHaveBeenCalled()
   })
 
   it('should call delete with correct id when Delete action is triggered', async () => {
