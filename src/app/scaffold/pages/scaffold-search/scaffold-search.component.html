@@ -68,7 +68,7 @@
         [columns]="vm.columns"
         [emptyResultsMessage]="'SCAFFOLD_SEARCH.EMPTY_RESULTS' | translate"
         (componentStateChanged)="resultComponentStateChanged($event)"
-        [layout]="vm.resultComponentState?.layout ?? 'list'"
+        [layout]="vm.resultComponentState?.layout ?? 'table'"
         [supportedViewLayouts]="['table']"
         [page]="vm.resultComponentState?.activePage ?? 0"
         [pageSize]="vm.resultComponentState?.pageSize"

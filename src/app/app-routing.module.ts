@@ -28,12 +28,12 @@ export const routes: Routes = [
     loadChildren: () => import('./mcpserver/mcpserver.module').then((mod) => mod.MCPServerModule)
   },
   {
-    matcher: startsWith(''),
-    redirectTo: 'dashboard',
-  },
-  {
     matcher: startsWith('provider'),
     loadChildren: () => import('./provider/provider.module').then((mod) => mod.ProviderModule)
+  },
+  {
+    matcher: startsWith(''),
+    redirectTo: 'dashboard'
   }
 ]
 
