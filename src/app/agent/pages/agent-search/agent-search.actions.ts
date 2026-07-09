@@ -10,6 +10,14 @@ import { AgentSearchCriteria } from './agent-search.parameters'
 export const agentSearchActions = createActionGroup({
   source: 'AgentSearch',
   events: {
+    'Create agent button clicked': emptyProps(),
+    'Edit agent button clicked': props<{ id: number | string }>(),
+    'Create agent cancelled': emptyProps(),
+    'Update agent cancelled': emptyProps(),
+    'Create agent succeeded': emptyProps(),
+    'Update agent succeeded': emptyProps(),
+    'Create agent failed': props<{ error: string | null }>(),
+    'Update agent failed': props<{ error: string | null }>(),
     'Details button clicked': props<{ id: number | string }>(),
     'Search button clicked': props<{
       searchCriteria: AgentSearchCriteria

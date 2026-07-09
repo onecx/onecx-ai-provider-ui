@@ -46,6 +46,13 @@ export class AgentSearchComponent implements OnInit {
     map((vm) => {
       const actions: Action[] = [
         {
+          labelKey: 'AGENT_CREATE_UPDATE.ACTION.CREATE',
+          permission: 'AGENT#CREATE',
+          icon: PrimeIcons.PLUS,
+          show: 'always',
+          actionCallback: () => this.create()
+        },
+        {
           labelKey: 'AGENT_SEARCH.HEADER_ACTIONS.EXPORT_ALL',
           icon: PrimeIcons.DOWNLOAD,
           titleKey: 'AGENT_SEARCH.HEADER_ACTIONS.EXPORT_ALL',
@@ -114,6 +121,14 @@ export class AgentSearchComponent implements OnInit {
 
   details({ id }: RowListGridData) {
     this.store.dispatch(agentSearchActions.detailsButtonClicked({ id }))
+  }
+
+  create() {
+    this.store.dispatch(agentSearchActions.createAgentButtonClicked())
+  }
+
+  edit({ id }: RowListGridData) {
+    this.store.dispatch(agentSearchActions.editAgentButtonClicked({ id }))
   }
 
   resetSearch() {
