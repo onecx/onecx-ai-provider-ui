@@ -153,6 +153,33 @@
       }
     }
   },
+  "AGENT_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Erstellen"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "DESCRIPTION": "Beschreibung"
+    },
+    "CREATE": {
+      "HEADER": "Agent erstellen",
+      "SUCCESS": "Agent erfolgreich erstellt",
+      "ERROR": "Agent konnte nicht erstellt werden",
+      "FORM": {
+        "SAVE": "Speichern",
+        "CANCEL": "Abbrechen"
+      }
+    },
+    "UPDATE": {
+      "HEADER": "Agent aktualisieren",
+      "SUCCESS": "Agent erfolgreich aktualisiert",
+      "ERROR": "Agent konnte nicht aktualisiert werden",
+      "FORM": {
+        "SAVE": "Speichern",
+        "CANCEL": "Abbrechen"
+      }
+    }
+  },
   "DASHBOARD": {
     "HEADER": "Agent Plane Dashboard",
     "SUBHEADER": "Navigation zu den primären Scaffold-Entitäten",

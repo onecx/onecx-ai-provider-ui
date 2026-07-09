@@ -153,6 +153,33 @@
       }
     }
   },
+  "AGENT_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Create"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description"
+    },
+    "CREATE": {
+      "HEADER": "Create Agent",
+      "SUCCESS": "Agent created successfully",
+      "ERROR": "Could not create Agent",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "UPDATE": {
+      "HEADER": "Update Agent",
+      "SUCCESS": "Agent updated successfully",
+      "ERROR": "Could not update Agent",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    }
+  },
   "DASHBOARD": {
     "HEADER": "Agent Plane Dashboard",
     "SUBHEADER": "Navigate to primary agent scaffold entities",
