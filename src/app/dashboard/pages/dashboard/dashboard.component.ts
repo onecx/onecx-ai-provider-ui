@@ -38,6 +38,13 @@ export class DashboardComponent {
       icon: 'pi pi-file-edit'
     },
     {
+      titleKey: 'DASHBOARD.PANELS.SKILL.TITLE',
+      subtitleKey: 'DASHBOARD.PANELS.SKILL.SUBTITLE',
+      descriptionKey: 'DASHBOARD.PANELS.SKILL.DESCRIPTION',
+      route: '../skill',
+      icon: 'pi pi-star'
+    },
+    {
       titleKey: 'DASHBOARD.PANELS.PROVIDER.TITLE',
       subtitleKey: 'DASHBOARD.PANELS.PROVIDER.SUBTITLE',
       descriptionKey: 'DASHBOARD.PANELS.PROVIDER.DESCRIPTION',

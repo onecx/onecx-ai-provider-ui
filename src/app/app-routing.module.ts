@@ -6,6 +6,12 @@ export const routes: Routes = [
   {
     // Adjust the matcher to match the feature route.
     // If you only have one feature, you can use '' for simplification.
+    matcher: startsWith('skill'),
+    loadChildren: () => import('./skill/skill.module').then((mod) => mod.SkillModule)
+  },
+  {
+    // Adjust the matcher to match the feature route.
+    // If you only have one feature, you can use '' for simplification.
     matcher: startsWith('agent'),
     loadChildren: () => import('./agent/agent.module').then((mod) => mod.AgentModule)
   },

@@ -1,4 +1,121 @@
 {
+  "SKILL_CREATE_UPDATE": {
+    "ACTION": {
+      "CREATE": "Create"
+    },
+    "CREATE": {
+      "HEADER": "Create Skill",
+      "SUCCESS": "Creation succesful",
+      "ERROR": "Creation failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "UPDATE": {
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      },
+      "HEADER": "Update Skill"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description"
+    }
+  },
+  "SKILL_DETAILS": {
+    "HEADER": "Skill Details",
+    "SUB_HEADER": "Display and edit skill details",
+    "HELP_ARTICLE_ID": "Help Article",
+    "BREADCRUMB": "Details",
+    "ARIA_LABEL": "Page Header with Details",
+    "ERROR_MESSAGES": {
+      "DETAILS_LOADING_FAILED": "Loading details failed."
+    },
+    "GENERAL": {
+      "BACK": "Back",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "CANCEL": "Cancel",
+      "SAVE": "Save"
+    },
+    "FORM": {
+      "ID": "ID",
+      "SOURCE": "Source",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "INSTRUCTION": "Instruction (Markdown)"
+    },
+    "CANCEL": {
+      "HEADER": "Confirm cancellation",
+      "MESSAGE": "Please confirm that you want to cancel editing and reset changes.",
+      "CONFIRM": "Confirm"
+    },
+    "UPDATE": {
+      "HEADER": "Update Skill",
+      "SUCCESS": "Update successful",
+      "ERROR": "Update failed",
+      "FORM": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      }
+    },
+    "DELETE": {
+      "HEADER": "Delete Skill",
+      "MESSAGE": "Please confirm that you want to delete this Skill item.",
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel",
+      "SUCCESS": "Skill deleted successfully",
+      "ERROR": "Could not delete Skill"
+    }
+  },
+  "SKILL_SEARCH": {
+    "HEADER": "Skill Search",
+    "SUB_HEADER": "Search and manage skills",
+    "HELP_ARTICLE_ID": "Help Article",
+    "EMPTY_RESULTS": "No results.",
+    "BREADCRUMB": "Search",
+    "DIAGRAM": {
+      "SUM": "Total",
+      "ARIA_LABEL": "Diagram for Search Results"
+    },
+    "HEADER_ACTIONS": {
+      "EXPORT_ALL": "Export all",
+      "SHOW_CHART": "Show chart",
+      "HIDE_CHART": "Hide chart",
+      "CREATE_SEARCH_CONFIG": "Create search configuration",
+      "UPDATE_SEARCH_CONFIG": "Update search configuration",
+      "DIALOG_CONFIRM": "Confirm",
+      "DIALOG_CANCEL": "Cancel"
+    },
+    "ERROR_MESSAGES": {
+      "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
+      "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
+      "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
+      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+    },
+    "HEADER_ARIA_LABEL": "Page Header with Search",
+    "PREDEFINED_GROUP": {
+      "DEFAULT": "Default",
+      "EXTENDED": "Extended",
+      "FULL": "Full"
+    },
+    "RESULTS_ARIA_LABEL": "Search Results",
+    "RESULTS": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description"
+    },
+    "CRITERIA": {
+      "NAME": {
+        "LABEL": "Name",
+        "ARIA_LABEL": "Name",
+        "TOOLTIP": "Name"
+      }
+    }
+  },
   "AGENT_DETAILS": {
     "HEADER": "Agent Details",
     "SUB_HEADER": "Display and edit Agent details",
@@ -196,6 +313,11 @@
         "TITLE": "Scaffold",
         "SUBTITLE": "Prompt foundation",
         "DESCRIPTION": "Control reusable scaffold templates and baseline system prompts."
+      },
+      "SKILL": {
+        "TITLE": "Skill",
+        "SUBTITLE": "Capability library",
+        "DESCRIPTION": "Manage reusable skills, instructions, and behavior building blocks."
       },
       "PROVIDER": {
         "TITLE": "Provider",

@@ -69,6 +69,15 @@ app:
             IMPORT: Import Agent items
             EXPORT: Export Agent items
             BACK: Navigate back in details of Agent item
+          SKILL:
+            CREATE: Create Skill item
+            EDIT: Edit Skill item
+            DELETE: Delete Skill item
+            SEARCH: Search Skill items
+            VIEW: View Skill item details
+            IMPORT: Import Skill items
+            EXPORT: Export Skill items
+            BACK: Navigate back in details of Skill item
     keycloak:
       client:
         enabled: true
