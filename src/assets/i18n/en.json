@@ -630,6 +630,7 @@
       "LLMURL": "LlmUrl",
       "TYPE": "Type",
       "AUTH_MODE": "Auth Mode",
+      "VIEW_API_KEY": "View API Key",
       "APIKEY": "API Key"
     }
   },
