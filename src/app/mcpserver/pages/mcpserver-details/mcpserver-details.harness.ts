@@ -6,5 +6,4 @@ export class MCPServerDetailsHarness extends ComponentHarness {
 
   getHeader = this.locatorFor(PageHeaderHarness)
   getDataTable = this.locatorFor(DataTableHarness)
-  getToggleAPIAccessButton = this.locatorFor('a[data-testid="toggle-api-access-button"]')
 }

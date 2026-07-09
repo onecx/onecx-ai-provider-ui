@@ -295,22 +295,6 @@ describe('MCPServerDetailsComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.deleteButtonClicked())
   })
 
-  it('should dispatch apiKeyToggleVisibility action on api key visibility toggle', async () => {
-    jest.spyOn(store, 'dispatch')
-    store.overrideSelector(selectMCPServerDetailsViewModel, {
-      ...baseMCPServerDetailsViewModel,
-      isApiKeyHidden: true
-    })
-    store.refreshState()
-    fixture.detectChanges()
-
-    const toggleButton = await mcpserverDetails.getToggleAPIAccessButton()
-    expect(toggleButton).toBeDefined()
-    await toggleButton?.click()
-
-    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.apiKeyVisibilityToggled())
-  })
-
   it('should work with details', async () => {
     store.overrideSelector(selectMCPServerDetailsViewModel, {
       ...baseMCPServerDetailsViewModel,
