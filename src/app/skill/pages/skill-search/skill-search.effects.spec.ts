@@ -16,7 +16,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { SearchSkillResponse, SkillAPIService, UpdateSkillResponse } from 'src/app/shared/generated'
+import { Skill, SkillPageResult, SkillService } from 'src/app/shared/generated'
 import { skillSearchActions } from './skill-search.actions'
 import { SkillSearchEffects } from './skill-search.effects'
 import { SkillSearchCriteria } from './skill-search.parameters'
@@ -40,12 +40,12 @@ describe('SkillSearchEffects', () => {
   let store: MockStore<Store>
   let router: jest.Mocked<Router>
   let route: ActivatedRoute
-  let skillService: jest.Mocked<SkillAPIService>
+  let skillService: jest.Mocked<SkillService>
   let portalDialogService: jest.Mocked<PortalDialogService>
   let messageService: jest.Mocked<PortalMessageService>
   let exportDataService: jest.Mocked<ExportDataService>
 
-  const mockCriteria: SkillSearchCriteria = { changeMe: 'test' }
+  const mockCriteria: SkillSearchCriteria = { name: 'test' }
 
   beforeEach(async () => {
     actions$ = new ReplaySubject(1)
@@ -54,8 +54,8 @@ describe('SkillSearchEffects', () => {
       createSkill: jest.fn(),
       updateSkillById: jest.fn(),
       deleteSkillById: jest.fn(),
-      searchSkillItems: jest.fn()
-    } as unknown as jest.Mocked<SkillAPIService>
+      findSkillByCriteria: jest.fn()
+    } as unknown as jest.Mocked<SkillService>
 
     router = {
       navigate: jest.fn().mockReturnValue(Promise.resolve(true)),
@@ -91,7 +91,7 @@ describe('SkillSearchEffects', () => {
         provideMockActions(() => actions$),
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
-        { provide: SkillAPIService, useValue: skillService },
+        { provide: SkillService, useValue: skillService },
         { provide: PortalDialogService, useValue: portalDialogService },
         { provide: PortalMessageService, useValue: messageService },
         { provide: ExportDataService, useValue: exportDataService }
@@ -159,21 +159,21 @@ describe('SkillSearchEffects', () => {
       store.overrideSelector(skillSearchSelectors.selectCriteria, mockCriteria)
       store.refreshState()
 
-      skillService.searchSkillItems.mockReturnValue(
+      skillService.findSkillByCriteria.mockReturnValue(
         of({
-          stream: [{ id: '1', changeMe: 'Item 1' }],
-          content: [{ id: '1', changeMe: 'Item 1', imagePath: '' }],
+          stream: [{ id: '1', name: 'Item 1' }],
+          content: [{ id: '1', name: 'Item 1', imagePath: '' }],
           size: 10,
           number: 0,
           totalElements: 1,
           totalPages: 1
-        } as unknown as HttpEvent<SearchSkillResponse>)
+        } as unknown as HttpEvent<SkillPageResult>)
       )
     })
 
     it('should dispatch resultsLoadingFailed on search error', (done) => {
       const mockError = 'Search failed'
-      skillService.searchSkillItems.mockReturnValueOnce(throwError(() => mockError))
+      skillService.findSkillByCriteria.mockReturnValueOnce(throwError(() => mockError))
 
       effects
         .performSearch(mockCriteria)
@@ -187,7 +187,7 @@ describe('SkillSearchEffects', () => {
 
     it('should convert Date objects in search criteria before calling skillService', (done) => {
       const criteriaWithDate = { ...mockCriteria, startDate: new Date('2023-01-01'), endDate: new Date('2023-12-31') }
-      const searchSpy = jest.spyOn(skillService, 'searchSkillItems')
+      const searchSpy = jest.spyOn(skillService, 'findSkillByCriteria')
 
       effects
         .performSearch(criteriaWithDate)
@@ -204,7 +204,7 @@ describe('SkillSearchEffects', () => {
     })
 
     it('should use latest criteria from store and call performSearch on routerNavigatedAction', (done) => {
-      const criteriaFromStore = { changeMe: 'fromStore' }
+      const criteriaFromStore = { name: 'fromStore' }
       store.overrideSelector(skillSearchSelectors.selectCriteria, criteriaFromStore)
       store.refreshState()
 
@@ -256,7 +256,7 @@ describe('SkillSearchEffects', () => {
       const mockColumns: DataTableColumn[] = [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME'
         }
       ]
@@ -279,7 +279,7 @@ describe('SkillSearchEffects', () => {
       const mockColumns: DataTableColumn[] = [
         {
           columnType: ColumnType.STRING,
-          id: 'changeMe',
+          id: 'name',
           nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME'
         }
       ]
@@ -358,7 +358,7 @@ describe('SkillSearchEffects', () => {
       const mockError = 'Refresh search failed'
 
       store.overrideSelector(skillSearchSelectors.selectCriteria, {})
-      skillService.searchSkillItems.mockReturnValueOnce(throwError(() => mockError))
+      skillService.findSkillByCriteria.mockReturnValueOnce(throwError(() => mockError))
 
       effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
         expect(action).toEqual(skillSearchActions.skillSearchResultsLoadingFailed({ error: mockError }))
@@ -380,7 +380,7 @@ describe('SkillSearchEffects', () => {
       const dialog = { button: 'primary', result: { ...item } }
 
       portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
-      skillService.updateSkillById.mockReturnValue(of({} as HttpEvent<UpdateSkillResponse>))
+      skillService.updateSkillById.mockReturnValue(of({} as HttpEvent<Skill>))
 
       effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
         expect(action.type).toBe(skillSearchActions.updateSkillSucceeded.type)

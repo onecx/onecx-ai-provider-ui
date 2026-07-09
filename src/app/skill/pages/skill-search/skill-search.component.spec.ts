@@ -13,12 +13,7 @@ import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import {
-  AngularAcceleratorModule,
-  BreadcrumbService,
-  ColumnType,
-  providePortalDialogService
-} from '@onecx/angular-accelerator'
+import { AngularAcceleratorModule, ColumnType, providePortalDialogService } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { provideUserServiceMock, UserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import {
@@ -84,7 +79,7 @@ describe('SkillSearchComponent', () => {
   // ACTION S11: Change test data in the whole document
   const baseSkillSearchViewModel: SkillSearchViewModel = {
     columns: skillSearchColumns,
-    searchCriteria: { changeMe: '0' },
+    searchCriteria: { name: '0' },
     searchExecuted: true,
     results: [],
     searchLoadingIndicator: false,
@@ -112,8 +107,8 @@ describe('SkillSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SkillSearchComponent],
       imports: [
+        SkillSearchComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,
@@ -273,13 +268,6 @@ describe('SkillSearchComponent', () => {
   })
 
   it('should display correct breadcrumbs', async () => {
-    const breadcrumbService = TestBed.inject(BreadcrumbService)
-    jest.spyOn(breadcrumbService, 'setItems')
-
-    component.ngOnInit()
-    fixture.detectChanges()
-
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
     const searchHeader = await skillSearch.getHeader()
     const pageHeader = await searchHeader.getPageHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')
@@ -386,7 +374,7 @@ describe('SkillSearchComponent', () => {
     const searchHeader = await skillSearch.getHeader()
     const pageHeader = await searchHeader.getPageHeader()
     expect(await pageHeader.getHeaderText()).toEqual('Skill Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of Skills')
+    expect(await pageHeader.getSubheaderText()).toEqual('Search and manage skills')
   })
 
   it('should display translated empty message when no search results', async () => {
