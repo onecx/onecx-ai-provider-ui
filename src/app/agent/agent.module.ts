@@ -22,6 +22,7 @@ import { TooltipModule } from 'primeng/tooltip'
 import { SharedModule } from '../shared/shared.module'
 import { AgentSearchComponent } from './pages/agent-search/agent-search.component'
 import { AgentSearchEffects } from './pages/agent-search/agent-search.effects'
+import { AgentCreateUpdateComponent } from './pages/agent-search/dialogs/agent-create-update/agent-create-update.component'
 import { agentFeature } from './agent.reducers'
 import { routes } from './agent.routes'
 
@@ -46,6 +47,7 @@ import { routes } from './agent.routes'
     ReactiveFormsModule,
     DatePickerModule,
     TooltipModule,
+    AgentCreateUpdateComponent,
     StoreModule.forFeature(agentFeature),
     EffectsModule.forFeature([AgentDetailsEffects, AgentSearchEffects]),
     TranslateModule

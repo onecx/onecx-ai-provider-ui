@@ -155,6 +155,8 @@
   <ocx-content-container layout="horizontal">
     <ocx-content class="w-full">
       <ocx-interactive-data-view
+        (editItem)="edit($event)"
+        editPermission="AGENT#EDIT"
         (viewItem)="details($event)"
         viewPermission="AGENT#VIEW"
         [data]="vm.results"
