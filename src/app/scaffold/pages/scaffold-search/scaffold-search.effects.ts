@@ -8,7 +8,12 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { CreateScaffoldRequest, Scaffold, ScaffoldService, UpdateScaffoldRequest } from '../../../shared/generated'
+import {
+  CreateScaffoldRequest,
+  Scaffold,
+  ScaffoldService,
+  UpdateScaffoldRequest
+} from '../../../shared/generated'
 import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
 
 import { Injectable, inject } from '@angular/core'
@@ -92,7 +97,8 @@ export class ScaffoldSearchEffects {
             type: ScaffoldCreateUpdateComponent,
             inputs: {
               vm: {
-                itemToEdit
+                itemToEdit,
+                skills: []
               }
             }
           },
@@ -116,7 +122,10 @@ export class ScaffoldSearchEffects {
         const itemToEditId = dialogResult.result.id
         const itemToEdit: UpdateScaffoldRequest = {
           modificationCount: dialogResult.result.modificationCount ?? 0,
-          name: dialogResult.result.name
+          name: dialogResult.result.name,
+          systemPrompt: dialogResult.result.systemPrompt,
+          sourceProduct: dialogResult.result.sourceProduct,
+          skills: dialogResult.result.skills
         }
         return this.scaffoldService.updateScaffoldById(itemToEditId, itemToEdit).pipe(
           map(() => {
@@ -150,7 +159,8 @@ export class ScaffoldSearchEffects {
             type: ScaffoldCreateUpdateComponent,
             inputs: {
               vm: {
-                itemToEdit: {}
+                itemToEdit: {},
+                skills: []
               }
             }
           },
@@ -169,7 +179,10 @@ export class ScaffoldSearchEffects {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem: CreateScaffoldRequest = {
-          name: dialogResult.result.name
+          name: dialogResult.result.name,
+          systemPrompt: dialogResult.result.systemPrompt,
+          sourceProduct: dialogResult.result.sourceProduct,
+          skills: dialogResult.result.skills
         }
         return this.scaffoldService.createScaffold(toCreateItem).pipe(
           map(() => {

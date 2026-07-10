@@ -50,7 +50,7 @@
       "SYSTEM_PROMPT": "System-Prompt",
       "SOURCE": "Quelle",
       "SOURCE_PRODUCT": "Quellprodukt",
-      "SKILLS": "Fähigkeiten",
+      "SKILLS": "Skills",
       "TOOLS": "Tools (MCP)"
     },
     "TABS": {
@@ -156,7 +156,13 @@
       }
     },
     "FORM": {
-      "NAME": "Name"
+      "NAME": "Name",
+      "SYSTEM_PROMPT": "System-Prompt",
+      "SOURCE_PRODUCT": "Quellprodukt",
+      "SKILLS": "Skills",
+      "NO_SKILLS": "Keine Skills verfügbar",
+      "SKILLS_LOADING": "Skills werden geladen...",
+      "SKILLS_LOAD_FAILED": "Skills konnten nicht geladen werden"
     }
   },
   "SKILL_CREATE_UPDATE": {
@@ -483,7 +489,7 @@
         "TITLE": "Provider",
         "SUBTITLE": "Modell-Backends",
         "DESCRIPTION": "Konfigurieren Sie externe Modell-Provider und deren Konnektivität."
-      },      
+      },
       "TOOL": {
         "TITLE": "Tools (MCP)",
         "SUBTITLE": "Ausführungserweiterungen",
