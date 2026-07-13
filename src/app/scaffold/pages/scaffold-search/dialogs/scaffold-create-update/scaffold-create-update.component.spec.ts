@@ -151,6 +151,14 @@ describe('ScaffoldCreateUpdateComponent', () => {
     expect(component.skillsLoadFailed).toBe(false)
   })
 
+  it('should default skills to an empty array when result has no stream on ngOnInit', () => {
+    skillServiceMock.findSkillByCriteria.mockReturnValueOnce(of({}))
+    component.ngOnInit()
+    expect(component.skills).toEqual([])
+    expect(component.skillsLoading).toBe(false)
+    expect(component.skillsLoadFailed).toBe(false)
+  })
+
   it('should handle skill loading failure on ngOnInit', () => {
     skillServiceMock.findSkillByCriteria.mockReturnValueOnce(throwError(() => new Error('Failed to load skills')))
     component.ngOnInit()

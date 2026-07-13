@@ -62,7 +62,7 @@ export class ScaffoldCreateUpdateComponent
     if (this.vm.itemToEdit) {
       this.formGroup.patchValue({
         ...this.vm.itemToEdit,
-        skills: this.vm.itemToEdit?.skills ?? []
+        skills: this.vm.itemToEdit.skills ?? []
       })
     }
     this.loadSkills()
