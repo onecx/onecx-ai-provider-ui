@@ -1,5 +1,5 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
@@ -149,5 +149,13 @@ describe('ScaffoldCreateUpdateComponent', () => {
     expect(component.skills).toEqual(mockSkills)
     expect(component.skillsLoading).toBe(false)
     expect(component.skillsLoadFailed).toBe(false)
+  })
+
+  it('should handle skill loading failure on ngOnInit', () => {
+    skillServiceMock.findSkillByCriteria.mockReturnValueOnce(throwError(() => new Error('Failed to load skills')))
+    component.ngOnInit()
+    expect(component.skills).toEqual([])
+    expect(component.skillsLoading).toBe(false)
+    expect(component.skillsLoadFailed).toBe(true)
   })
 })
