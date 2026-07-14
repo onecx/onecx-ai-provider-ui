@@ -91,13 +91,11 @@ describe('ScaffoldCreateUpdateComponent', () => {
       id: '1',
       name: 'Old',
       systemPrompt: 'systemPrompt',
-      sourceProduct: 'sourceProduct',
       skills: [{ id: 'skill1', name: 'Skill 1' }]
     } as any
     component.formGroup.setValue({
       name: 'New',
       systemPrompt: 'NewSystemPrompt',
-      sourceProduct: 'newSourceProduct',
       skills: [
         { id: 'skill1', name: 'Skill 1' },
         { id: 'skill2', name: 'Skill 2' }
@@ -108,7 +106,6 @@ describe('ScaffoldCreateUpdateComponent', () => {
       id: '1',
       name: 'New',
       systemPrompt: 'NewSystemPrompt',
-      sourceProduct: 'newSourceProduct',
       skills: [
         { id: 'skill1', name: 'Skill 1' },
         { id: 'skill2', name: 'Skill 2' }
@@ -121,16 +118,14 @@ describe('ScaffoldCreateUpdateComponent', () => {
       id: '2',
       name: 'Patched',
       systemPrompt: 'PatchedSystemPrompt',
-      sourceProduct: 'PatchedSourceProduct',
       skills: [{ id: 'skill1', name: 'Skill 1' }]
     } as any
-    component.formGroup.setValue({ name: null, systemPrompt: null, sourceProduct: null, skills: null })
+    component.formGroup.setValue({ name: null, systemPrompt: null, skills: null })
     component.ngOnInit()
     expect(component.formGroup.value).toEqual({
       name: 'Patched',
       systemPrompt: 'PatchedSystemPrompt',
-      sourceProduct: 'PatchedSourceProduct',
-      skills: [{ id: 'skill1', name: 'Skill 1' }]
+        skills: [{ id: 'skill1', name: 'Skill 1' }]
     })
   })
 

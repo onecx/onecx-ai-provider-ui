@@ -39,7 +39,6 @@ export class ScaffoldCreateUpdateComponent
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
       systemPrompt: new FormControl(null, [Validators.maxLength(4000)]),
-      sourceProduct: new FormControl(null, [Validators.maxLength(255)]),
       skills: new FormControl<Skill[]>([])
     })
     this.formGroup.statusChanges
