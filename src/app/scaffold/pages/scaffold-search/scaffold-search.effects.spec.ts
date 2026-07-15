@@ -16,7 +16,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { ScaffoldPageResult, ScaffoldService, SkillPageResult, SkillService } from 'src/app/shared/generated'
+import { Scaffold, ScaffoldPageResult, ScaffoldService, SkillPageResult, SkillService } from 'src/app/shared/generated'
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchEffects } from './scaffold-search.effects'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
@@ -400,6 +400,177 @@ describe('ScaffoldSearchEffects', () => {
     })
 
     actions$.next(scaffoldSearchActions.loadSkills())
+  })
+
+  describe('refreshSearchAfterCreateUpdate$', () => {
+    beforeEach(() => {
+      store.overrideSelector(scaffoldSearchSelectors.selectCriteria, mockCriteria)
+      store.refreshState()
+
+      scaffoldService.findScaffoldByCriteria.mockReturnValue(
+        of({
+          stream: [{ id: '1', name: 'Item 1' }],
+          size: 10,
+          number: 0,
+          totalElements: 1,
+          totalPages: 1
+        } as unknown as HttpEvent<ScaffoldPageResult>)
+      )
+    })
+
+    it('should perform search after createScaffoldSucceeded', (done) => {
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(scaffoldSearchActions.scaffoldSearchResultsReceived.type)
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldSucceeded())
+    })
+
+    it('should perform search after updateScaffoldSucceeded', (done) => {
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(scaffoldSearchActions.scaffoldSearchResultsReceived.type)
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.updateScaffoldSucceeded())
+    })
+  })
+
+  describe('editButtonClicked$', () => {
+    const item = { id: '1', name: 'Item 1' }
+    const mockSkills = [{ id: 'skill-1', name: 'Skill 1' }]
+
+    beforeEach(() => {
+      store.overrideSelector(scaffoldSearchSelectors.selectResults, [item] as never)
+      store.overrideSelector(scaffoldSearchSelectors.selectSkills, mockSkills as never)
+      store.refreshState()
+    })
+
+    it('should dispatch updateScaffoldSucceeded when update succeeds', (done) => {
+      const dialog = { button: 'primary', result: { ...item } }
+      portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
+      scaffoldService.updateScaffoldById.mockReturnValue(of({} as HttpEvent<Scaffold>))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.updateScaffoldSucceeded.type)
+        expect(messageService.success).toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: '1' }))
+    })
+
+    it('should dispatch updateScaffoldCancelled and not call the service when dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: null }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.updateScaffoldCancelled.type)
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: '1' }))
+    })
+
+    it('should dispatch updateScaffoldFailed when dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.updateScaffoldFailed.type)
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: '1' }))
+    })
+
+    it('should dispatch updateScaffoldFailed when the edited item has no id', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: { name: 'No id' } }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.updateScaffoldFailed.type)
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: '1' }))
+    })
+
+    it('should dispatch updateScaffoldFailed and show an error message when the API update call fails', (done) => {
+      const dialog = { button: 'primary', result: { ...item } }
+      portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
+      scaffoldService.updateScaffoldById.mockReturnValue(throwError(() => 'Update failed'))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.updateScaffoldFailed({ error: 'Update failed' }))
+        expect(messageService.error).toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: '1' }))
+    })
+  })
+
+  describe('createButtonClicked$', () => {
+    const mockSkills = [{ id: 'skill-1', name: 'Skill 1' }]
+
+    beforeEach(() => {
+      store.overrideSelector(scaffoldSearchSelectors.selectSkills, mockSkills as never)
+      store.refreshState()
+    })
+
+    it('should dispatch createScaffoldSucceeded when creation succeeds', (done) => {
+      const dialog = { button: 'primary', result: { name: 'New scaffold' } }
+      portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
+      scaffoldService.createScaffold.mockReturnValue(of({} as HttpEvent<Scaffold>))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.createScaffoldSucceeded.type)
+        expect(messageService.success).toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldCancelled and not call the service when dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: { name: 'x' } }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.createScaffoldCancelled.type)
+        expect(scaffoldService.createScaffold).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldFailed when dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(scaffoldSearchActions.createScaffoldFailed.type)
+        expect(scaffoldService.createScaffold).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldFailed and show an error message when the API create call fails', (done) => {
+      const dialog = { button: 'primary', result: { name: 'New scaffold' } }
+      portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
+      scaffoldService.createScaffold.mockReturnValue(throwError(() => 'API Error'))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.createScaffoldFailed({ error: 'API Error' }))
+        expect(messageService.error).toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
   })
 
   // <<SPEC-EXTENSIONS-MARKER-!!!-DO-NOT-REMOVE-!!!>>
