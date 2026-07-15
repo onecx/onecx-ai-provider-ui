@@ -111,10 +111,8 @@ export class ScaffoldSearchEffects {
         this.store.select(scaffoldSearchSelectors.selectSkills)
       ]),
       map(([action, results, skills]) => {
-        return {
-          itemToEdit: results.find((item) => item.id == action.id),
-          skills
-        }
+        const itemToEdit = results.find((item) => item.id === action.id)
+        return { itemToEdit, skills }
       }),
       mergeMap(({ itemToEdit, skills }) => {
         return this.portalDialogService.openDialog<Scaffold | undefined>(

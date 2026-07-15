@@ -27,9 +27,7 @@
           class="w-full"
           rows="4"
         ></textarea>
-        <label for="system_prompt">
-          {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate }}
-        </label>
+        <label for="system_prompt"> {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate }} </label>
       </p-floatlabel>
     </div>
 
@@ -39,7 +37,7 @@
           inputId="scaffold_create_update_form_skills"
           [options]="vm.skills"
           optionLabel="name"
-          optionValue="id"
+          dataKey="id"
           formControlName="skills"
           appendTo="body"
           display="chip"

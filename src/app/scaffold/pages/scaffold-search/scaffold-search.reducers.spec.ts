@@ -117,6 +117,14 @@ describe('scaffoldSearchReducer', () => {
     expect(nextState.searchLoadingIndicator).toBe(true)
   })
 
+  it('should store skills on scaffoldSkillsReceived', () => {
+    const skills = [{ id: '1', name: 'Skill 1' }, { id: '2', name: 'Skill 2' }]
+    const action = scaffoldSearchActions.scaffoldSkillsReceived({ skills })
+    const nextState = reducers.scaffoldSearchReducer(reducers.initialState, action)
+
+    expect(nextState.skills).toEqual(skills)
+  })
+
   it('should not change state when routerNavigatedAction fails schema parse', () => {
     const { routerNavigatedAction } = require('@ngrx/router-store')
     const mockSchema = require('./scaffold-search.parameters')
