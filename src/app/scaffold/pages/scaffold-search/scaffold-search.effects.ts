@@ -12,6 +12,7 @@ import {
   CreateScaffoldRequest,
   Scaffold,
   ScaffoldService,
+  SkillService,
   UpdateScaffoldRequest
 } from '../../../shared/generated'
 import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
@@ -29,11 +30,30 @@ export class ScaffoldSearchEffects {
   private readonly actions$ = inject(Actions)
   private readonly route = inject(ActivatedRoute)
   private readonly scaffoldService = inject(ScaffoldService)
+  private readonly skillService = inject(SkillService)
   private readonly portalDialogService = inject(PortalDialogService)
   private readonly router = inject(Router)
   private readonly store = inject(Store)
   private readonly messageService = inject(PortalMessageService)
   private readonly exportDataService = inject(ExportDataService)
+
+  loadSkills$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(scaffoldSearchActions.loadSkills),
+      switchMap(() =>
+        this.skillService.findSkillByCriteria({}).pipe(
+          map((res) => scaffoldSearchActions.scaffoldSkillsReceived({ skills: res.stream ?? [] })),
+          catchError((error) =>
+            of(
+              scaffoldSearchActions.scaffoldSkillsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      )
+    )
+  })
 
   syncParamsToUrl$ = createEffect(
     () => {
@@ -86,11 +106,17 @@ export class ScaffoldSearchEffects {
   editButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(scaffoldSearchActions.editScaffoldButtonClicked),
-      concatLatestFrom(() => this.store.select(scaffoldSearchSelectors.selectResults)),
-      map(([action, results]) => {
-        return results.find((item) => item.id == action.id)
+      concatLatestFrom(() => [
+        this.store.select(scaffoldSearchSelectors.selectResults),
+        this.store.select(scaffoldSearchSelectors.selectSkills)
+      ]),
+      map(([action, results, skills]) => {
+        return {
+          itemToEdit: results.find((item) => item.id == action.id),
+          skills
+        }
       }),
-      mergeMap((itemToEdit) => {
+      mergeMap(({ itemToEdit, skills }) => {
         return this.portalDialogService.openDialog<Scaffold | undefined>(
           'SCAFFOLD_CREATE_UPDATE.UPDATE.HEADER',
           {
@@ -98,7 +124,7 @@ export class ScaffoldSearchEffects {
             inputs: {
               vm: {
                 itemToEdit,
-                skills: []
+                skills
               }
             }
           },
@@ -152,7 +178,8 @@ export class ScaffoldSearchEffects {
   createButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(scaffoldSearchActions.createScaffoldButtonClicked),
-      switchMap(() => {
+      concatLatestFrom(() => this.store.select(scaffoldSearchSelectors.selectSkills)),
+      switchMap(([, skills]) => {
         return this.portalDialogService.openDialog<Scaffold | undefined>(
           'SCAFFOLD_CREATE_UPDATE.CREATE.HEADER',
           {
@@ -160,7 +187,7 @@ export class ScaffoldSearchEffects {
             inputs: {
               vm: {
                 itemToEdit: {},
-                skills: []
+                skills: skills
               }
             }
           },

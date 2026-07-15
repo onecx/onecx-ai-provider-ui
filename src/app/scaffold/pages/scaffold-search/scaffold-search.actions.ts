@@ -4,7 +4,7 @@ import {
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
-import { Scaffold } from '../../../shared/generated'
+import { Scaffold, Skill } from '../../../shared/generated'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
 
 export const scaffoldSearchActions = createActionGroup({
@@ -42,6 +42,9 @@ export const scaffoldSearchActions = createActionGroup({
     'Result component state changed': props<InteractiveDataViewComponentState>(),
     'Search header component state changed': props<SearchHeaderComponentState>(),
     'Diagram component state changed': props<GroupByCountDiagramComponentState>(),
-    'Chart visibility toggled': emptyProps()
+    'Chart visibility toggled': emptyProps(),
+    'Load skills': emptyProps(),
+    'Scaffold skills received': props<{ skills: Skill[] }>(),
+    'Scaffold skills loading failed': props<{ error: string | null }>()
   }
 })

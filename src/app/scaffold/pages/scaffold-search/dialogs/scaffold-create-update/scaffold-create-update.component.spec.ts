@@ -1,5 +1,4 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { of, throwError } from 'rxjs'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
@@ -9,12 +8,10 @@ import { BreadcrumbService, AngularAcceleratorModule } from '@onecx/angular-acce
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ScaffoldCreateUpdateComponent } from './scaffold-create-update.component'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { SkillService } from 'src/app/shared/generated/api/skill.service'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
-import { Skill } from 'src/app/shared/generated/model/models'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -36,18 +33,7 @@ describe('ScaffoldCreateUpdateComponent', () => {
 
   const mockActivatedRoute = {}
 
-  const mockSkills: Skill[] = [
-    { id: 'skill1', name: 'Skill 1' },
-    { id: 'skill2', name: 'Skill 2' }
-  ]
-
-  const skillServiceMock = {
-    findSkillByCriteria: jest.fn().mockReturnValue(of({ stream: mockSkills }))
-  }
-
   beforeEach(async () => {
-    skillServiceMock.findSkillByCriteria = jest.fn().mockReturnValue(of({ stream: mockSkills }))
-
     await TestBed.configureTestingModule({
       declarations: [ScaffoldCreateUpdateComponent],
       imports: [
@@ -72,8 +58,7 @@ describe('ScaffoldCreateUpdateComponent', () => {
         {
           provide: HAS_PERMISSION_CHECKER,
           useClass: AlwaysGrantPermissionChecker
-        },
-        { provide: SkillService, useValue: skillServiceMock }
+        }
       ]
     }).compileComponents()
 
@@ -125,7 +110,7 @@ describe('ScaffoldCreateUpdateComponent', () => {
     expect(component.formGroup.value).toEqual({
       name: 'Patched',
       systemPrompt: 'PatchedSystemPrompt',
-        skills: [{ id: 'skill1', name: 'Skill 1' }]
+      skills: [{ id: 'skill1', name: 'Skill 1' }]
     })
   })
 
@@ -137,28 +122,5 @@ describe('ScaffoldCreateUpdateComponent', () => {
     } as any
     component.ngOnInit()
     expect(component.formGroup.value.skills).toEqual([])
-  })
-
-  it('should load skills successfully on ngOnInit', () => {
-    component.ngOnInit()
-    expect(component.skills).toEqual(mockSkills)
-    expect(component.skillsLoading).toBe(false)
-    expect(component.skillsLoadFailed).toBe(false)
-  })
-
-  it('should default skills to an empty array when result has no stream on ngOnInit', () => {
-    skillServiceMock.findSkillByCriteria.mockReturnValueOnce(of({}))
-    component.ngOnInit()
-    expect(component.skills).toEqual([])
-    expect(component.skillsLoading).toBe(false)
-    expect(component.skillsLoadFailed).toBe(false)
-  })
-
-  it('should handle skill loading failure on ngOnInit', () => {
-    skillServiceMock.findSkillByCriteria.mockReturnValueOnce(throwError(() => new Error('Failed to load skills')))
-    component.ngOnInit()
-    expect(component.skills).toEqual([])
-    expect(component.skillsLoading).toBe(false)
-    expect(component.skillsLoadFailed).toBe(true)
   })
 })

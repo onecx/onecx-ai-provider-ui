@@ -16,7 +16,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { ScaffoldPageResult, ScaffoldService } from 'src/app/shared/generated'
+import { ScaffoldPageResult, ScaffoldService, SkillPageResult, SkillService } from 'src/app/shared/generated'
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchEffects } from './scaffold-search.effects'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
@@ -41,6 +41,7 @@ describe('ScaffoldSearchEffects', () => {
   let router: jest.Mocked<Router>
   let route: ActivatedRoute
   let scaffoldService: jest.Mocked<ScaffoldService>
+  let skillService: jest.Mocked<SkillService>
   let portalDialogService: jest.Mocked<PortalDialogService>
   let messageService: jest.Mocked<PortalMessageService>
   let exportDataService: jest.Mocked<ExportDataService>
@@ -56,6 +57,10 @@ describe('ScaffoldSearchEffects', () => {
       deleteScaffoldById: jest.fn(),
       findScaffoldByCriteria: jest.fn()
     } as unknown as jest.Mocked<ScaffoldService>
+
+    skillService = {
+      findSkillByCriteria: jest.fn()
+    } as unknown as jest.Mocked<SkillService>
 
     router = {
       navigate: jest.fn().mockReturnValue(Promise.resolve(true)),
@@ -92,6 +97,7 @@ describe('ScaffoldSearchEffects', () => {
         { provide: ActivatedRoute, useValue: route },
         { provide: Router, useValue: router },
         { provide: ScaffoldService, useValue: scaffoldService },
+        { provide: SkillService, useValue: skillService },
         { provide: PortalDialogService, useValue: portalDialogService },
         { provide: PortalMessageService, useValue: messageService },
         { provide: ExportDataService, useValue: exportDataService }
@@ -351,6 +357,49 @@ describe('ScaffoldSearchEffects', () => {
 
       actions$.next(scaffoldSearchActions.detailsButtonClicked({ id: testId }))
     })
+  })
+
+  describe('loadSkills$', () => {
+    it('should displatch scaffoldSkillsReceived with the loaded skills', (done) => {
+      const mockSkills = [
+        { id: 'skill-1', name: 'Skill 1' },
+        { id: 'skill-2', name: 'Skill 2' }
+      ]
+
+      skillService.findSkillByCriteria.mockReturnValue(
+        of({ stream: mockSkills } as unknown as HttpEvent<SkillPageResult>)
+      )
+
+      effects.loadSkills$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.scaffoldSkillsReceived({ skills: mockSkills }))
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.loadSkills())
+    })
+  })
+
+  it('should default to an empty skills array when the result has no stream', (done) => {
+    skillService.findSkillByCriteria.mockReturnValue(of({} as unknown as HttpEvent<SkillPageResult>))
+
+    effects.loadSkills$.pipe(take(1)).subscribe((action) => {
+      expect(action).toEqual(scaffoldSearchActions.scaffoldSkillsReceived({ skills: [] }))
+      done()
+    })
+
+    actions$.next(scaffoldSearchActions.loadSkills())
+  })
+
+  it('should dispatch scaffoldSkillsLoadingFailed on error', (done) => {
+    const mockError = 'Load skills failed'
+    skillService.findSkillByCriteria.mockReturnValueOnce(throwError(() => mockError))
+
+    effects.loadSkills$.pipe(take(1)).subscribe((action) => {
+      expect(action).toEqual(scaffoldSearchActions.scaffoldSkillsLoadingFailed({ error: mockError }))
+      done()
+    })
+
+    actions$.next(scaffoldSearchActions.loadSkills())
   })
 
   // <<SPEC-EXTENSIONS-MARKER-!!!-DO-NOT-REMOVE-!!!>>

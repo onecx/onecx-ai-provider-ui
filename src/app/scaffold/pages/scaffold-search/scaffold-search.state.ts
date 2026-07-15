@@ -4,7 +4,7 @@ import {
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
-import { Scaffold } from 'src/app/shared/generated'
+import { Scaffold, Skill } from 'src/app/shared/generated'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
 
 export interface ScaffoldSearchState {
@@ -17,4 +17,5 @@ export interface ScaffoldSearchState {
   searchLoadingIndicator: boolean
   criteria: ScaffoldSearchCriteria
   searchExecuted: boolean
+  skills: Skill[]
 }
