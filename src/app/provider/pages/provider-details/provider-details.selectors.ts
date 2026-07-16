@@ -11,11 +11,7 @@ export const selectProviderDetailsViewModel = createSelector(
   ProviderDetailsSelectors.selectDetails,
   ProviderDetailsSelectors.selectEditMode,
   ProviderDetailsSelectors.selectIsApiKeyHidden,
-  (
-    details: Provider | undefined, 
-    editMode,
-    isApiKeyHidden
-  ): ProviderDetailsViewModel => ({
+  (details: Provider | undefined, editMode, isApiKeyHidden): ProviderDetailsViewModel => ({
     details,
     editMode,
     isApiKeyHidden

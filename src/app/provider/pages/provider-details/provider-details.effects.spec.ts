@@ -55,8 +55,8 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
         ProviderDetailsComponent,
         ReactiveFormsModule,
         TranslateTestingModule.withTranslations({
-          'en': require('./src/assets/i18n/en.json'),
-          'de': require('./src/assets/i18n/de.json')
+          en: require('./src/assets/i18n/en.json'),
+          de: require('./src/assets/i18n/de.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
@@ -247,7 +247,7 @@ describe('ProviderDetailsComponent actions & dispatch', () => {
 
     expect(component.formGroup.get('apiKey')?.disabled).toBe(true)
   })
-  
+
   it('should dispatch apiKeyVisibilityToggled action on toggleApiKeyVisibility()', () => {
     const dispatchSpy = jest.spyOn(store, 'dispatch')
     component.toggleApiKeyVisibility()

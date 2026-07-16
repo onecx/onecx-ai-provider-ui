@@ -80,7 +80,7 @@ const config = withModuleFederationPlugin({
       includeSecondaries: true
     }
   }),
-  sharedMappings: ['@onecx/angular-accelerator'],
+  sharedMappings: ['@onecx/angular-accelerator']
 })
 
 const plugins = config.plugins.filter((plugin) => !(plugin instanceof ModifyEntryPlugin))
@@ -148,8 +148,8 @@ module.exports = {
     ...config.module,
     parser: {
       javascript: {
-        importMeta: false,
-      },
-    },
-  },
+        importMeta: false
+      }
+    }
+  }
 }

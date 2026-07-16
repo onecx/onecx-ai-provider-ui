@@ -4,8 +4,8 @@ import { apiConfigProvider } from './apiConfigProvider.utils'
 
 jest.mock('src/environments/environment', () => ({
   environment: {
-    apiPrefix: '/api',
-  },
+    apiPrefix: '/api'
+  }
 }))
 jest.mock('../generated')
 

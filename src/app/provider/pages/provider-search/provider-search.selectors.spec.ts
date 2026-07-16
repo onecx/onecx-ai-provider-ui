@@ -1,4 +1,4 @@
-import { selectProviderSearchViewModel, selectDisplayedColumns, selectResults } from "./provider-search.selectors"
+import { selectProviderSearchViewModel, selectDisplayedColumns, selectResults } from './provider-search.selectors'
 
 describe('ProviderSearch selectors', () => {
   it('should map results to RowListGridData', () => {
@@ -8,7 +8,7 @@ describe('ProviderSearch selectors', () => {
         name: 'Test',
         description: 'Desc',
         llmUrl: 'url',
-        modelName: 'model',
+        modelName: 'model'
       }
     ]
     const healthStatus = {

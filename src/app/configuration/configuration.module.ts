@@ -45,7 +45,7 @@ import { ConfigurationDetailsEffects } from './pages/configuration-details/confi
     AutoCompleteModule,
     StoreModule.forFeature(configurationFeature),
     EffectsModule.forFeature([ConfigurationDetailsEffects, ConfigurationSearchEffects]),
-    TranslateModule,
+    TranslateModule
   ]
 })
 export class ConfigurationModule {}

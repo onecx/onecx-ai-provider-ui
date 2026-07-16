@@ -16,11 +16,7 @@ import { configurationSearchCriteriasSchema } from './configuration-search.param
 import { configurationSearchSelectors, selectConfigurationSearchViewModel } from './configuration-search.selectors'
 import { ConfigurationCreateUpdateComponent } from './dialogs/configuration-create-update/configuration-create-update.component'
 import { PrimeIcons } from 'primeng/api'
-import {
-  Configuration,
-  ConfigurationService,
-  CreateConfigurationRequest,
-} from 'src/app/shared/generated'
+import { Configuration, ConfigurationService, CreateConfigurationRequest } from 'src/app/shared/generated'
 
 @Injectable()
 export class ConfigurationSearchEffects {

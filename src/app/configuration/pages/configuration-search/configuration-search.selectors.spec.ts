@@ -1,4 +1,4 @@
-import { ColumnType } from "@onecx/angular-accelerator"
+import { ColumnType } from '@onecx/angular-accelerator'
 import * as selectors from './configuration-search.selectors'
 
 describe('ConfigurationSearch selectors', () => {
@@ -79,11 +79,7 @@ describe('ConfigurationSearch selectors', () => {
         searchExecuted: true
       }
 
-      const result = selectors.selectConfigurationSearchViewModel.projector(
-        coreState,
-        componentStates,
-        uiState
-      )
+      const result = selectors.selectConfigurationSearchViewModel.projector(coreState, componentStates, uiState)
 
       expect(result).toEqual({
         ...coreState,
@@ -100,12 +96,7 @@ describe('ConfigurationSearch selectors', () => {
       const results = [{ imagePath: '', id: '1' }]
       const displayedColumns = [{ id: 'col1', nameKey: 'Col 1', columnType: ColumnType.STRING }]
 
-      const result = selectors.selectSearchCoreState.projector(
-        columns,
-        searchCriteria,
-        results,
-        displayedColumns
-      )
+      const result = selectors.selectSearchCoreState.projector(columns, searchCriteria, results, displayedColumns)
 
       expect(result).toEqual({
         columns,
@@ -142,11 +133,7 @@ describe('ConfigurationSearch selectors', () => {
       const searchLoadingIndicator = false
       const searchExecuted = true
 
-      const result = selectors.selectUiState.projector(
-        chartVisible,
-        searchLoadingIndicator,
-        searchExecuted
-      )
+      const result = selectors.selectUiState.projector(chartVisible, searchLoadingIndicator, searchExecuted)
 
       expect(result).toEqual({
         chartVisible,

@@ -40,6 +40,6 @@ export const MCPServerDetailsActions = createActionGroup({
     'back navigation failed': emptyProps(),
     'navigation to search started': emptyProps(),
     'navigation to search not started': emptyProps(),
-    'api key visibility toggled': emptyProps(),
+    'api key visibility toggled': emptyProps()
   }
 })

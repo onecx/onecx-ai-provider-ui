@@ -1,4 +1,4 @@
-import { selectProviderDetailsViewModel } from "./provider-details.selectors"
+import { selectProviderDetailsViewModel } from './provider-details.selectors'
 
 describe('selectProviderDetailsViewModel', () => {
   it('should return correct view model for all fields', () => {

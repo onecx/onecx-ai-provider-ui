@@ -12,7 +12,7 @@ export interface ConfigurationDetailsState {
   mcpServers: MCPServer[] | undefined
   mcpServersLoaded: boolean
   mcpServersLoadingIndicator: boolean
-  
+
   backNavigationPossible: boolean
   editMode: boolean
   isSubmitting: boolean

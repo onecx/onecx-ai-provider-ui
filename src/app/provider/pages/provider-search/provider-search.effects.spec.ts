@@ -70,8 +70,8 @@ describe('ProviderSearchComponent effects', () => {
         ReactiveFormsModule,
         StoreModule.forRoot({}),
         TranslateTestingModule.withTranslations({
-          'en': require('./src/assets/i18n/en.json'),
-          'de': require('./src/assets/i18n/de.json')
+          en: require('./src/assets/i18n/en.json'),
+          de: require('./src/assets/i18n/de.json')
         }).withDefaultLanguage('en'),
         NoopAnimationsModule
       ],
@@ -113,7 +113,7 @@ describe('ProviderSearchComponent effects', () => {
     effects = new ProviderSearchEffects(
       { openDialog: jest.fn() } as unknown as PortalDialogService,
       new Actions(actionsSubject),
-      ({ queryParams: of({}) } as unknown) as ActivatedRoute,
+      { queryParams: of({}) } as unknown as ActivatedRoute,
       providerService as unknown as ProviderService,
       { navigate: jest.fn(), parseUrl: jest.fn(), events: of({}) } as unknown as Router,
       { select: jest.fn(() => of(undefined)) } as unknown as Store,
@@ -284,87 +284,83 @@ describe('ProviderSearchComponent effects', () => {
       done()
     })
   })
-  
+
   describe('ProviderSearchEffects health polling', () => {
     it('should emit health poll ticks for each result and fallback to empty id', async () => {
       const promise = firstValueFrom(effects.pollProviderHealth$.pipe(take(2), toArray()))
-  
+
       actionsSubject.next(
         ProviderSearchActions.providerSearchResultsReceived({
           results: [{ id: 'p1' } as Provider, { id: undefined } as Provider],
           totalNumberOfResults: 2
         })
       )
-  
+
       await expect(promise).resolves.toEqual([
         ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }),
         ProviderSearchActions.providerHealthPollTicked({ id: '' })
       ])
     })
-  
+
     it('should update health status from provider service response', async () => {
       providerService.getProviderHealthStatus.mockReturnValue(of({ status: 'ONLINE' }))
-  
+
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
-  
+
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'ONLINE' })
       )
     })
-  
+
     it('should fallback to NODATA when response status is missing', async () => {
       providerService.getProviderHealthStatus.mockReturnValue(of({}))
-  
+
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
-  
+
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'NODATA' })
       )
     })
-  
+
     it('should fallback to NODATA when service returns undefined response', async () => {
       providerService.getProviderHealthStatus.mockReturnValue(of(undefined))
-  
+
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
-  
+
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'NODATA' })
       )
     })
-  
+
     it('should map 404 error to NODATA', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(
-        throwError(() => ({ status: 404 } as HttpErrorResponse))
-      )
-  
+      providerService.getProviderHealthStatus.mockReturnValue(throwError(() => ({ status: 404 }) as HttpErrorResponse))
+
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
-  
+
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'NODATA' })
       )
     })
 
     it('should map undefined error object to OFFLINE', async () => {
-      providerService.getProviderHealthStatus.mockReturnValue(
-        throwError(() => undefined)
-      )
-  
+      providerService.getProviderHealthStatus.mockReturnValue(throwError(() => undefined))
+
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: 'p1' }))
-  
+
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: 'p1', status: 'OFFLINE' })
       )
     })
-  
+
     it('should return NODATA immediately for empty id without calling service', async () => {
       const promise = firstValueFrom(effects.updateProviderHealthStatus$)
       actionsSubject.next(ProviderSearchActions.providerHealthPollTicked({ id: '' }))
-  
+
       await expect(promise).resolves.toEqual(
         ProviderSearchActions.providerHealthStatusUpdated({ id: '', status: 'NODATA' })
       )
@@ -372,4 +368,3 @@ describe('ProviderSearchComponent effects', () => {
     })
   })
 })
-

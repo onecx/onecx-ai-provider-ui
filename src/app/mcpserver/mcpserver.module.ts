@@ -37,7 +37,7 @@ import { MCPServerSearchEffects } from './pages/mcpserver-search/mcpserver-searc
     MCPServerSearchComponent,
     StoreModule.forFeature(mcpserverFeature),
     EffectsModule.forFeature([MCPServerDetailsEffects, MCPServerSearchEffects]),
-    TranslateModule,
+    TranslateModule
   ]
 })
 export class MCPServerModule {}

@@ -2,13 +2,7 @@
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
     <div [title]="'PROVIDER_CREATE_UPDATE.FORM.NAME' | translate">
       <p-floatlabel variant="on" controlErrorAnchor>
-        <input
-          pInputText
-          type="text"
-          id="provider_detail_form_name"
-          class="w-full pt-3 pb-2"
-          formControlName="name"
-        />
+        <input pInputText type="text" id="provider_detail_form_name" class="w-full pt-3 pb-2" formControlName="name" />
         <label class="ocx-required-label" for="provider_detail_form_name">
           {{ 'PROVIDER_CREATE_UPDATE.FORM.NAME' | translate }}</label
         >
@@ -55,7 +49,8 @@
           [attr.aria-label]="'PROVIDER_CREATE_UPDATE.FORM.LLMURL' | translate"
         />
         <label class="ocx-required-label" for="provider_detail_form_llmUrl">
-          {{ 'PROVIDER_CREATE_UPDATE.FORM.LLMURL' | translate }}</label>        
+          {{ 'PROVIDER_CREATE_UPDATE.FORM.LLMURL' | translate }}</label
+        >
       </p-floatlabel>
     </div>
     <div [title]="'PROVIDER_CREATE_UPDATE.FORM.APIKEY' | translate">
@@ -69,7 +64,8 @@
           [attr.aria-label]="'PROVIDER_CREATE_UPDATE.FORM.APIKEY' | translate"
         />
         <label class="ocx-required-label" for="provider_detail_form_apiKey">
-          {{ 'PROVIDER_CREATE_UPDATE.FORM.APIKEY' | translate }}</label>
+          {{ 'PROVIDER_CREATE_UPDATE.FORM.APIKEY' | translate }}</label
+        >
       </p-floatlabel>
     </div>
   </div>

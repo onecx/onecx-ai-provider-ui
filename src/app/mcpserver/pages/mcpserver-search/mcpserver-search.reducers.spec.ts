@@ -1,8 +1,8 @@
-import { routerNavigatedAction } from "@ngrx/router-store"
-import { MCPServerSearchActions } from "./mcpserver-search.actions"
-import { mcpserverSearchReducer, initialState } from "./mcpserver-search.reducers"
-import { mcpserverSearchCriteriasSchema } from "./mcpserver-search.parameters"
-import { DiagramComponentState, DiagramType, SearchHeaderComponentState } from "@onecx/angular-accelerator"
+import { routerNavigatedAction } from '@ngrx/router-store'
+import { MCPServerSearchActions } from './mcpserver-search.actions'
+import { mcpserverSearchReducer, initialState } from './mcpserver-search.reducers'
+import { mcpserverSearchCriteriasSchema } from './mcpserver-search.parameters'
+import { DiagramComponentState, DiagramType, SearchHeaderComponentState } from '@onecx/angular-accelerator'
 
 describe('mcpserverSearchReducer', () => {
   it('should parse query params on routerNavigatedAction (success)', () => {
@@ -46,7 +46,7 @@ describe('mcpserverSearchReducer', () => {
 
   it('should set loading and criteria on searchButtonClicked', () => {
     const action = MCPServerSearchActions.searchButtonClicked({ searchCriteria: { name: 'Test' } })
-    const state = mcpserverSearchReducer(initialState, action)    
+    const state = mcpserverSearchReducer(initialState, action)
     expect(state.criteria).toEqual({ name: 'Test' })
   })
 
@@ -105,5 +105,4 @@ describe('mcpserverSearchReducer', () => {
     delete (state.diagramComponentState as any).type // remove type property for comparison
     expect(state.diagramComponentState).toEqual(componentState)
   })
-
 })

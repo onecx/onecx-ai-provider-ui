@@ -12,6 +12,6 @@ export const ProviderDetailsActions = createActionGroup({
     }>(),
     'provider details loading failed': props<{ error: string | null }>(),
     'provider details edit mode set': props<{ editMode: boolean }>(),
-    'api key visibility toggled': emptyProps(),
+    'api key visibility toggled': emptyProps()
   }
 })

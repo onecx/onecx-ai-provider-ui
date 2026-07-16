@@ -90,8 +90,8 @@ describe('MCPServerDetailsComponent', () => {
         MCPServerDetailsComponent,
         ReactiveFormsModule,
         TranslateTestingModule.withTranslations({
-          'en': require('./src/assets/i18n/en.json'),
-          'de': require('./src/assets/i18n/de.json')
+          en: require('./src/assets/i18n/en.json'),
+          de: require('./src/assets/i18n/de.json')
         }).withDefaultLanguage('en'),
         HttpClientTestingModule
       ],

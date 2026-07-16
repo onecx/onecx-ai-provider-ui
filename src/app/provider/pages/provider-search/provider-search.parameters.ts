@@ -7,7 +7,7 @@ export const ProviderSearchCriteriasSchema = z.object({
   llmUrl: z.string().optional(),
   type: z.string().optional(),
   modelName: z.string().optional(),
-  id: z.number().optional(),
+  id: z.number().optional()
 } satisfies Partial<Record<keyof APIProviderSearchCriteria, ZodTypeAny>>)
 
 export type ProviderSearchCriteria = z.infer<typeof ProviderSearchCriteriasSchema>

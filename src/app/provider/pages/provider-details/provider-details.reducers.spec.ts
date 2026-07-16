@@ -1,6 +1,6 @@
-import { ProviderDetailsActions } from "./provider-details.actions"
-import { ProviderDetailsReducer, initialState } from "./provider-details.reducers"
-import { ProviderDetailsState } from "./provider-details.state"
+import { ProviderDetailsActions } from './provider-details.actions'
+import { ProviderDetailsReducer, initialState } from './provider-details.reducers'
+import { ProviderDetailsState } from './provider-details.state'
 
 describe('ProviderDetailsReducer', () => {
   it('should set details on providerDetailsReceived', () => {
@@ -9,7 +9,6 @@ describe('ProviderDetailsReducer', () => {
     const state = ProviderDetailsReducer(initialState, action)
     expect(state.details).toEqual(details)
   })
-
 
   it('should set details to undefined on providerDetailsLoadingFailed', () => {
     const prevState: ProviderDetailsState = { ...initialState, details: { id: '1' } as any }
@@ -24,7 +23,6 @@ describe('ProviderDetailsReducer', () => {
     const state = ProviderDetailsReducer(prevState, action)
     expect(state).toEqual(initialState)
   })
-
 
   it('should set editMode on providerDetailsEditModeSet', () => {
     const action = ProviderDetailsActions.providerDetailsEditModeSet({ editMode: true })

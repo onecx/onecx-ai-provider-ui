@@ -114,15 +114,18 @@ export const configurationDetailsReducer = createReducer(
       isSubmitting: false
     })
   ),
-  on(ConfigurationDetailsActions.updateConfigurationSucceeded, (state, {updateResult}): ConfigurationDetailsState => ({
-    ...state,
-    details: {
-      ...state.details!,
-      modificationCount: updateResult.modificationCount
-    },
-    editMode: false,
-    isSubmitting: false
-  })),
+  on(
+    ConfigurationDetailsActions.updateConfigurationSucceeded,
+    (state, { updateResult }): ConfigurationDetailsState => ({
+      ...state,
+      details: {
+        ...state.details!,
+        modificationCount: updateResult.modificationCount
+      },
+      editMode: false,
+      isSubmitting: false
+    })
+  ),
   on(
     ConfigurationDetailsActions.updateConfigurationFailed,
     (state: ConfigurationDetailsState): ConfigurationDetailsState => ({

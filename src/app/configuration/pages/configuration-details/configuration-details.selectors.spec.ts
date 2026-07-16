@@ -1,5 +1,9 @@
-
-import { selectConfigurationDetailsViewModel, selectDetailsState, selectMcpServersState, selectProvidersState } from "./configuration-details.selectors"
+import {
+  selectConfigurationDetailsViewModel,
+  selectDetailsState,
+  selectMcpServersState,
+  selectProvidersState
+} from './configuration-details.selectors'
 import { Provider, MCPServer, Configuration } from 'src/app/shared/generated'
 
 describe('selectConfigurationDetailsViewModel', () => {

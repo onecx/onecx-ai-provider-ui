@@ -59,8 +59,8 @@ describe('ProviderSearchComponent', () => {
         ReactiveFormsModule,
         StoreModule.forRoot({}),
         TranslateTestingModule.withTranslations({
-          'en': require('./src/assets/i18n/en.json'),
-          'de': require('./src/assets/i18n/de.json')
+          en: require('./src/assets/i18n/en.json'),
+          de: require('./src/assets/i18n/de.json')
         }).withDefaultLanguage('en'),
         NoopAnimationsModule
       ],
@@ -335,9 +335,7 @@ describe('ProviderSearchComponent', () => {
 
     component.delete(mockRow)
 
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      ProviderSearchActions.deleteProviderButtonClicked({ id: '123' })
-    )
+    expect(dispatchSpy).toHaveBeenCalledWith(ProviderSearchActions.deleteProviderButtonClicked({ id: '123' }))
   })
 
   describe('date mapping logic', () => {
@@ -367,7 +365,8 @@ describe('ProviderSearchComponent', () => {
 
     it('should map valid Date value to UTC ISO string in searchCriteria', () => {
       const localDate = new Date(2023, 7, 14, 12, 30, 45)
-      const expectedIso = new Date(Date.UTC(
+      const expectedIso = new Date(
+        Date.UTC(
           localDate.getFullYear(),
           localDate.getMonth(),
           localDate.getDate(),

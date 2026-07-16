@@ -167,7 +167,7 @@ export class ConfigurationDetailsEffects {
             this.messageService.success({
               summaryKey: 'CONFIGURATION_DETAILS.UPDATE.SUCCESS'
             })
-            return ConfigurationDetailsActions.updateConfigurationSucceeded({updateResult: response})
+            return ConfigurationDetailsActions.updateConfigurationSucceeded({ updateResult: response })
           }),
           catchError((error) => {
             this.messageService.error({

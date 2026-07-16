@@ -126,7 +126,7 @@ export class ConfigurationDetailsComponent implements OnInit {
   ) {
     this.filteredProviders$ = combineLatest([this.providerQuery$, this.viewModel$]).pipe(
       map(([query, vm]) => {
-        const suggestions = [...(vm.details?.llmProvider ? [vm.details.llmProvider] : []), ...vm.Providers ?? []]
+        const suggestions = [...(vm.details?.llmProvider ? [vm.details.llmProvider] : []), ...(vm.Providers ?? [])]
         return suggestions.filter(
           (p) => p.name.toLowerCase().includes(query.toLowerCase()) && vm.details?.llmProvider?.id !== p.id
         )
@@ -163,7 +163,7 @@ export class ConfigurationDetailsComponent implements OnInit {
           modificationCount: vm.details?.modificationCount,
           description: vm.details?.description || '',
           mcpServers: vm.details?.mcpServers,
-          llmProvider: vm.details?.llmProvider,
+          llmProvider: vm.details?.llmProvider
         })
 
         this.formGroup.markAsPristine()

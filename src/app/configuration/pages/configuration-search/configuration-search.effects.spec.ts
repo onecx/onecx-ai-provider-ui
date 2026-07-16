@@ -474,7 +474,6 @@ describe('ConfigurationSearchEffects', () => {
         done()
       })
     })
-
     ;[
       {
         desc: 'should dispatch deleteConfigurationCancelled when dialog is cancelled',
@@ -650,7 +649,6 @@ describe('ConfigurationSearchEffects', () => {
 
       actions$.next(ConfigurationSearchActions.createConfigurationButtonClicked())
     })
-
     ;[
       {
         desc: 'should dispatch cancelled action when dialog is closed without result',
