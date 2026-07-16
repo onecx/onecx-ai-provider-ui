@@ -141,6 +141,190 @@ describe('AgentDetailsEffects', () => {
     })
   })
 
+  describe('loadProviders$', () => {
+    it('should dispatch agentProvidersReceived with the loaded providers', async () => {
+      const providers = [{ id: 'p1', name: 'Provider 1' }]
+      providerService.findProviderBySearchCriteria.mockReturnValue(of({ stream: providers }))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadProviders$)
+
+      expect(action).toEqual(agentDetailsActions.agentProvidersReceived({ providers }))
+    })
+
+    it('should dispatch agentProvidersReceived with an empty list when stream is missing', async () => {
+      providerService.findProviderBySearchCriteria.mockReturnValue(of({}))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadProviders$)
+
+      expect(action).toEqual(agentDetailsActions.agentProvidersReceived({ providers: [] }))
+    })
+
+    it('should dispatch agentProvidersLoadingFailed on error', async () => {
+      const mockError = 'providers failed'
+      providerService.findProviderBySearchCriteria.mockReturnValue(throwError(() => mockError))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadProviders$)
+
+      expect(action).toEqual(agentDetailsActions.agentProvidersLoadingFailed({ error: mockError }))
+    })
+  })
+
+  describe('loadModels$', () => {
+    it('should dispatch agentModelsReceived with the loaded models', async () => {
+      const models = [{ id: 'm1', name: 'Model 1' }]
+      modelService.findModelByCriteria.mockReturnValue(of({ stream: models }))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadModels$)
+
+      expect(action).toEqual(agentDetailsActions.agentModelsReceived({ models }))
+    })
+
+    it('should dispatch agentModelsReceived with an empty list when stream is missing', async () => {
+      modelService.findModelByCriteria.mockReturnValue(of({}))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadModels$)
+
+      expect(action).toEqual(agentDetailsActions.agentModelsReceived({ models: [] }))
+    })
+
+    it('should dispatch agentModelsLoadingFailed on error', async () => {
+      const mockError = 'models failed'
+      modelService.findModelByCriteria.mockReturnValue(throwError(() => mockError))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadModels$)
+
+      expect(action).toEqual(agentDetailsActions.agentModelsLoadingFailed({ error: mockError }))
+    })
+  })
+
+  describe('loadScaffolds$', () => {
+    it('should dispatch agentScaffoldsReceived with the loaded scaffolds', async () => {
+      const scaffolds = [{ id: 's1', name: 'Scaffold 1' }]
+      scaffoldService.findScaffoldByCriteria.mockReturnValue(of({ stream: scaffolds }))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadScaffolds$)
+
+      expect(action).toEqual(agentDetailsActions.agentScaffoldsReceived({ scaffolds }))
+    })
+
+    it('should dispatch agentScaffoldsReceived with an empty list when stream is missing', async () => {
+      scaffoldService.findScaffoldByCriteria.mockReturnValue(of({}))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadScaffolds$)
+
+      expect(action).toEqual(agentDetailsActions.agentScaffoldsReceived({ scaffolds: [] }))
+    })
+
+    it('should dispatch agentScaffoldsLoadingFailed on error', async () => {
+      const mockError = 'scaffolds failed'
+      scaffoldService.findScaffoldByCriteria.mockReturnValue(throwError(() => mockError))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadScaffolds$)
+
+      expect(action).toEqual(agentDetailsActions.agentScaffoldsLoadingFailed({ error: mockError }))
+    })
+  })
+
+  describe('loadTools$', () => {
+    it('should dispatch agentToolsReceived with the loaded tools', async () => {
+      const tools = [{ id: 't1', name: 'Tool 1' }]
+      toolService.findToolByCriteria.mockReturnValue(of({ stream: tools }))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadTools$)
+
+      expect(action).toEqual(agentDetailsActions.agentToolsReceived({ tools }))
+    })
+
+    it('should dispatch agentToolsReceived with an empty list when stream is missing', async () => {
+      toolService.findToolByCriteria.mockReturnValue(of({}))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadTools$)
+
+      expect(action).toEqual(agentDetailsActions.agentToolsReceived({ tools: [] }))
+    })
+
+    it('should dispatch agentToolsLoadingFailed on error', async () => {
+      const mockError = 'tools failed'
+      toolService.findToolByCriteria.mockReturnValue(throwError(() => mockError))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadTools$)
+
+      expect(action).toEqual(agentDetailsActions.agentToolsLoadingFailed({ error: mockError }))
+    })
+  })
+
+  describe('loadGroups$', () => {
+    it('should dispatch agentGroupsReceived with the loaded groups', async () => {
+      const groups = [{ id: 'g1', name: 'Group 1' }]
+      agentGroupService.findAgentGroupByCriteria.mockReturnValue(of({ stream: groups }))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadGroups$)
+
+      expect(action).toEqual(agentDetailsActions.agentGroupsReceived({ groups }))
+    })
+
+    it('should dispatch agentGroupsReceived with an empty list when stream is missing', async () => {
+      agentGroupService.findAgentGroupByCriteria.mockReturnValue(of({}))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadGroups$)
+
+      expect(action).toEqual(agentDetailsActions.agentGroupsReceived({ groups: [] }))
+    })
+
+    it('should dispatch agentGroupsLoadingFailed on error', async () => {
+      const mockError = 'groups failed'
+      agentGroupService.findAgentGroupByCriteria.mockReturnValue(throwError(() => mockError))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadGroups$)
+
+      expect(action).toEqual(agentDetailsActions.agentGroupsLoadingFailed({ error: mockError }))
+    })
+  })
+
+  describe('createGroupInPlace$', () => {
+    it('should dispatch createGroupInPlaceSucceeded and show a success message', async () => {
+      const group = { id: 'g1', name: 'New Group' }
+      agentGroupService.createAgentGroup.mockReturnValue(of(group))
+
+      actions$.next(agentDetailsActions.createGroupInPlaceClicked({ name: 'New Group' }))
+      const action = await firstValueFrom(effects.createGroupInPlace$)
+
+      expect(action).toEqual(agentDetailsActions.createGroupInPlaceSucceeded({ group }))
+      expect(agentGroupService.createAgentGroup).toHaveBeenCalledWith({ name: 'New Group' })
+      expect(messageService.success).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.ASSIGNMENTS.CREATE_GROUP_SUCCESS'
+      })
+    })
+
+    it('should dispatch createGroupInPlaceFailed and show an error message on failure', async () => {
+      const mockError = 'create group failed'
+      agentGroupService.createAgentGroup.mockReturnValue(throwError(() => mockError))
+
+      actions$.next(agentDetailsActions.createGroupInPlaceClicked({ name: 'New Group' }))
+      const action = await firstValueFrom(effects.createGroupInPlace$)
+
+      expect(action).toEqual(agentDetailsActions.createGroupInPlaceFailed({ error: mockError }))
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.ASSIGNMENTS.CREATE_GROUP_FAILED'
+      })
+    })
+  })
+
   describe('cancelButtonNotDirty$', () => {
     it('should dispatch cancelEditNotDirty', async () => {
       actions$.next(agentDetailsActions.cancelButtonClicked({ dirty: false }))
@@ -197,6 +381,17 @@ describe('AgentDetailsEffects', () => {
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'AGENT_DETAILS.UPDATE.SUCCESS'
       })
+    })
+
+    it('should use the existing modificationCount when present', async () => {
+      const mockDetails = { id: '123', modificationCount: 5 }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+      agentService.updateAgent.mockReturnValueOnce(of(mockDetails))
+
+      actions$.next(agentDetailsActions.saveButtonClicked({ details: mockDetails }))
+      await firstValueFrom(effects.saveButtonClicked$)
+
+      expect(agentService.updateAgent).toHaveBeenCalledWith('123', expect.objectContaining({ modificationCount: 5 }))
     })
 
     it('should dispatch updateAgentCancelled', async () => {

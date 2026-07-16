@@ -244,20 +244,18 @@ export class AgentDetailsEffects {
       ofType(agentDetailsActions.saveButtonClicked),
       concatLatestFrom(() => this.store.select(agentDetailsSelectors.selectDetails)),
       switchMap(([action, details]) => {
-        const itemToEditId = details?.id
+        if (!details?.id) {
+          return of(agentDetailsActions.updateAgentCancelled())
+        }
         const updatedItem = {
           ...details,
           ...action.details
         }
-
-        if (!itemToEditId) {
-          return of(agentDetailsActions.updateAgentCancelled())
-        }
         const itemToEdit: UpdateAgentRequest = {
-          modificationCount: details?.modificationCount ?? 0,
+          modificationCount: details.modificationCount ?? 0,
           ...updatedItem
         }
-        return this.agentService.updateAgent(itemToEditId, itemToEdit).pipe(
+        return this.agentService.updateAgent(details.id, itemToEdit).pipe(
           map((response) => {
             this.messageService.success({
               summaryKey: 'AGENT_DETAILS.UPDATE.SUCCESS'

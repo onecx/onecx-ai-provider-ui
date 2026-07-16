@@ -31,7 +31,6 @@ import {
   TranslationConnectionService
 } from '@onecx/angular-utils'
 
-// ACTION D11: Add missing imports here
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { AgentDetailsHarness } from './agent-details.harness'
@@ -260,7 +259,6 @@ describe('AgentDetailsComponent', () => {
 
   it('should dispatch saveButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
-    // ACTION D11: Adjust form field names and values according to your implementation
     const agent = { id: '123' }
     const agentForm = {
       name: 'title',
@@ -387,11 +385,51 @@ describe('AgentDetailsComponent', () => {
     expect(await fourthDetailItem?.getIcon()).toEqual(PrimeIcons.QUESTION)
   })
 
+  it('should work with details', async () => {
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      details: {
+        id: 'my-id',
+        name: 'my-agent',
+        status: 'LIVE' as any,
+        modificationCount: 3
+      }
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const pageHeader = await agentDetails.getHeader()
+    const translatedNameLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.NAME')
+    const nameDetailItem = await pageHeader.getObjectInfoByLabel(translatedNameLabel)
+    expect(await nameDetailItem?.getValue()).toEqual('my-agent')
+
+    const translatedStatusLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.STATUS')
+    const statusDetailItem = await pageHeader.getObjectInfoByLabel(translatedStatusLabel)
+    expect(await statusDetailItem?.getValue()).toEqual('LIVE')
+  })
+
+  it('handles missing details (covers optional chaining)', async () => {
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      details: undefined
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const pageHeader = await agentDetails.getHeader()
+    const translatedNameLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.NAME')
+    const nameDetailItem = await pageHeader.getObjectInfoByLabel(translatedNameLabel)
+    expect(await nameDetailItem?.getValue()).toBeFalsy()
+
+    const translatedVersionLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.VERSION')
+    const versionDetailItem = await pageHeader.getObjectInfoByLabel(translatedVersionLabel)
+    expect(await versionDetailItem?.getValue()).toBeFalsy()
+  })
+
   it('should mark as pristine and disable form when editMode is false', async () => {
     const markAsPristineSpy = jest.spyOn(component.formGroup, 'markAsPristine')
     const disableSpy = jest.spyOn(component.formGroup, 'disable')
 
-    // ACTION D11: Adjust form field names and values according to your implementation
     const agent = {
       id: '123',
       name: 'title',
@@ -433,5 +471,220 @@ describe('AgentDetailsComponent', () => {
     const pageHeader = await agentDetails.getHeader()
     const versionDetailItem = await pageHeader.getObjectInfoByLabel(translatedVersionLabel)
     expect(await versionDetailItem?.getValue()).toEqual('7')
+  })
+
+  it('should map model provider, tools and groups when they are present on the view model', () => {
+    const agent = {
+      id: '123',
+      name: 'title',
+      model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } },
+      tools: [{ id: 'tool-1', name: 'Tool 1' }],
+      groups: [{ id: 'group-1', name: 'Group 1' }]
+    }
+
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false,
+      details: agent
+    })
+    store.refreshState()
+
+    expect(component.formGroup.getRawValue()).toEqual(
+      expect.objectContaining({
+        provider: { id: 'provider-1', name: 'Provider 1' },
+        model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } },
+        tools: [{ id: 'tool-1', name: 'Tool 1' }],
+        groups: [{ id: 'group-1', name: 'Group 1' }]
+      })
+    )
+  })
+
+  describe('save', () => {
+    it('should attach the explicitly selected provider to the saved model', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.patchValue({
+        provider: { id: 'provider-1', name: 'Provider 1' },
+        model: { id: 'model-1', provider: { id: 'provider-old', name: 'Provider Old' } },
+        scaffold: { id: 'scaffold-1', name: 'Scaffold 1' }
+      })
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } },
+            scaffold: { id: 'scaffold-1', name: 'Scaffold 1' }
+          })
+        })
+      )
+    })
+
+    it('should fall back to the model provider when no provider is explicitly selected', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.patchValue({
+        provider: null,
+        model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } }
+      })
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } }
+          })
+        })
+      )
+    })
+
+    it('should default tools and groups to an empty array when their control value is null', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.get('tools')?.setValue(null)
+      component.formGroup.get('groups')?.setValue(null)
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            tools: [],
+            groups: []
+          })
+        })
+      )
+    })
+  })
+
+  describe('filters', () => {
+    it('should add and remove filter form groups', () => {
+      expect(component.filtersFormArray.length).toBe(0)
+
+      component.addFilter()
+      component.addFilter()
+      expect(component.filtersFormArray.length).toBe(2)
+
+      component.removeFilter(0)
+      expect(component.filtersFormArray.length).toBe(1)
+    })
+
+    it('should pick the first fully filled filter row when saving', () => {
+      jest.spyOn(store, 'dispatch')
+      component.addFilter()
+      component.addFilter()
+      component.filtersFormArray.at(0).patchValue({ key: null, value: 'ignored' })
+      component.filtersFormArray.at(1).patchValue({ key: AgentFilterKeyEnum.AppId, value: 'my-app' })
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            filter: { key: AgentFilterKeyEnum.AppId, value: 'my-app' }
+          })
+        })
+      )
+    })
+
+    it('should filter key suggestions based on the typed query', () => {
+      component.searchFilterKeys({ query: 'app' })
+      expect(component.filterKeySuggestions).toEqual([AgentFilterKeyEnum.AppId])
+
+      component.searchFilterKeys({ query: 'no-match' })
+      expect(component.filterKeySuggestions).toEqual([])
+
+      component.searchFilterKeys({ query: '' })
+      expect(component.filterKeySuggestions).toEqual(component.filterKeys)
+    })
+  })
+
+  describe('onProviderChanged', () => {
+    it('should enable the model control when a provider is selected', () => {
+      component.formGroup.patchValue({ provider: { id: 'p1', name: 'Provider 1' }, model: null })
+      component.onProviderChanged()
+      expect(component.formGroup.get('model')?.disabled).toBe(false)
+    })
+
+    it('should reset the model when it belongs to a different provider', () => {
+      component.formGroup.patchValue({
+        provider: { id: 'p1', name: 'Provider 1' },
+        model: { id: 'm1', provider: { id: 'p2', name: 'Provider 2' } }
+      })
+      component.onProviderChanged()
+      expect(component.formGroup.get('model')?.value).toBeNull()
+    })
+
+    it('should keep the model when it already belongs to the selected provider', () => {
+      const model = { id: 'm1', provider: { id: 'p1', name: 'Provider 1' } }
+      component.formGroup.patchValue({ provider: { id: 'p1', name: 'Provider 1' }, model })
+      component.onProviderChanged()
+      expect(component.formGroup.get('model')?.value).toEqual(model)
+    })
+
+    it('should reset and disable the model control when the provider is cleared', () => {
+      component.formGroup.patchValue({ provider: null, model: { id: 'm1' } })
+      component.onProviderChanged()
+      expect(component.formGroup.get('model')?.value).toBeNull()
+      expect(component.formGroup.get('model')?.disabled).toBe(true)
+    })
+
+    it('should reset the model when it has no provider of its own', () => {
+      component.formGroup.patchValue({ provider: { id: 'p1', name: 'Provider 1' }, model: { id: 'm1' } })
+      component.onProviderChanged()
+      expect(component.formGroup.get('model')?.value).toBeNull()
+    })
+  })
+
+  describe('createGroupInPlace', () => {
+    it('should not dispatch createGroupInPlaceClicked when the group name is not set', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.createGroupInPlace()
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should not dispatch createGroupInPlaceClicked when the group name is blank', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.get('newGroupName')?.setValue('   ')
+
+      component.createGroupInPlace()
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should dispatch createGroupInPlaceClicked with the trimmed name and reset the input', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.get('newGroupName')?.setValue('  New Group  ')
+
+      component.createGroupInPlace()
+
+      expect(store.dispatch).toHaveBeenCalledWith(agentDetailsActions.createGroupInPlaceClicked({ name: 'New Group' }))
+      expect(component.formGroup.get('newGroupName')?.value).toBeNull()
+    })
+  })
+
+  describe('getFilteredModels', () => {
+    it('should return no models when no provider is selected', () => {
+      component.formGroup.get('provider')?.setValue(null)
+      expect(component.getFilteredModels([{ id: 'm1', provider: { id: 'p1', name: 'Provider 1' } }])).toEqual([])
+    })
+
+    it('should return only models belonging to the selected provider', () => {
+      component.formGroup.get('provider')?.setValue({ id: 'p1', name: 'Provider 1' })
+      const models = [
+        { id: 'm1', provider: { id: 'p1', name: 'Provider 1' } },
+        { id: 'm2', provider: { id: 'p2', name: 'Provider 2' } }
+      ]
+
+      expect(component.getFilteredModels(models)).toEqual([models[0]])
+    })
+
+    it('should exclude models without a provider from the filtered result', () => {
+      component.formGroup.get('provider')?.setValue({ id: 'p1', name: 'Provider 1' })
+      const models = [{ id: 'm1', provider: { id: 'p1', name: 'Provider 1' } }, { id: 'm2' }]
+
+      expect(component.getFilteredModels(models)).toEqual([models[0]])
+    })
   })
 })
