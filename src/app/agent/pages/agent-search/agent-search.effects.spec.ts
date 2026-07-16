@@ -16,8 +16,9 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { AgentPageResult, AgentService } from 'src/app/shared/generated'
+import { Agent, AgentPageResult, AgentService } from 'src/app/shared/generated'
 import { agentSearchActions } from './agent-search.actions'
+import { AgentCreateUpdateComponent } from './dialogs/agent-create-update/agent-create-update.component'
 import { AgentSearchEffects } from './agent-search.effects'
 import { AgentSearchCriteria } from './agent-search.parameters'
 import { initialState } from './agent-search.reducers'
@@ -52,8 +53,8 @@ describe('AgentSearchEffects', () => {
 
     agentService = {
       createAgent: jest.fn(),
-      updateAgentById: jest.fn(),
-      deleteAgentById: jest.fn(),
+      updateAgent: jest.fn(),
+      deleteAgent: jest.fn(),
       findAgentBySearchCriteria: jest.fn()
     } as unknown as jest.Mocked<AgentService>
 
@@ -181,6 +182,28 @@ describe('AgentSearchEffects', () => {
         .subscribe((action) => {
           expect(action.type).toEqual(agentSearchActions.agentSearchResultsLoadingFailed.type)
           expect(action).toEqual(agentSearchActions.agentSearchResultsLoadingFailed({ error: mockError }))
+          done()
+        })
+    })
+
+    it('should default missing response fields to empty results and zero counts', (done) => {
+      agentService.findAgentBySearchCriteria.mockReturnValueOnce(
+        of({} as unknown as HttpEvent<AgentPageResult>)
+      )
+
+      effects
+        .performSearch(mockCriteria)
+        .pipe(take(1))
+        .subscribe((action) => {
+          expect(action).toEqual(
+            agentSearchActions.agentSearchResultsReceived({
+              stream: [],
+              size: 0,
+              number: 0,
+              totalElements: 0,
+              totalPages: 0
+            })
+          )
           done()
         })
     })
@@ -350,6 +373,262 @@ describe('AgentSearchEffects', () => {
       })
 
       actions$.next(agentSearchActions.detailsButtonClicked({ id: testId }))
+    })
+  })
+
+  describe('refreshSearchAfterCreateUpdate$', () => {
+    beforeEach(() => {
+      store.overrideSelector(agentSearchSelectors.selectCriteria, mockCriteria)
+      store.refreshState()
+    })
+
+    it('should call performSearch with current criteria when createAgentSucceeded is dispatched', (done) => {
+      const markerAction = agentSearchActions.agentSearchResultsLoadingFailed({ error: null })
+      const performSearchSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(markerAction))
+
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(performSearchSpy).toHaveBeenCalledWith(mockCriteria)
+        expect(action).toBe(markerAction)
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentSucceeded())
+    })
+
+    it('should call performSearch with current criteria when updateAgentSucceeded is dispatched', (done) => {
+      const markerAction = agentSearchActions.agentSearchResultsLoadingFailed({ error: null })
+      const performSearchSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(markerAction))
+
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(performSearchSpy).toHaveBeenCalledWith(mockCriteria)
+        expect(action).toBe(markerAction)
+        done()
+      })
+
+      actions$.next(agentSearchActions.updateAgentSucceeded())
+    })
+  })
+
+  describe('createButtonClicked$', () => {
+    it('should open the create dialog with the expected configuration', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'AGENT_CREATE_UPDATE.CREATE.HEADER',
+          {
+            type: AgentCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: undefined
+              }
+            }
+          },
+          'AGENT_CREATE_UPDATE.CREATE.FORM.SAVE',
+          'AGENT_CREATE_UPDATE.CREATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+
+    it('should dispatch createAgentCancelled when the dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: { name: 'x' } }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(agentSearchActions.createAgentCancelled())
+        expect(agentService.createAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+
+    it('should dispatch createAgentCancelled when the dialog is dismissed without a result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of(undefined) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(agentSearchActions.createAgentCancelled())
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+
+    it('should dispatch createAgentFailed when the dialog confirms without a name', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: {} }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(agentSearchActions.createAgentFailed.type)
+        expect(agentService.createAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+
+    it('should dispatch createAgentFailed when the dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(agentSearchActions.createAgentFailed.type)
+        expect(agentService.createAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+
+    it('should create the agent and dispatch createAgentSucceeded on success', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'New Agent', description: 'desc' } }) as never
+      )
+      agentService.createAgent.mockReturnValue(of({} as unknown as HttpEvent<Agent>))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(agentService.createAgent).toHaveBeenCalledWith({ name: 'New Agent', description: 'desc' })
+        expect(messageService.success).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.CREATE.SUCCESS' })
+        expect(action).toEqual(agentSearchActions.createAgentSucceeded())
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+
+    it('should dispatch createAgentFailed and show an error message when the create call fails', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: { name: 'New Agent' } }) as never)
+      agentService.createAgent.mockReturnValue(throwError(() => 'API Error'))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(agentSearchActions.createAgentFailed({ error: 'API Error' }))
+        expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.CREATE.ERROR' })
+        done()
+      })
+
+      actions$.next(agentSearchActions.createAgentButtonClicked())
+    })
+  })
+
+  describe('editButtonClicked$', () => {
+    const item = { id: 'agent-1', name: 'Agent 1', modificationCount: 3 }
+
+    beforeEach(() => {
+      store.overrideSelector(agentSearchSelectors.selectResults, [item])
+      store.refreshState()
+    })
+
+    it('should open the update dialog with the item found in the results', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'AGENT_CREATE_UPDATE.UPDATE.HEADER',
+          {
+            type: AgentCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: item
+              }
+            }
+          },
+          'AGENT_CREATE_UPDATE.UPDATE.FORM.SAVE',
+          'AGENT_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should dispatch updateAgentCancelled when the dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: null }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(agentSearchActions.updateAgentCancelled())
+        expect(agentService.updateAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should dispatch updateAgentFailed when the dialog confirms without an id', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { modificationCount: 1 } }) as never
+      )
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(agentSearchActions.updateAgentFailed.type)
+        expect(agentService.updateAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should dispatch updateAgentFailed when the dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(agentSearchActions.updateAgentFailed.type)
+        expect(agentService.updateAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should dispatch updateAgentFailed when the dialog confirms without a modificationCount', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: { id: 'agent-1' } }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(agentSearchActions.updateAgentFailed.type)
+        expect(agentService.updateAgent).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should update the agent and dispatch updateAgentSucceeded on success', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'agent-1', name: 'Updated', description: 'desc', modificationCount: 3 }
+        }) as never
+      )
+      agentService.updateAgent.mockReturnValue(of({} as unknown as HttpEvent<Agent>))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(agentService.updateAgent).toHaveBeenCalledWith('agent-1', {
+          modificationCount: 3,
+          name: 'Updated',
+          description: 'desc'
+        })
+        expect(messageService.success).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.SUCCESS' })
+        expect(action).toEqual(agentSearchActions.updateAgentSucceeded())
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should dispatch updateAgentFailed and show an error message when the update call fails', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { id: 'agent-1', name: 'Updated', modificationCount: 3 } }) as never
+      )
+      agentService.updateAgent.mockReturnValue(throwError(() => 'Update failed'))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(agentSearchActions.updateAgentFailed({ error: 'Update failed' }))
+        expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.ERROR' })
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
     })
   })
 

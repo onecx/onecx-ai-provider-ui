@@ -625,5 +625,32 @@ describe('AgentSearchComponent', () => {
     component.details(row)
     expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.detailsButtonClicked({ id: 'test-id' }))
   })
+
+  it('should dispatch createAgentButtonClicked action on create()', () => {
+    jest.spyOn(store, 'dispatch')
+    component.create()
+    expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.createAgentButtonClicked())
+  })
+
+  it('should dispatch editAgentButtonClicked action on edit()', () => {
+    jest.spyOn(store, 'dispatch')
+    const row: RowListGridData = { id: 'test-id', imagePath: '' }
+    component.edit(row)
+    expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.editAgentButtonClicked({ id: 'test-id' }))
+  })
+
+  it('should call create() when headerActions$ actionCallback is triggered', (done) => {
+    jest.spyOn(component, 'create')
+    jest.spyOn(store, 'dispatch')
+
+    component.headerActions$.subscribe((actions) => {
+      const createAction = actions.find((a) => a.labelKey === 'AGENT_CREATE_UPDATE.ACTION.CREATE')
+      expect(createAction).toBeTruthy()
+      createAction!.actionCallback()
+      expect(component.create).toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.createAgentButtonClicked())
+      done()
+    })
+  })
   // <<SPEC-EXTENSIONS-MARKER-!!!-DO-NOT-REMOVE-!!!>>
 })
