@@ -113,7 +113,7 @@ export class AgentSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(agentSearchActions.createAgentCancelled())
         }
-        if (!dialogResult?.result?.name) {
+        if (!dialogResult.result?.name) {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem: CreateAgentRequest = {
@@ -170,7 +170,7 @@ export class AgentSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(agentSearchActions.updateAgentCancelled())
         }
-        if (!dialogResult?.result?.id || dialogResult.result.modificationCount == undefined) {
+        if (!dialogResult.result?.id || dialogResult.result.modificationCount == undefined) {
           throw new Error('DialogResult was not set as expected!')
         }
         const itemToEditId = dialogResult.result.id

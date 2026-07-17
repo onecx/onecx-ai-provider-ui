@@ -247,26 +247,28 @@ export class AgentDetailsComponent implements OnInit {
   }
 
   onProviderChanged() {
+    const modelControl = this.formGroup.get('model')
     const selectedProvider = this.formGroup.get('provider')?.value as Provider | null
-    const selectedModel = this.formGroup.get('model')?.value as Model | null
+    const selectedModel = modelControl?.value as Model | null
     if (selectedProvider) {
-      this.formGroup.get('model')?.enable()
-      if (selectedModel && selectedModel.provider?.id !== selectedProvider.id) {
-        this.formGroup.get('model')?.setValue(null)
+      modelControl?.enable()
+      if (modelControl && selectedModel && selectedModel.provider?.id !== selectedProvider.id) {
+        modelControl.setValue(null)
       }
     } else {
-      this.formGroup.get('model')?.setValue(null)
-      this.formGroup.get('model')?.disable()
+      modelControl?.setValue(null)
+      modelControl?.disable()
     }
   }
 
   createGroupInPlace() {
-    const groupName = this.formGroup.get('newGroupName')?.value?.trim()
-    if (!groupName) {
+    const groupNameControl = this.formGroup.get('newGroupName')
+    const groupName = groupNameControl?.value?.trim()
+    if (!groupNameControl || !groupName) {
       return
     }
     this.store.dispatch(agentDetailsActions.createGroupInPlaceClicked({ name: groupName }))
-    this.formGroup.get('newGroupName')?.setValue(null)
+    groupNameControl.setValue(null)
   }
 
   getFilteredModels(allModels: Model[]): Model[] {

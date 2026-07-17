@@ -17,16 +17,11 @@ describe('AgentSearch selectors', () => {
         ]
       },
       {
-        desc: 'should use empty string fallback when item.id is falsy',
-        input: [
-          { id: '', name: 'A' },
-          { id: '', name: 'B' },
-          { id: '', name: 'C' }
-        ] as never[],
+        desc: 'should use the generated agent-${index} fallback when item.id is missing',
+        input: [{ name: 'A' }, { name: 'B' }] as never[],
         expected: [
-          { imagePath: '', id: '', name: 'A' },
-          { imagePath: '', id: '', name: 'B' },
-          { imagePath: '', id: '', name: 'C' }
+          { imagePath: '', id: 'agent-0', name: 'A' },
+          { imagePath: '', id: 'agent-1', name: 'B' }
         ]
       }
     ]

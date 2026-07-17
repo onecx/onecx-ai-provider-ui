@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { ReactiveFormsModule } from '@angular/forms'
+import { FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
@@ -633,6 +633,18 @@ describe('AgentDetailsComponent', () => {
       component.onProviderChanged()
       expect(component.formGroup.get('model')?.value).toBeNull()
     })
+
+    it('should not throw when the provider and model controls are missing', () => {
+      component.formGroup.removeControl('provider')
+      component.formGroup.removeControl('model')
+      expect(() => component.onProviderChanged()).not.toThrow()
+    })
+
+    it('should not throw when a provider is selected but the model control is missing', () => {
+      component.formGroup.get('provider')?.setValue({ id: 'p1', name: 'Provider 1' })
+      component.formGroup.removeControl('model')
+      expect(() => component.onProviderChanged()).not.toThrow()
+    })
   })
 
   describe('createGroupInPlace', () => {
@@ -662,6 +674,14 @@ describe('AgentDetailsComponent', () => {
       expect(store.dispatch).toHaveBeenCalledWith(agentDetailsActions.createGroupInPlaceClicked({ name: 'New Group' }))
       expect(component.formGroup.get('newGroupName')?.value).toBeNull()
     })
+
+    it('should not dispatch or throw when the newGroupName control is missing', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.removeControl('newGroupName')
+
+      expect(() => component.createGroupInPlace()).not.toThrow()
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
   })
 
   describe('getFilteredModels', () => {
@@ -685,6 +705,54 @@ describe('AgentDetailsComponent', () => {
       const models = [{ id: 'm1', provider: { id: 'p1', name: 'Provider 1' } }, { id: 'm2' }]
 
       expect(component.getFilteredModels(models)).toEqual([models[0]])
+    })
+
+    it('should return no models when the provider control is missing', () => {
+      component.formGroup.removeControl('provider')
+      expect(component.getFilteredModels([{ id: 'm1', provider: { id: 'p1', name: 'Provider 1' } }])).toEqual([])
+    })
+  })
+
+  describe('missing form controls', () => {
+    it('should not throw in the edit-mode subscription when provider and model controls are missing', () => {
+      component.formGroup.removeControl('provider')
+      component.formGroup.removeControl('model')
+
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        editMode: true
+      })
+
+      expect(() => store.refreshState()).not.toThrow()
+    })
+
+    it('should still dispatch saveButtonClicked when form and filter controls are missing', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.addFilter()
+      const filterEntry = component.filtersFormArray.at(0) as FormGroup
+      filterEntry.removeControl('key')
+      filterEntry.removeControl('value')
+      ;['provider', 'model', 'name', 'description', 'additionalPrompt', 'scaffold', 'tools', 'groups'].forEach((control) =>
+        component.formGroup.removeControl(control)
+      )
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            name: undefined,
+            description: undefined,
+            additionalPrompt: undefined,
+            model: undefined,
+            scaffold: undefined,
+            tools: [],
+            groups: [],
+            filter: undefined
+          })
+        })
+      )
     })
   })
 })
