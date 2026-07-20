@@ -112,4 +112,28 @@ describe('ProviderCreateUpdateComponent', () => {
       apiKey: 'PatchedKey'
     })
   })
+
+  it('should not patch formGroup on ngOnInit when there is no itemToEdit', () => {
+    component.vm.itemToEdit = undefined
+    component.formGroup.setValue({ name: null, description: null, modelName: null, llmUrl: null, apiKey: null })
+    component.ngOnInit()
+    expect(component.formGroup.value).toEqual({
+      name: null,
+      description: null,
+      modelName: null,
+      llmUrl: null,
+      apiKey: null
+    })
+  })
+
+  it('should emit primaryButtonEnabled based on form validity', () => {
+    const emissions: boolean[] = []
+    component.primaryButtonEnabled.subscribe((enabled) => emissions.push(enabled))
+
+    component.formGroup.get('name')?.setValue('a'.repeat(256))
+    expect(emissions[emissions.length - 1]).toBe(false)
+
+    component.formGroup.get('name')?.setValue('Valid')
+    expect(emissions[emissions.length - 1]).toBe(true)
+  })
 })

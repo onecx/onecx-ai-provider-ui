@@ -40,8 +40,15 @@ export class ProviderDetailsEffects {
   loadProviderById$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ProviderDetailsActions.navigatedToDetailsPage),
-      switchMap(({ id }) =>
-        this.providerService.getProvider(id ?? '').pipe(
+      switchMap(({ id }) => {
+        if (!id) {
+          return of(
+            ProviderDetailsActions.providerDetailsLoadingFailed({
+              error: 'Missing ID'
+            })
+          )
+        }
+        return this.providerService.getProvider(id).pipe(
           map((resource) =>
             ProviderDetailsActions.providerDetailsReceived({
               details: resource
@@ -55,7 +62,7 @@ export class ProviderDetailsEffects {
             )
           )
         )
-      )
+      })
     )
   })
 

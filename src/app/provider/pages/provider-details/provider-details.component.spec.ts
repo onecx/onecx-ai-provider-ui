@@ -1,6 +1,6 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -8,6 +8,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
 import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
+import { UserService } from '@onecx/angular-integration-interface'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { ProviderDetailsComponent } from './provider-details.component'
 import { ProviderDetailsHarness } from './provider-details.harness'
@@ -17,6 +18,9 @@ import { ProviderDetailsViewModel } from './provider-details.viewmodel'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { ReactiveFormsModule } from '@angular/forms'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { ProviderSearchActions } from '../provider-search/provider-search.actions'
+import { ProviderDetailsActions } from './provider-details.actions'
+import { firstValueFrom } from 'rxjs'
 
 describe('ProviderDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -109,6 +113,8 @@ describe('ProviderDetailsComponent', () => {
       ]
     }).compileComponents()
 
+    const userService = TestBed.inject(UserService)
+    userService.hasPermission = async () => true
     const translateService = TestBed.inject(TranslateService)
     translateService.use('en')
 
@@ -184,6 +190,316 @@ describe('ProviderDetailsComponent', () => {
         newModelIdentifier: null
       })
     })
+
+    it('should call toggleEditMode(true) when Edit action is clicked', async () => {
+      const toggleSpy = jest.spyOn(component, 'toggleEditMode')
+      const pageHeader = await ProviderDetails.getHeader()
+      const editAction = await pageHeader.getInlineActionButtonByLabel('Edit')
+      await editAction?.click()
+      expect(toggleSpy).toHaveBeenCalledWith(true)
+    })
+
+    it('should call delete with empty string if details.id is undefined', async () => {
+      const deleteSpy = jest.spyOn(component, 'delete')
+      store.overrideSelector(selectProviderDetailsViewModel, {
+        details: undefined,
+        models: [],
+        modelsLoadingIndicator: false,
+        modelMutationInProgress: false,
+        isSubmitting: false,
+        editMode: false,
+        isApiKeyHidden: false
+      })
+      store.refreshState()
+      fixture.detectChanges()
+      await fixture.whenStable()
+
+      const actions = await firstValueFrom(component.headerActions$)
+      const deleteAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.DELETE')
+      expect(deleteAction).toBeDefined()
+      deleteAction!.actionCallback()
+      expect(deleteSpy).toHaveBeenCalledWith('')
+    })
+
+    it('should call save when Save action is clicked in edit mode', async () => {
+      const saveSpy = jest.spyOn(component, 'save')
+      store.overrideSelector(selectProviderDetailsViewModel, {
+        ...baseProviderDetaulsViewModel,
+        editMode: true
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      const pageHeader = await ProviderDetails.getHeader()
+      const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
+      await saveAction?.click()
+      expect(saveSpy).toHaveBeenCalled()
+    })
+
+    it('should call delete with correct id when Delete action is triggered', async () => {
+      const deleteSpy = jest.spyOn(component, 'delete')
+
+      store.overrideSelector(selectProviderDetailsViewModel, {
+        ...baseProviderDetaulsViewModel,
+        editMode: false
+      })
+      store.refreshState()
+      fixture.detectChanges()
+      await fixture.whenStable()
+
+      const actions = await firstValueFrom(component.headerActions$)
+      const deleteAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.DELETE')
+
+      expect(deleteAction).toBeDefined()
+      deleteAction!.actionCallback()
+
+      expect(deleteSpy).toHaveBeenCalledWith('1')
+    })
+
+    it('should call toggleEditMode(false) when Cancel action is clicked', async () => {
+      const toggleSpy = jest.spyOn(component, 'toggleEditMode')
+
+      store.overrideSelector(selectProviderDetailsViewModel, {
+        ...baseProviderDetaulsViewModel,
+        editMode: true
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      const pageHeader = await ProviderDetails.getHeader()
+      const cancelAction = await pageHeader.getInlineActionButtonByLabel('Cancel')
+      await cancelAction?.click()
+
+      expect(toggleSpy).toHaveBeenCalledWith(false)
+    })
+
+    it('should patch form fields with empty string if details fields are undefined', async () => {
+      store.overrideSelector(selectProviderDetailsViewModel, {
+        details: { id: '', name: '', description: '' },
+        models: [],
+        modelsLoadingIndicator: false,
+        modelMutationInProgress: false,
+        isSubmitting: false,
+        editMode: false,
+        isApiKeyHidden: false
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      const pageDetails = component.formGroup.value
+      expect(pageDetails).toEqual({
+        name: '',
+        description: '',
+        llmUrl: undefined,
+        type: undefined,
+        authMode: undefined,
+        apiKey: undefined,
+        newModelIdentifier: null
+      })
+    })
+  })
+
+  describe('actions & dispatch', () => {
+    it('should dispatch providerUpdateRequested when save() is called', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+
+      component.formGroup.patchValue({
+        name: 'Provider One',
+        description: 'Desc',
+        llmUrl: 'http://llm',
+        type: 'OPENAI',
+        authMode: 'API_KEY',
+        apiKey: 'secret'
+      })
+
+      component.save()
+
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        ProviderDetailsActions.providerUpdateRequested({
+          details: {
+            id: undefined,
+            name: 'Provider One',
+            description: 'Desc',
+            llmUrl: 'http://llm',
+            type: 'OPENAI',
+            authMode: 'API_KEY',
+            apiKey: 'secret'
+          } as any
+        })
+      )
+    })
+
+    it('should apply nullish defaults when saving empty form values', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+      component.formGroup.patchValue({
+        name: null,
+        description: null,
+        llmUrl: null,
+        type: null,
+        authMode: null,
+        apiKey: null
+      })
+
+      component.save()
+
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        ProviderDetailsActions.providerUpdateRequested({
+          details: {
+            id: undefined,
+            name: '',
+            description: undefined,
+            type: undefined,
+            llmUrl: undefined,
+            apiKey: undefined,
+            authMode: undefined
+          } as any
+        })
+      )
+    })
+
+    it('should dispatch editProviderDetailsButtonClicked action on edit()', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+      component.edit('123')
+      expect(dispatchSpy).toHaveBeenCalledWith(ProviderSearchActions.editProviderDetailsButtonClicked({ id: '123' }))
+    })
+
+    it('should dispatch deleteProviderButtonClicked action on delete()', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+      component.delete('456')
+      expect(dispatchSpy).toHaveBeenCalledWith(ProviderSearchActions.deleteProviderButtonClicked({ id: '456' }))
+    })
+
+    it('should dispatch apiKeyVisibilityToggled action on toggleApiKeyVisibility()', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+      component.toggleApiKeyVisibility()
+      expect(dispatchSpy).toHaveBeenCalledWith(ProviderDetailsActions.apiKeyVisibilityToggled())
+    })
+  })
+
+  describe('createModelInPlace', () => {
+    it('should not dispatch when the model identifier is not set', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.createModelInPlace()
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should not dispatch when the model identifier is blank', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.get('newModelIdentifier')?.setValue('   ')
+
+      component.createModelInPlace()
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should dispatch providerModelCreateClicked with the trimmed name and reset the input', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.get('newModelIdentifier')?.setValue('  gpt-4  ')
+
+      component.createModelInPlace()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier: 'gpt-4' })
+      )
+      expect(component.formGroup.get('newModelIdentifier')?.value).toBeNull()
+    })
+
+    it('should not dispatch or throw when the newModelIdentifier control is missing', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.removeControl('newModelIdentifier')
+
+      expect(() => component.createModelInPlace()).not.toThrow()
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('deleteModel', () => {
+    it('should not dispatch when the model id is missing', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.deleteModel({ modelIdentifier: 'gpt-4' } as any)
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should dispatch providerModelDeleteClicked when the model has an id', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.deleteModel({ id: 'm1', modelIdentifier: 'gpt-4' } as any)
+
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelDeleteClicked({ modelId: 'm1' }))
+    })
+  })
+
+  describe('toggleEditMode', () => {
+    it('should enable form and dispatch editMode true on toggleEditMode(true)', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(true as unknown as Promise<boolean>)
+
+      component.toggleEditMode(true)
+
+      expect(dispatchSpy).toHaveBeenCalledWith(ProviderDetailsActions.providerDetailsEditModeSet({ editMode: true }))
+      expect(component.formGroup.enabled).toBe(true)
+    })
+
+    it('should disable form and dispatch editMode false on toggleEditMode(false)', () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch')
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(true as unknown as Promise<boolean>)
+
+      component.toggleEditMode(false)
+
+      expect(dispatchSpy).toHaveBeenCalledWith(ProviderDetailsActions.providerDetailsEditModeSet({ editMode: false }))
+      expect(component.formGroup.disabled).toBe(true)
+    })
+
+    it('should disable apiKey field synchronously when user lacks permission', () => {
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(false as unknown as Promise<boolean>)
+
+      component.toggleEditMode(true)
+
+      expect(component.formGroup.get('apiKey')?.disabled).toBe(true)
+    })
+
+    it('should keep apiKey enabled when sync permission is granted', () => {
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(true as unknown as Promise<boolean>)
+
+      component.toggleEditMode(true)
+
+      expect(component.formGroup.get('apiKey')?.disabled).toBe(false)
+    })
+
+    it('should disable apiKey asynchronously when permission promise resolves to false', fakeAsync(() => {
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(Promise.resolve(false))
+      const disableSpy = jest.spyOn(component.formGroup.get('apiKey')!, 'disable')
+
+      component.toggleEditMode(true)
+      tick()
+
+      expect(disableSpy).toHaveBeenCalled()
+      expect(component.formGroup.get('apiKey')?.disabled).toBe(true)
+    }))
+
+    it('should keep apiKey enabled asynchronously when permission promise resolves to true', fakeAsync(() => {
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(Promise.resolve(true))
+      const disableSpy = jest.spyOn(component.formGroup.get('apiKey')!, 'disable')
+
+      component.toggleEditMode(true)
+      tick()
+
+      expect(disableSpy).not.toHaveBeenCalled()
+    }))
+
+    it('should not throw when apiKey control is missing during async permission deny', fakeAsync(() => {
+      jest.spyOn(component['user'], 'hasPermission').mockReturnValue(Promise.resolve(false))
+      component.formGroup.removeControl('apiKey')
+
+      expect(() => {
+        component.toggleEditMode(true)
+        tick()
+      }).not.toThrow()
+    }))
   })
 
   describe('apiKey control safety', () => {

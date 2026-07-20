@@ -106,7 +106,13 @@ export class ProviderSearchComponent implements OnInit {
         routerLink: '/provider'
       }
     ])
-    this.viewModel$.subscribe((vm) => this.ProviderSearchFormGroup.patchValue(vm.searchCriteria))
+    this.viewModel$.subscribe((vm) => {
+      if (Object.keys(vm.searchCriteria).length === 0) {
+        this.ProviderSearchFormGroup.reset()
+      } else {
+        this.ProviderSearchFormGroup.patchValue(vm.searchCriteria)
+      }
+    })
   }
 
   search(formValue: FormGroup) {

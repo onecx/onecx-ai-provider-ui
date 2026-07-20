@@ -178,12 +178,13 @@ export class ProviderDetailsComponent implements OnInit {
   }
 
   createModelInPlace() {
-    const modelIdentifier = this.formGroup.get('newModelIdentifier')?.value?.trim()
-    if (!modelIdentifier) {
+    const newModelIdentifier = this.formGroup.get('newModelIdentifier')
+    const modelIdentifier = newModelIdentifier?.value?.trim()
+    if (!newModelIdentifier || !modelIdentifier) {
       return
     }
     this.store.dispatch(ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier }))
-    this.formGroup.get('newModelIdentifier')?.setValue(null)
+    newModelIdentifier.setValue(null)
   }
 
   deleteModel(model: Model) {
