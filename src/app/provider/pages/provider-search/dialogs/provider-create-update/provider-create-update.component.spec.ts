@@ -40,8 +40,8 @@ describe('ProviderCreateUpdateComponent', () => {
         ReactiveFormsModule,
         LetDirective,
         TranslateTestingModule.withTranslations({
-          'en': require('./src/assets/i18n/en.json'),
-          'de': require('./src/assets/i18n/de.json')
+          en: require('./src/assets/i18n/en.json'),
+          de: require('./src/assets/i18n/de.json')
         }).withDefaultLanguage('en')
       ],
       providers: [
