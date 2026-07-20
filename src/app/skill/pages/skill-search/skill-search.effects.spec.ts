@@ -17,12 +17,14 @@ import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
 import { Skill, SkillPageResult, SkillService } from 'src/app/shared/generated'
+import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { skillSearchActions } from './skill-search.actions'
 import { SkillSearchEffects } from './skill-search.effects'
 import { SkillSearchCriteria } from './skill-search.parameters'
 import { initialState } from './skill-search.reducers'
 import { selectSkillSearchViewModel, skillSearchSelectors } from './skill-search.selectors'
 import { SkillSearchViewModel } from './skill-search.viewmodel'
+import { SkillCreateUpdateComponent } from './dialogs/skill-create-update/skill-create-update.component'
 
 jest.mock('@onecx/ngrx-accelerator', () => {
   const actual = jest.requireActual('@onecx/ngrx-accelerator')
@@ -186,7 +188,9 @@ describe('SkillSearchEffects', () => {
     })
 
     it('should convert Date objects in search criteria before calling skillService', (done) => {
-      const criteriaWithDate = { ...mockCriteria, startDate: new Date('2023-01-01'), endDate: new Date('2023-12-31') }
+      const startDate = new Date(Date.UTC(2023, 0, 1))
+      const endDate = new Date(Date.UTC(2023, 11, 31))
+      const criteriaWithDate = { ...mockCriteria, startDate, endDate }
       const searchSpy = jest.spyOn(skillService, 'findSkillByCriteria')
 
       effects
@@ -197,6 +201,26 @@ describe('SkillSearchEffects', () => {
             expect.objectContaining({
               startDate: '2023-01-01T00:00:00.000Z',
               endDate: '2023-12-31T00:00:00.000Z'
+            })
+          )
+          done()
+        })
+    })
+
+    it('should default missing response fields to empty results and zero counts', (done) => {
+      skillService.findSkillByCriteria.mockReturnValueOnce(of({} as unknown as HttpEvent<SkillPageResult>))
+
+      effects
+        .performSearch(mockCriteria)
+        .pipe(take(1))
+        .subscribe((action) => {
+          expect(action).toEqual(
+            skillSearchActions.skillSearchResultsReceived({
+              stream: [],
+              size: 0,
+              number: 0,
+              totalElements: 0,
+              totalPages: 0
             })
           )
           done()
@@ -312,15 +336,27 @@ describe('SkillSearchEffects', () => {
   describe('navigateToOrderDetailsPage$', () => {
     it('should navigate to details page with correct URL structure', (done) => {
       const testId = 'test-123'
-      const navigateSpy = router
-        ? jest.spyOn(router, 'navigate')
-        : // eslint-disable-next-line @typescript-eslint/no-empty-function
-          { mock: { calls: [] }, toHaveBeenCalledWith: () => {} }
+      store.overrideSelector(selectUrl, '/search')
+      store.refreshState()
+      const navigateSpy = jest.spyOn(router, 'navigate')
 
       effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
-        if (router) {
-          expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
-        }
+        expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
+        done()
+      })
+
+      actions$.next(skillSearchActions.detailsButtonClicked({ id: testId }))
+    })
+
+    it('should parse an empty URL when currentUrl is undefined', (done) => {
+      const testId = 'test-789'
+      store.overrideSelector(selectUrl, undefined as unknown as string)
+      store.refreshState()
+      const navigateSpy = jest.spyOn(router, 'navigate')
+
+      effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
+        expect(router.parseUrl).toHaveBeenCalledWith('')
+        expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
         done()
       })
 
@@ -329,6 +365,8 @@ describe('SkillSearchEffects', () => {
 
     it('should dynamically clear query params and fragment from URL on navigateToOrderDetailsPage$', (done) => {
       const testId = 'test-456'
+      store.overrideSelector(selectUrl, '/search?a=1#frag')
+      store.refreshState()
       const mockUrlTree = {
         toString: jest.fn(() => '/search'),
         queryParams: { a: 1 },
@@ -370,22 +408,71 @@ describe('SkillSearchEffects', () => {
   })
 
   describe('editButtonClicked$', () => {
-    const item = { id: 'test-123', name: 'Item' }
+    const item = { id: 'test-123', name: 'Item', modificationCount: 3 }
     beforeEach(() => {
       store.overrideSelector(skillSearchSelectors.selectResults, [item])
       store.refreshState()
     })
 
+    it('should open the update dialog with the item found in the results', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'SKILL_CREATE_UPDATE.UPDATE.HEADER',
+          {
+            type: SkillCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: item
+              }
+            }
+          },
+          'SKILL_CREATE_UPDATE.UPDATE.FORM.SAVE',
+          'SKILL_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(skillSearchActions.editSkillButtonClicked({ id: 'test-123' }))
+    })
+
     it('should dispatch updateSucceeded and show a success message when update succeeds', (done) => {
-      const dialog = { button: 'primary', result: { ...item } }
+      const dialog = {
+        button: 'primary',
+        result: { id: 'test-123', name: 'Updated', description: 'desc', instruction: 'do it', modificationCount: 3 }
+      }
 
       portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
       skillService.updateSkillById.mockReturnValue(of({} as HttpEvent<Skill>))
 
       effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(skillService.updateSkillById).toHaveBeenCalledWith('test-123', {
+          modificationCount: 3,
+          name: 'Updated',
+          description: 'desc',
+          instruction: 'do it'
+        })
         expect(action.type).toBe(skillSearchActions.updateSkillSucceeded.type)
-
         expect(messageService.success).toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(skillSearchActions.editSkillButtonClicked({ id: 'test-123' }))
+    })
+
+    it('should dispatch updateFailed when modificationCount is missing', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'test-123', name: 'Updated', description: 'desc', instruction: 'do it' }
+        }) as never
+      )
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(skillSearchActions.updateSkillFailed.type)
+        expect(skillService.updateSkillById).not.toHaveBeenCalled()
         done()
       })
 
@@ -426,6 +513,20 @@ describe('SkillSearchEffects', () => {
       effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
         expect(action.type).toBe(skillSearchActions.updateSkillFailed.type)
 
+        expect(skillService.updateSkillById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(skillSearchActions.editSkillButtonClicked({ id: 'test-123' }))
+    })
+
+    it('should dispatch updateFailed when the dialog confirms without an id', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'Updated', modificationCount: 1 } }) as never
+      )
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toBe(skillSearchActions.updateSkillFailed.type)
         expect(skillService.updateSkillById).not.toHaveBeenCalled()
         done()
       })

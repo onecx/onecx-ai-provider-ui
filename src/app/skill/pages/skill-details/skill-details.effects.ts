@@ -104,11 +104,11 @@ export class SkillDetailsEffects {
           ...action.details
         }
 
-        if (!itemToEditId) {
+        if (!itemToEditId || updatedItem.modificationCount == undefined) {
           return of(skillDetailsActions.updateSkillCancelled())
         }
         const itemToEdit: UpdateSkillRequest = {
-          modificationCount: details?.modificationCount ?? 0,
+          modificationCount: updatedItem.modificationCount,
           name: updatedItem.name,
           description: updatedItem.description,
           instruction: updatedItem.instruction

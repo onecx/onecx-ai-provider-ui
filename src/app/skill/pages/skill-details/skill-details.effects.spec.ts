@@ -173,7 +173,7 @@ describe('SkillDetailsEffects', () => {
 
   describe('saveButtonClicked$', () => {
     it('should dispatch updateSkillSucceeded', async () => {
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1 }
       const mockResponse = mockDetails
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       skillService.updateSkillById.mockReturnValueOnce(of(mockResponse))
@@ -187,6 +187,31 @@ describe('SkillDetailsEffects', () => {
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'SKILL_DETAILS.UPDATE.SUCCESS'
       })
+    })
+
+    it('should cancel update when modificationCount is missing', async () => {
+      const mockDetails = { id: '123', name: 'Skill' }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+
+      actions$.next(skillDetailsActions.saveButtonClicked({ details: { name: 'Updated' } }))
+      const action = await firstValueFrom(effects.saveButtonClicked$)
+
+      expect(action).toEqual(skillDetailsActions.updateSkillCancelled())
+      expect(skillService.updateSkillById).not.toHaveBeenCalled()
+    })
+
+    it('should use the existing modificationCount when present', async () => {
+      const mockDetails = { id: '123', name: 'Skill', modificationCount: 5 }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+      skillService.updateSkillById.mockReturnValueOnce(of(mockDetails))
+
+      actions$.next(skillDetailsActions.saveButtonClicked({ details: { name: 'Updated' } }))
+      await firstValueFrom(effects.saveButtonClicked$)
+
+      expect(skillService.updateSkillById).toHaveBeenCalledWith(
+        '123',
+        expect.objectContaining({ modificationCount: 5 })
+      )
     })
 
     it('should dispatch updateSkillCancelled', async () => {
@@ -205,7 +230,7 @@ describe('SkillDetailsEffects', () => {
 
     it('should dispatch updateSkillFailed', async () => {
       const mockError = 'updateSkill failed'
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1 }
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       skillService.updateSkillById.mockReturnValueOnce(throwError(() => mockError))
 
@@ -291,6 +316,24 @@ describe('SkillDetailsEffects', () => {
       await firstValueFrom(effects.deleteSkillSucceeded$)
 
       expect(router.parseUrl).toHaveBeenCalledWith(mockUrl)
+      expect(mockUrlTree.queryParams).toEqual({})
+      expect(mockUrlTree.fragment).toBeNull()
+      expect(router.navigate).toHaveBeenCalledWith(['/skills'])
+    })
+
+    it('should parse an empty URL when currentUrl is undefined', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
+      const mockUrlTree = {
+        queryParams: { a: 1 },
+        fragment: 'frag',
+        toString: () => '/skills/details/123'
+      }
+      ;(router.parseUrl as jest.Mock).mockReturnValueOnce(mockUrlTree)
+
+      actions$.next(skillDetailsActions.deleteSkillSucceeded())
+      await firstValueFrom(effects.deleteSkillSucceeded$)
+
+      expect(router.parseUrl).toHaveBeenCalledWith('')
       expect(mockUrlTree.queryParams).toEqual({})
       expect(mockUrlTree.fragment).toBeNull()
       expect(router.navigate).toHaveBeenCalledWith(['/skills'])

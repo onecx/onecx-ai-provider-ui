@@ -621,6 +621,13 @@ describe('SkillSearchComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.detailsButtonClicked({ id: 'test-id' }))
   })
 
+  it('should dispatch editSkillButtonClicked action on edit()', () => {
+    jest.spyOn(store, 'dispatch')
+    const row: RowListGridData = { id: 'test-id', imagePath: '' }
+    component.edit(row)
+    expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.editSkillButtonClicked({ id: 'test-id' }))
+  })
+
   it('should dispatch editSkillButtonClicked action on item edit click', async () => {
     jest.spyOn(store, 'dispatch')
 

@@ -13,11 +13,13 @@ export const skillSearchSelectors = createChildSelectors(skillFeature.selectSear
 export const selectResults = createSelector(
   skillSearchSelectors.selectResults,
   (results: Skill[]): RowListGridData[] => {
-    return results.map((item) => ({
-      id: item.id ?? '',
-      imagePath: '',
-      ...item
-    }))
+    return results
+      .filter((item): item is Skill & { id: string } => !!item.id)
+      .map((item) => ({
+        imagePath: '',
+        ...item,
+        id: item.id
+      }))
   }
 )
 

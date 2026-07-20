@@ -17,17 +17,14 @@ describe('SkillSearch selectors', () => {
         ]
       },
       {
-        desc: 'should use empty string fallback when item.id is falsy',
+        desc: 'should omit results without a valid id',
         input: [
-          { id: '', changeMe: 'A' },
-          { id: '', changeMe: 'B' },
-          { id: '', changeMe: 'C' }
+          { id: undefined, changeMe: 'A' },
+          { changeMe: 'B' },
+          { id: null, changeMe: 'C' },
+          { id: 'keep-me', changeMe: 'D' }
         ] as never[],
-        expected: [
-          { imagePath: '', id: '', changeMe: 'A' },
-          { imagePath: '', id: '', changeMe: 'B' },
-          { imagePath: '', id: '', changeMe: 'C' }
-        ]
+        expected: [{ imagePath: '', id: 'keep-me', changeMe: 'D' }]
       }
     ]
 

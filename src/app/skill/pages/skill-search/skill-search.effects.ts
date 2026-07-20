@@ -108,15 +108,15 @@ export class SkillSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(skillSearchActions.updateSkillCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
-        if (!dialogResult.result.id) {
-          throw new Error('Item id was not set as expected!')
+        if (!dialogResult.result.id || dialogResult.result.modificationCount == undefined) {
+          throw new Error('Item id or modificationCount was not set as expected!')
         }
         const itemToEditId = dialogResult.result.id
         const itemToEdit: UpdateSkillRequest = {
-          modificationCount: dialogResult.result.modificationCount ?? 0,
+          modificationCount: dialogResult.result.modificationCount,
           name: dialogResult.result.name,
           description: dialogResult.result.description,
           instruction: dialogResult.result.instruction
@@ -168,7 +168,7 @@ export class SkillSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(skillSearchActions.createSkillCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem: CreateSkillRequest = {

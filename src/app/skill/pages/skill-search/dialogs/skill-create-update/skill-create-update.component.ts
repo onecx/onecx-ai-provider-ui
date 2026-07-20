@@ -29,8 +29,7 @@ export class SkillCreateUpdateComponent
 
   public formGroup: FormGroup
 
-  // eslint-disable-next-line @typescript-eslint/consistent-generic-constructors
-  primaryButtonEnabled: EventEmitter<boolean> = new EventEmitter()
+  primaryButtonEnabled = new EventEmitter<boolean>()
   dialogResult: Skill | undefined = undefined
 
   constructor() {
@@ -57,7 +56,8 @@ export class SkillCreateUpdateComponent
   ngOnInit() {
     if (this.vm.itemToEdit) {
       this.formGroup.patchValue({
-        ...this.vm.itemToEdit
+        name: this.vm.itemToEdit.name,
+        description: this.vm.itemToEdit.description
       })
     }
   }
