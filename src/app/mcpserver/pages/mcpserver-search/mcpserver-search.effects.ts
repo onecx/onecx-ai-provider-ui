@@ -9,13 +9,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
 import equal from 'fast-deep-equal'
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
-import {
-  CreateToolRequest,
-  Tool,
-  ToolService,
-  ToolType,
-  UpdateToolRequest
-} from 'src/app/shared/generated'
+import { CreateToolRequest, Tool, ToolService, ToolType, UpdateToolRequest } from 'src/app/shared/generated'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { McpserverCreateUpdateComponent } from './dialogs/mcpserver-create-update/mcpserver-create-update.component'
 import { MCPServerSearchActions } from './mcpserver-search.actions'
@@ -116,7 +110,7 @@ export class MCPServerSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(MCPServerSearchActions.updateMcpserverCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
         if (!dialogResult.result.id) {
@@ -175,7 +169,7 @@ export class MCPServerSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(MCPServerSearchActions.createMcpserverCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem: CreateToolRequest = {

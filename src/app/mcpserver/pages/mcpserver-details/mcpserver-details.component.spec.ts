@@ -313,7 +313,7 @@ describe('MCPServerDetailsComponent', () => {
     expect(await idDetailItem?.getValue()).toEqual('my-name')
   })
 
-  it('handles missing details (covers optional chaining)', async () => {
+  it('should render empty header details when details are missing', async () => {
     store.overrideSelector(selectMCPServerDetailsViewModel, {
       ...baseMCPServerDetailsViewModel,
       details: undefined
@@ -326,5 +326,11 @@ describe('MCPServerDetailsComponent', () => {
     const idDetailItem = await pageHeader.getObjectInfoByLabel(translatedLabel)
     expect(await idDetailItem?.getValue()).toBeFalsy()
     expect(component.formGroup.get('name')?.value).toBeFalsy()
+  })
+
+  it('should dispatch apiKeyVisibilityToggled on toggleApiKeyVisibility', () => {
+    jest.spyOn(store, 'dispatch')
+    component.toggleApiKeyVisibility()
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.apiKeyVisibilityToggled())
   })
 })

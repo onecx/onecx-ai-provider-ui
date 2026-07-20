@@ -1,7 +1,7 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { By } from '@angular/platform-browser'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
@@ -10,7 +10,6 @@ import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
-import { getUTCDateWithoutTimezoneIssues } from '@onecx/accelerator'
 import { AngularAcceleratorModule, ColumnType, DiagramType } from '@onecx/angular-accelerator'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
@@ -304,7 +303,7 @@ describe('MCPServerSearchComponent', () => {
       MCPServerSearchActions.searchButtonClicked({
         searchCriteria: {
           name: 'just text',
-          description: getUTCDateWithoutTimezoneIssues(sampleDate)
+          description: new Date(Date.UTC(2024, 5, 1))
         } as any
       })
     )
@@ -616,5 +615,71 @@ describe('MCPServerSearchComponent', () => {
     await exportAllActionItem!.selectItem()
 
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.exportButtonClicked())
+  })
+
+  describe('searchCriteria mapping', () => {
+    const cases = [
+      {
+        desc: 'should convert Date values to UTC and dispatch searchButtonClicked',
+        formValue: { name: new Date(2024, 4, 15) },
+        expected: { name: new Date(Date.UTC(2024, 4, 15)) }
+      },
+      {
+        desc: 'should pass through non-date, non-empty values unchanged',
+        formValue: { name: 'testName' },
+        expected: { name: 'testName' }
+      },
+      {
+        desc: 'should pass through null values unchanged',
+        formValue: { name: null },
+        expected: { name: null }
+      }
+    ]
+
+    cases.forEach(({ desc, formValue, expected }) => {
+      it(desc, () => {
+        jest.spyOn(store, 'dispatch')
+
+        component.mcpserverSearchFormGroup = {
+          value: formValue,
+          getRawValue: () => formValue
+        } as unknown as FormGroup
+
+        component.search(component.mcpserverSearchFormGroup)
+
+        const calls = (store.dispatch as jest.Mock).mock.calls
+        expect(calls.length).toBeGreaterThan(0)
+        const lastAction = calls[calls.length - 1][0]
+        expect(lastAction.type).toBe(MCPServerSearchActions.searchButtonClicked.type)
+        expect(lastAction.searchCriteria).toEqual(expected)
+      })
+    })
+  })
+
+  it('should dispatch createMcpserverButtonClicked action on create()', () => {
+    jest.spyOn(store, 'dispatch')
+    component.create()
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.createMcpserverButtonClicked())
+  })
+
+  it('should dispatch editMcpserverButtonClicked action on edit()', () => {
+    jest.spyOn(store, 'dispatch')
+    const row = { id: 'test-id', imagePath: '' }
+    component.edit(row)
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'test-id' }))
+  })
+
+  it('should call create() when headerActions$ actionCallback is triggered', (done) => {
+    jest.spyOn(component, 'create')
+    jest.spyOn(store, 'dispatch')
+
+    component.headerActions$.subscribe((actions) => {
+      const createAction = actions.find((a) => a.labelKey === 'MCPSERVER_CREATE_UPDATE.ACTION.CREATE')
+      expect(createAction).toBeTruthy()
+      createAction!.actionCallback()
+      expect(component.create).toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.createMcpserverButtonClicked())
+      done()
+    })
   })
 })

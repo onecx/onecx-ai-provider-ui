@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing'
+import { HttpEvent } from '@angular/common/http'
 import { ActivatedRoute, Router } from '@angular/router'
 import { RouterTestingModule } from '@angular/router/testing'
 import { provideMockActions } from '@ngrx/effects/testing'
@@ -7,9 +8,10 @@ import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageServiceMock, providePortalMessageServiceMock } from '@onecx/angular-integration-interface/mocks'
-import { MonoTypeOperatorFunction, ReplaySubject, map, of, throwError } from 'rxjs'
-import { ToolService, ToolType } from 'src/app/shared/generated'
+import { MonoTypeOperatorFunction, ReplaySubject, map, of, take, throwError } from 'rxjs'
+import { Tool, ToolPageResult, ToolService, ToolType } from 'src/app/shared/generated'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
+import { McpserverCreateUpdateComponent } from './dialogs/mcpserver-create-update/mcpserver-create-update.component'
 import { MCPServerSearchActions } from './mcpserver-search.actions'
 import { MCPServerSearchEffects } from './mcpserver-search.effects'
 import { MCPServerSearchCriteria } from './mcpserver-search.parameters'
@@ -48,6 +50,7 @@ describe('MCPServerSearchEffects', () => {
   let mcpService: jest.Mocked<ToolService>
   let messageService: PortalMessageServiceMock
   let exportDataService: jest.Mocked<ExportDataService>
+  let portalDialogService: jest.Mocked<PortalDialogService>
 
   const mockCriteria: MCPServerSearchCriteria = {
     name: 'test-name',
@@ -58,8 +61,14 @@ describe('MCPServerSearchEffects', () => {
     actions$ = new ReplaySubject(1)
 
     mcpService = {
-      findToolByCriteria: jest.fn()
+      findToolByCriteria: jest.fn(),
+      createTool: jest.fn(),
+      updateToolById: jest.fn()
     } as unknown as jest.Mocked<ToolService>
+
+    portalDialogService = {
+      openDialog: jest.fn()
+    } as unknown as jest.Mocked<PortalDialogService>
 
     router = {
       navigate: jest.fn().mockReturnValue(Promise.resolve(true)),
@@ -93,7 +102,7 @@ describe('MCPServerSearchEffects', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        { provide: PortalDialogService, useValue: { openDialog: jest.fn() } },
+        { provide: PortalDialogService, useValue: portalDialogService },
         MCPServerSearchEffects,
         provideMockStore({
           initialState: { mcpserver: { search: initialState } }
@@ -117,7 +126,7 @@ describe('MCPServerSearchEffects', () => {
       ngrxActions,
       route as any,
       mcpService as any,
-      TestBed.inject(PortalDialogService) as any,
+      portalDialogService as any,
       router as any,
       TestBed.inject(MockStore),
       messageService as any,
@@ -293,6 +302,26 @@ describe('MCPServerSearchEffects', () => {
       })
     })
 
+    it('should default missing response fields to empty results and zero counts', (done) => {
+      mcpService.findToolByCriteria.mockReturnValue(of({} as unknown as HttpEvent<ToolPageResult>))
+
+      effects
+        .performSearch(mockCriteria)
+        .pipe(take(1))
+        .subscribe((action) => {
+          expect(action).toEqual(
+            MCPServerSearchActions.mcpserverSearchResultsReceived({
+              stream: [],
+              size: 0,
+              number: 0,
+              totalElements: 0,
+              totalPages: 0
+            })
+          )
+          done()
+        })
+    })
+
     it('should handle Date objects in search criteria', (done) => {
       const criteriaWithDate = {
         ...mockCriteria,
@@ -437,6 +466,275 @@ describe('MCPServerSearchEffects', () => {
       }, 0)
 
       actions$.next(MCPServerSearchActions.resetButtonClicked())
+    })
+  })
+
+  describe('refreshSearchAfterCreateUpdate$', () => {
+    beforeEach(() => {
+      store.overrideSelector(mcpserverSearchSelectors.selectCriteria, mockCriteria)
+      store.refreshState()
+    })
+
+    it('should call performSearch with current criteria when createMcpserverSucceeded is dispatched', (done) => {
+      const markerAction = MCPServerSearchActions.mcpserverSearchResultsLoadingFailed({ error: null })
+      const performSearchSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(markerAction))
+
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(performSearchSpy).toHaveBeenCalledWith(mockCriteria)
+        expect(action).toBe(markerAction)
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverSucceeded())
+    })
+
+    it('should call performSearch with current criteria when updateMcpserverSucceeded is dispatched', (done) => {
+      const markerAction = MCPServerSearchActions.mcpserverSearchResultsLoadingFailed({ error: null })
+      const performSearchSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(markerAction))
+
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(performSearchSpy).toHaveBeenCalledWith(mockCriteria)
+        expect(action).toBe(markerAction)
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.updateMcpserverSucceeded())
+    })
+  })
+
+  describe('createButtonClicked$', () => {
+    it('should open the create dialog with the expected configuration', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'MCPSERVER_CREATE_UPDATE.CREATE.HEADER',
+          {
+            type: McpserverCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: {}
+              }
+            }
+          },
+          'MCPSERVER_CREATE_UPDATE.CREATE.FORM.SAVE',
+          'MCPSERVER_CREATE_UPDATE.CREATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+    })
+
+    it('should dispatch createMcpserverCancelled when the dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: { name: 'x' } }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(MCPServerSearchActions.createMcpserverCancelled())
+        expect(mcpService.createTool).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+    })
+
+    it('should dispatch createMcpserverCancelled when the dialog is dismissed without a result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of(undefined) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(MCPServerSearchActions.createMcpserverCancelled())
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+    })
+
+    it('should dispatch createMcpserverFailed when the dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(MCPServerSearchActions.createMcpserverFailed.type)
+        expect(mcpService.createTool).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+    })
+
+    it('should create the MCP server and dispatch createMcpserverSucceeded on success', (done) => {
+      const successSpy = jest.spyOn(messageService, 'success')
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'New Server', description: 'desc' } }) as never
+      )
+      mcpService.createTool.mockReturnValue(of({} as unknown as HttpEvent<Tool>))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(mcpService.createTool).toHaveBeenCalledWith({ name: 'New Server', description: 'desc' })
+        expect(successSpy).toHaveBeenCalledWith({
+          summaryKey: 'MCPSERVER_CREATE_UPDATE.CREATE.SUCCESS'
+        })
+        expect(action).toEqual(MCPServerSearchActions.createMcpserverSucceeded())
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+    })
+
+    it('should dispatch createMcpserverFailed and show an error message when the create call fails', (done) => {
+      const errorSpy = jest.spyOn(messageService, 'error')
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: { name: 'New Server' } }) as never)
+      mcpService.createTool.mockReturnValue(throwError(() => 'API Error'))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(MCPServerSearchActions.createMcpserverFailed({ error: 'API Error' }))
+        expect(errorSpy).toHaveBeenCalledWith({
+          summaryKey: 'MCPSERVER_CREATE_UPDATE.CREATE.ERROR'
+        })
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+    })
+  })
+
+  describe('editButtonClicked$', () => {
+    const item = { id: 'server-1', name: 'Server 1', modificationCount: 3 }
+
+    beforeEach(() => {
+      store.overrideSelector(mcpserverSearchSelectors.selectResults, [item])
+      store.refreshState()
+    })
+
+    it('should open the update dialog with the item found in the results', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'MCPSERVER_CREATE_UPDATE.UPDATE.HEADER',
+          {
+            type: McpserverCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: item
+              }
+            }
+          },
+          'MCPSERVER_CREATE_UPDATE.UPDATE.FORM.SAVE',
+          'MCPSERVER_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
+    })
+
+    it('should dispatch updateMcpserverCancelled when the dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: null }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(MCPServerSearchActions.updateMcpserverCancelled())
+        expect(mcpService.updateToolById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
+    })
+
+    it('should dispatch updateMcpserverFailed when the dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(MCPServerSearchActions.updateMcpserverFailed.type)
+        expect(mcpService.updateToolById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
+    })
+
+    it('should dispatch updateMcpserverFailed when the dialog confirms without an id', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'Updated', modificationCount: 1 } }) as never
+      )
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(MCPServerSearchActions.updateMcpserverFailed.type)
+        expect(mcpService.updateToolById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
+    })
+
+    it('should update the MCP server and dispatch updateMcpserverSucceeded on success', (done) => {
+      const successSpy = jest.spyOn(messageService, 'success')
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'server-1', name: 'Updated', description: 'desc', modificationCount: 3 }
+        }) as never
+      )
+      mcpService.updateToolById.mockReturnValue(of({} as unknown as HttpEvent<Tool>))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(mcpService.updateToolById).toHaveBeenCalledWith('server-1', {
+          modificationCount: 3,
+          name: 'Updated',
+          description: 'desc'
+        })
+        expect(successSpy).toHaveBeenCalledWith({
+          summaryKey: 'MCPSERVER_CREATE_UPDATE.UPDATE.SUCCESS'
+        })
+        expect(action).toEqual(MCPServerSearchActions.updateMcpserverSucceeded())
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
+    })
+
+    it('should default missing modificationCount to 0 when updating', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'server-1', name: 'Updated', description: 'desc' }
+        }) as never
+      )
+      mcpService.updateToolById.mockReturnValue(of({} as unknown as HttpEvent<Tool>))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(mcpService.updateToolById).toHaveBeenCalledWith('server-1', {
+          modificationCount: 0,
+          name: 'Updated',
+          description: 'desc'
+        })
+        expect(action).toEqual(MCPServerSearchActions.updateMcpserverSucceeded())
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
+    })
+
+    it('should dispatch updateMcpserverFailed and show an error message when the update call fails', (done) => {
+      const errorSpy = jest.spyOn(messageService, 'error')
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'server-1', name: 'Updated', modificationCount: 3 }
+        }) as never
+      )
+      mcpService.updateToolById.mockReturnValue(throwError(() => 'Update failed'))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(MCPServerSearchActions.updateMcpserverFailed({ error: 'Update failed' }))
+        expect(errorSpy).toHaveBeenCalledWith({
+          summaryKey: 'MCPSERVER_CREATE_UPDATE.UPDATE.ERROR'
+        })
+        done()
+      })
+
+      actions$.next(MCPServerSearchActions.editMcpserverButtonClicked({ id: 'server-1' }))
     })
   })
 })
