@@ -17,17 +17,13 @@ describe('ScaffoldSearch selectors', () => {
         ]
       },
       {
-        desc: 'should use empty string fallback when item.id is falsy',
+        desc: 'should omit results without a valid id',
         input: [
-          { id: '', name: 'A' },
-          { id: '', name: 'B' },
-          { id: '', name: 'C' }
+          { id: null, name: 'A' },
+          { id: undefined, name: 'B' },
+          { id: 'keep-me', name: 'C' }
         ] as never[],
-        expected: [
-          { imagePath: '', id: '', name: 'A' },
-          { imagePath: '', id: '', name: 'B' },
-          { imagePath: '', id: '', name: 'C' }
-        ]
+        expected: [{ imagePath: '', id: 'keep-me', name: 'C' }]
       }
     ]
 

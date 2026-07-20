@@ -636,5 +636,28 @@ describe('ScaffoldSearchComponent', () => {
     component.details(row)
     expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.detailsButtonClicked({ id: 'test-id' }))
   })
+
+  it('should dispatch createScaffoldButtonClicked action on create()', () => {
+    jest.spyOn(store, 'dispatch')
+    component.create()
+    expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.createScaffoldButtonClicked())
+  })
+
+  it('should dispatch editScaffoldButtonClicked action on edit()', () => {
+    jest.spyOn(store, 'dispatch')
+    component.edit({ id: '123', imagePath: '' })
+    expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.editScaffoldButtonClicked({ id: '123' }))
+  })
+
+  it('should call create() when headerActions$ actionCallback is triggered', (done) => {
+    const createSpy = jest.spyOn(component, 'create')
+
+    component.headerActions$.subscribe((actions) => {
+      const createAction = actions.find((a) => a.labelKey === 'SCAFFOLD_CREATE_UPDATE.ACTION.CREATE')
+      createAction!.actionCallback()
+      expect(createSpy).toHaveBeenCalled()
+      done()
+    })
+  })
   // <<SPEC-EXTENSIONS-MARKER-!!!-DO-NOT-REMOVE-!!!>>
 })

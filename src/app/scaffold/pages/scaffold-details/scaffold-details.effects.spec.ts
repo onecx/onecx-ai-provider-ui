@@ -9,7 +9,7 @@ import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { ScaffoldService, SkillService, ToolService } from 'src/app/shared/generated'
+import { ScaffoldService, SkillService, ToolService, Scaffold } from 'src/app/shared/generated'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { ScaffoldDetailsEffects } from './scaffold-details.effects'
@@ -144,6 +144,40 @@ describe('ScaffoldDetailsEffects', () => {
     })
   })
 
+  describe('loadSkills$', () => {
+    it('should dispatch scaffoldSkillsReceived on success', async () => {
+      const mockSkills = [{ id: 'skill-1' }]
+      skillService.findSkillByCriteria.mockReturnValueOnce(of({ stream: mockSkills }))
+
+      actions$.next(scaffoldDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadSkills$)
+
+      expect(action).toEqual(scaffoldDetailsActions.scaffoldSkillsReceived({ skills: mockSkills }))
+      expect(skillService.findSkillByCriteria).toHaveBeenCalledTimes(1)
+      expect(skillService.findSkillByCriteria).toHaveBeenCalledWith({})
+    })
+
+    it('should dispatch scaffoldSkillsReceived with an empty list when stream is missing', async () => {
+      skillService.findSkillByCriteria.mockReturnValueOnce(of({}))
+
+      actions$.next(scaffoldDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadSkills$)
+
+      expect(action).toEqual(scaffoldDetailsActions.scaffoldSkillsReceived({ skills: [] }))
+    })
+
+    it('should dispatch scaffoldSkillsLoadingFailed on error', async () => {
+      const mockError = 'skills failed'
+      skillService.findSkillByCriteria.mockReturnValueOnce(throwError(() => mockError))
+
+      actions$.next(scaffoldDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadSkills$)
+
+      expect(action).toEqual(scaffoldDetailsActions.scaffoldSkillsLoadingFailed({ error: mockError }))
+      expect(skillService.findSkillByCriteria).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('loadTools$', () => {
     it('should dispatch scaffoldToolsReceived on success', async () => {
       const mockTools = [{ id: 'tool-1' }]
@@ -155,6 +189,15 @@ describe('ScaffoldDetailsEffects', () => {
       expect(action).toEqual(scaffoldDetailsActions.scaffoldToolsReceived({ tools: mockTools }))
       expect(toolService.findToolByCriteria).toHaveBeenCalledTimes(1)
       expect(toolService.findToolByCriteria).toHaveBeenCalledWith({})
+    })
+
+    it('should dispatch scaffoldToolsReceived with an empty list when stream is missing', async () => {
+      toolService.findToolByCriteria.mockReturnValueOnce(of({}))
+
+      actions$.next(scaffoldDetailsActions.navigatedToDetailsPage({ id: '123' }))
+      const action = await firstValueFrom(effects.loadTools$)
+
+      expect(action).toEqual(scaffoldDetailsActions.scaffoldToolsReceived({ tools: [] }))
     })
 
     it('should dispatch scaffoldToolsLoadingFailed on error', async () => {
@@ -199,11 +242,20 @@ describe('ScaffoldDetailsEffects', () => {
         'SCAFFOLD_DETAILS.CANCEL.CONFIRM'
       )
     })
+
+    it('should dispatch cancelEditBackClicked when the dialog is dismissed', async () => {
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of(undefined))
+
+      actions$.next(scaffoldDetailsActions.cancelButtonClicked({ dirty: true }))
+      const action = await firstValueFrom(effects.cancelButtonClickedDirty$)
+
+      expect(action).toEqual(scaffoldDetailsActions.cancelEditBackClicked())
+    })
   })
 
   describe('saveButtonClicked$', () => {
     it('should dispatch updateScaffoldSucceeded', async () => {
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1 }
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       scaffoldService.updateScaffoldById.mockReturnValueOnce(of(mockDetails))
 
@@ -216,6 +268,43 @@ describe('ScaffoldDetailsEffects', () => {
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'SCAFFOLD_DETAILS.UPDATE.SUCCESS'
       })
+    })
+
+    it('should cancel update when modificationCount is missing', async () => {
+      const mockDetails = { id: '123', name: 'Scaffold' }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+
+      actions$.next(scaffoldDetailsActions.saveButtonClicked({ details: mockDetails }))
+      const action = await firstValueFrom(effects.saveButtonClicked$)
+
+      expect(action).toEqual(scaffoldDetailsActions.updateScaffoldCancelled())
+      expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+    })
+
+    it('should omit tools from the update request and return the API response as-is', async () => {
+      const tools = [{ id: 'tool-1' }]
+      const mockDetails = { id: '123', name: 'Scaffold', modificationCount: 2, tools } as Scaffold & {
+        tools: { id: string }[]
+      }
+      const apiResponse = { id: '123', name: 'Scaffold', modificationCount: 3 } as Scaffold
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+      scaffoldService.updateScaffoldById.mockReturnValueOnce(of(apiResponse))
+
+      actions$.next(scaffoldDetailsActions.saveButtonClicked({ details: mockDetails }))
+      const action = await firstValueFrom(effects.saveButtonClicked$)
+
+      expect(scaffoldService.updateScaffoldById).toHaveBeenCalledWith('123', {
+        modificationCount: 2,
+        name: 'Scaffold',
+        systemPrompt: undefined,
+        sourceProduct: undefined,
+        skills: undefined
+      })
+      expect(action).toEqual(
+        scaffoldDetailsActions.updateScaffoldSucceeded({
+          details: apiResponse
+        })
+      )
     })
 
     it('should dispatch updateScaffoldCancelled', async () => {
@@ -234,7 +323,7 @@ describe('ScaffoldDetailsEffects', () => {
 
     it('should dispatch updateScaffoldFailed', async () => {
       const mockError = 'updateScaffold failed'
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1 }
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       scaffoldService.updateScaffoldById.mockReturnValueOnce(throwError(() => mockError))
 
@@ -281,6 +370,18 @@ describe('ScaffoldDetailsEffects', () => {
       expect(scaffoldService.deleteScaffoldById).not.toHaveBeenCalled()
     })
 
+    it('should dispatch deleteScaffoldCancelled when dialog result is undefined', async () => {
+      const mockDetails = { id: '123' }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of(undefined))
+
+      actions$.next(scaffoldDetailsActions.deleteButtonClicked())
+      const action = await firstValueFrom(effects.deleteButtonClicked$)
+
+      expect(action).toEqual(scaffoldDetailsActions.deleteScaffoldCancelled())
+      expect(scaffoldService.deleteScaffoldById).not.toHaveBeenCalled()
+    })
+
     it('should dispatch deleteScaffoldFailed when delete fails', async () => {
       const mockError = 'deleteScaffold failed'
       const mockDetails = { id: '123' }
@@ -306,6 +407,16 @@ describe('ScaffoldDetailsEffects', () => {
       actions$.next(scaffoldDetailsActions.deleteButtonClicked())
 
       await expect(firstValueFrom(effects.deleteButtonClicked$)).rejects.toThrow('Item to delete not found!')
+    })
+
+    it('should throw error when itemToDelete has no id after dialog confirmed', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of({ name: 'no-id' }))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'primary' }))
+
+      actions$.next(scaffoldDetailsActions.deleteButtonClicked())
+
+      await expect(firstValueFrom(effects.deleteButtonClicked$)).rejects.toThrow('Item to delete not found!')
+      expect(scaffoldService.deleteScaffoldById).not.toHaveBeenCalled()
     })
   })
 
@@ -333,6 +444,24 @@ describe('ScaffoldDetailsEffects', () => {
           error: 'Test error'
         })
       )
+      await firstValueFrom(effects.displayError$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'SCAFFOLD_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+      })
+    })
+
+    it('should display error message when SkillsLoadingFailed action is dispatched', async () => {
+      actions$.next(scaffoldDetailsActions.scaffoldSkillsLoadingFailed({ error: 'skills error' }))
+      await firstValueFrom(effects.displayError$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'SCAFFOLD_DETAILS.ERROR_MESSAGES.DETAILS_LOADING_FAILED'
+      })
+    })
+
+    it('should display error message when ToolsLoadingFailed action is dispatched', async () => {
+      actions$.next(scaffoldDetailsActions.scaffoldToolsLoadingFailed({ error: 'tools error' }))
       await firstValueFrom(effects.displayError$)
 
       expect(messageService.error).toHaveBeenCalledWith({

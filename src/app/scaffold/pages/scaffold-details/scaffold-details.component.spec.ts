@@ -63,7 +63,7 @@ describe('ScaffoldDetailsComponent', () => {
 
   window.postMessage = (m: unknown) => {
     for (const l of listeners) {
-      (l as (event: { data: unknown; stopImmediatePropagation: () => void; stopPropagation: () => void }) => void)({
+      ;(l as (event: { data: unknown; stopImmediatePropagation: () => void; stopPropagation: () => void }) => void)({
         data: m,
         stopImmediatePropagation: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
         stopPropagation: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
@@ -369,5 +369,35 @@ describe('ScaffoldDetailsComponent', () => {
     expect(component.formGroup.pristine).toBe(true)
     expect(component.formGroup.disabled).toBe(true)
     expect(component.formGroup.getRawValue()).toEqual(scaffoldForm)
+  })
+
+  it('should default tools to an empty array when their control value is null', () => {
+    jest.spyOn(store, 'dispatch')
+    component.formGroup.get('tools')?.setValue(null)
+
+    component.save()
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      scaffoldDetailsActions.saveButtonClicked({
+        details: expect.objectContaining({
+          tools: []
+        })
+      })
+    )
+  })
+
+  it('should default tools to an empty array when the tools control is missing', () => {
+    jest.spyOn(store, 'dispatch')
+    component.formGroup.removeControl('tools')
+
+    component.save()
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      scaffoldDetailsActions.saveButtonClicked({
+        details: expect.objectContaining({
+          tools: []
+        })
+      })
+    )
   })
 })

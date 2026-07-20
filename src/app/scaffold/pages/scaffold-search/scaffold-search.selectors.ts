@@ -13,12 +13,13 @@ export const scaffoldSearchSelectors = createChildSelectors(scaffoldFeature.sele
 export const selectResults = createSelector(
   scaffoldSearchSelectors.selectResults,
   (results: Scaffold[]): RowListGridData[] => {
-    return results.map((item) => ({
-      imagePath: '',
-      id: item.id ?? '',
-      ...item
-      // ACTION S7: Create a mapping of the items and their corresponding translation keys
-    }))
+    return results
+      .filter((item): item is Scaffold & { id: string } => !!item.id)
+      .map((item) => ({
+        imagePath: '',
+        ...item,
+        id: item.id
+      }))
   }
 )
 

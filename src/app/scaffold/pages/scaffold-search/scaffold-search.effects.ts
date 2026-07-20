@@ -107,15 +107,15 @@ export class ScaffoldSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(scaffoldSearchActions.updateScaffoldCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
-        if (!dialogResult.result.id) {
-          throw new Error('Item id was not set as expected!')
+        if (!dialogResult.result.id || dialogResult.result.modificationCount == undefined) {
+          throw new Error('Item id or modificationCount was not set as expected!')
         }
         const itemToEditId = dialogResult.result.id
         const itemToEdit: UpdateScaffoldRequest = {
-          modificationCount: dialogResult.result.modificationCount ?? 0,
+          modificationCount: dialogResult.result.modificationCount,
           name: dialogResult.result.name
         }
         return this.scaffoldService.updateScaffoldById(itemToEditId, itemToEdit).pipe(
@@ -165,7 +165,7 @@ export class ScaffoldSearchEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(scaffoldSearchActions.createScaffoldCancelled())
         }
-        if (!dialogResult?.result) {
+        if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem: CreateScaffoldRequest = {

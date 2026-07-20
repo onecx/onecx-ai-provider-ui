@@ -1,6 +1,22 @@
-import { selectScaffoldDetailsViewModel } from './scaffold-details.selectors'
+import { selectScaffoldDetailsCollections, selectScaffoldDetailsViewModel } from './scaffold-details.selectors'
 
 describe('ScaffoldDetails selectors', () => {
+  describe('selectScaffoldDetailsCollections', () => {
+    it('should combine skills and tools state', () => {
+      const skills = [{ id: 'skill-1' }]
+      const tools = [{ id: 'tool-1' }]
+
+      expect(selectScaffoldDetailsCollections.projector(skills, false, true, tools, false, true)).toEqual({
+        skills,
+        skillsLoadingIndicator: false,
+        skillsLoaded: true,
+        tools,
+        toolsLoadingIndicator: false,
+        toolsLoaded: true
+      })
+    })
+  })
+
   describe('selectScaffoldDetailsViewModel', () => {
     it('should combine the input to be the viewmodel', () => {
       const details = { id: '10' }
@@ -31,7 +47,7 @@ describe('ScaffoldDetails selectors', () => {
           detailsLoaded,
           editMode,
           isSubmitting,
-          collections,
+          collections
         )
       ).toEqual({
         details,
@@ -40,10 +56,7 @@ describe('ScaffoldDetails selectors', () => {
         detailsLoaded,
         editMode,
         isSubmitting,
-        ...collections,
-        skills,
-        skillsLoadingIndicator,
-        skillsLoaded
+        ...collections
       })
     })
   })

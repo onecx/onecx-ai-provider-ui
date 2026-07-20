@@ -16,7 +16,8 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { of, ReplaySubject, throwError } from 'rxjs'
 import { take } from 'rxjs/operators'
 
-import { ScaffoldPageResult, ScaffoldService } from 'src/app/shared/generated'
+import { Scaffold, ScaffoldPageResult, ScaffoldService } from 'src/app/shared/generated'
+import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchEffects } from './scaffold-search.effects'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
@@ -154,6 +155,271 @@ describe('ScaffoldSearchEffects', () => {
     })
   })
 
+  describe('refreshSearchAfterCreateUpdate$', () => {
+    beforeEach(() => {
+      store.overrideSelector(scaffoldSearchSelectors.selectCriteria, mockCriteria)
+      store.refreshState()
+    })
+
+    it('should call performSearch when createScaffoldSucceeded is dispatched', (done) => {
+      const markerAction = scaffoldSearchActions.scaffoldSearchResultsLoadingFailed({ error: null })
+      const performSearchSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(markerAction))
+
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(performSearchSpy).toHaveBeenCalledWith(mockCriteria)
+        expect(action).toBe(markerAction)
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldSucceeded())
+    })
+
+    it('should call performSearch when updateScaffoldSucceeded is dispatched', (done) => {
+      const markerAction = scaffoldSearchActions.scaffoldSearchResultsLoadingFailed({ error: null })
+      const performSearchSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(markerAction))
+
+      effects.refreshSearchAfterCreateUpdate$.pipe(take(1)).subscribe((action) => {
+        expect(performSearchSpy).toHaveBeenCalledWith(mockCriteria)
+        expect(action).toBe(markerAction)
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.updateScaffoldSucceeded())
+    })
+  })
+
+  describe('createButtonClicked$', () => {
+    it('should open the create dialog with the expected configuration', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'SCAFFOLD_CREATE_UPDATE.CREATE.HEADER',
+          {
+            type: ScaffoldCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: {}
+              }
+            }
+          },
+          'SCAFFOLD_CREATE_UPDATE.CREATE.FORM.SAVE',
+          'SCAFFOLD_CREATE_UPDATE.CREATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldCancelled when the dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: { name: 'x' } }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.createScaffoldCancelled())
+        expect(scaffoldService.createScaffold).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldCancelled when the dialog is dismissed without a result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of(undefined) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.createScaffoldCancelled())
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldFailed when the dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(scaffoldSearchActions.createScaffoldFailed.type)
+        expect(scaffoldService.createScaffold).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should create the scaffold and dispatch createScaffoldSucceeded on success', (done) => {
+      const successSpy = jest.spyOn(messageService, 'success')
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'New Scaffold' } }) as never
+      )
+      scaffoldService.createScaffold.mockReturnValue(of({} as unknown as HttpEvent<Scaffold>))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(scaffoldService.createScaffold).toHaveBeenCalledWith({ name: 'New Scaffold' })
+        expect(successSpy).toHaveBeenCalledWith({
+          summaryKey: 'SCAFFOLD_CREATE_UPDATE.CREATE.SUCCESS'
+        })
+        expect(action).toEqual(scaffoldSearchActions.createScaffoldSucceeded())
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+
+    it('should dispatch createScaffoldFailed and show an error message when the create call fails', (done) => {
+      const errorSpy = jest.spyOn(messageService, 'error')
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'New Scaffold' } }) as never
+      )
+      scaffoldService.createScaffold.mockReturnValue(throwError(() => 'API Error'))
+
+      effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.createScaffoldFailed({ error: 'API Error' }))
+        expect(errorSpy).toHaveBeenCalledWith({
+          summaryKey: 'SCAFFOLD_CREATE_UPDATE.CREATE.ERROR'
+        })
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.createScaffoldButtonClicked())
+    })
+  })
+
+  describe('editButtonClicked$', () => {
+    const item = { id: 'scaffold-1', name: 'Scaffold 1', modificationCount: 3 }
+
+    beforeEach(() => {
+      store.overrideSelector(scaffoldSearchSelectors.selectResults, [item])
+      store.refreshState()
+    })
+
+    it('should open the update dialog with the item found in the results', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+          'SCAFFOLD_CREATE_UPDATE.UPDATE.HEADER',
+          {
+            type: ScaffoldCreateUpdateComponent,
+            inputs: {
+              vm: {
+                itemToEdit: item
+              }
+            }
+          },
+          'SCAFFOLD_CREATE_UPDATE.UPDATE.FORM.SAVE',
+          'SCAFFOLD_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+          { baseZIndex: 100 }
+        )
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+
+    it('should dispatch updateScaffoldCancelled when the dialog is cancelled', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: null }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.updateScaffoldCancelled())
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+
+    it('should dispatch updateScaffoldFailed when the dialog confirms but returns no result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(scaffoldSearchActions.updateScaffoldFailed.type)
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+
+    it('should dispatch updateScaffoldFailed when the dialog confirms without an id', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { name: 'Updated', modificationCount: 1 } }) as never
+      )
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action.type).toEqual(scaffoldSearchActions.updateScaffoldFailed.type)
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+
+    it('should update the scaffold and dispatch updateScaffoldSucceeded on success', (done) => {
+      const successSpy = jest.spyOn(messageService, 'success')
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'scaffold-1', name: 'Updated', modificationCount: 3 }
+        }) as never
+      )
+      scaffoldService.updateScaffoldById.mockReturnValue(of({} as unknown as HttpEvent<Scaffold>))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(scaffoldService.updateScaffoldById).toHaveBeenCalledWith('scaffold-1', {
+          modificationCount: 3,
+          name: 'Updated'
+        })
+        expect(successSpy).toHaveBeenCalledWith({
+          summaryKey: 'SCAFFOLD_CREATE_UPDATE.UPDATE.SUCCESS'
+        })
+        expect(action).toEqual(scaffoldSearchActions.updateScaffoldSucceeded())
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+
+    it('should dispatch updateFailed when modificationCount is missing on the dialog result', (done) => {
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'scaffold-1', name: 'Updated' }
+        }) as never
+      )
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.updateScaffoldFailed({ error: expect.any(Error) }))
+        expect(scaffoldService.updateScaffoldById).not.toHaveBeenCalled()
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+
+    it('should dispatch updateScaffoldFailed and show an error message when the update call fails', (done) => {
+      const errorSpy = jest.spyOn(messageService, 'error')
+      portalDialogService.openDialog.mockReturnValue(
+        of({
+          button: 'primary',
+          result: { id: 'scaffold-1', name: 'Updated', modificationCount: 3 }
+        }) as never
+      )
+      scaffoldService.updateScaffoldById.mockReturnValue(throwError(() => 'Update failed'))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(scaffoldSearchActions.updateScaffoldFailed({ error: 'Update failed' }))
+        expect(errorSpy).toHaveBeenCalledWith({
+          summaryKey: 'SCAFFOLD_CREATE_UPDATE.UPDATE.ERROR'
+        })
+        done()
+      })
+
+      actions$.next(scaffoldSearchActions.editScaffoldButtonClicked({ id: 'scaffold-1' }))
+    })
+  })
+
   describe('searchByUrl$ / performSearch', () => {
     beforeEach(() => {
       store.overrideSelector(scaffoldSearchSelectors.selectCriteria, mockCriteria)
@@ -171,6 +437,44 @@ describe('ScaffoldSearchEffects', () => {
       )
     })
 
+    it('should dispatch scaffoldSearchResultsReceived on successful search', (done) => {
+      effects
+        .performSearch(mockCriteria)
+        .pipe(take(1))
+        .subscribe((action) => {
+          expect(action).toEqual(
+            scaffoldSearchActions.scaffoldSearchResultsReceived({
+              stream: [{ id: '1', name: 'Item 1' }] as never,
+              size: 10,
+              number: 0,
+              totalElements: 1,
+              totalPages: 1
+            })
+          )
+          done()
+        })
+    })
+
+    it('should default missing response fields to empty stream and zero counts', (done) => {
+      scaffoldService.findScaffoldByCriteria.mockReturnValue(of({} as unknown as HttpEvent<ScaffoldPageResult>))
+
+      effects
+        .performSearch(mockCriteria)
+        .pipe(take(1))
+        .subscribe((action) => {
+          expect(action).toEqual(
+            scaffoldSearchActions.scaffoldSearchResultsReceived({
+              stream: [] as never,
+              size: 0,
+              number: 0,
+              totalElements: 0,
+              totalPages: 0
+            })
+          )
+          done()
+        })
+    })
+
     it('should dispatch resultsLoadingFailed on search error', (done) => {
       const mockError = 'Search failed'
       scaffoldService.findScaffoldByCriteria.mockReturnValueOnce(throwError(() => mockError))
@@ -186,7 +490,11 @@ describe('ScaffoldSearchEffects', () => {
     })
 
     it('should convert Date objects in search criteria before calling scaffoldService', (done) => {
-      const criteriaWithDate = { ...mockCriteria, startDate: new Date('2023-01-01'), endDate: new Date('2023-12-31') }
+      const criteriaWithDate = {
+        ...mockCriteria,
+        startDate: new Date(Date.UTC(2023, 0, 1)),
+        endDate: new Date(Date.UTC(2023, 11, 31))
+      }
       const searchSpy = jest.spyOn(scaffoldService, 'findScaffoldByCriteria')
 
       effects

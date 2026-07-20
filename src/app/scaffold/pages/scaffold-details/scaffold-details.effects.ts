@@ -13,7 +13,14 @@ import { filterForNavigatedTo } from '@onecx/ngrx-accelerator'
 
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { Scaffold, ScaffoldService, SkillService, Tool, ToolService, UpdateScaffoldRequest } from '../../../shared/generated'
+import {
+  Scaffold,
+  ScaffoldService,
+  SkillService,
+  Tool,
+  ToolService,
+  UpdateScaffoldRequest
+} from '../../../shared/generated'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { ScaffoldDetailsComponent } from './scaffold-details.component'
 import { scaffoldDetailsSelectors } from './scaffold-details.selectors'
@@ -152,16 +159,15 @@ export class ScaffoldDetailsEffects {
           ...action.details
         }
 
-        if (!itemToEditId) {
+        if (!itemToEditId || updatedItem.modificationCount == undefined) {
           return of(scaffoldDetailsActions.updateScaffoldCancelled())
         }
         const itemToEdit: UpdateScaffoldRequest = {
-          modificationCount: updatedItem.modificationCount ?? 0,
+          modificationCount: updatedItem.modificationCount,
           name: updatedItem.name,
           systemPrompt: updatedItem.systemPrompt,
           sourceProduct: updatedItem.sourceProduct,
-          skills: updatedItem.skills,
-          ...(updatedItem.tools ? { tools: updatedItem.tools } : {})
+          skills: updatedItem.skills
         }
         return this.scaffoldService.updateScaffoldById(itemToEditId, itemToEdit).pipe(
           map((response) => {
@@ -169,7 +175,7 @@ export class ScaffoldDetailsEffects {
               summaryKey: 'SCAFFOLD_DETAILS.UPDATE.SUCCESS'
             })
             return scaffoldDetailsActions.updateScaffoldSucceeded({
-              details: { ...response, ...(updatedItem.tools ? { tools: updatedItem.tools } : {}) }
+              details: response
             })
           }),
           catchError((error) => {
