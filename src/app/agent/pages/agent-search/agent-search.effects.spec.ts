@@ -187,9 +187,7 @@ describe('AgentSearchEffects', () => {
     })
 
     it('should default missing response fields to empty results and zero counts', (done) => {
-      agentService.findAgentBySearchCriteria.mockReturnValueOnce(
-        of({} as unknown as HttpEvent<AgentPageResult>)
-      )
+      agentService.findAgentBySearchCriteria.mockReturnValueOnce(of({} as unknown as HttpEvent<AgentPageResult>))
 
       effects
         .performSearch(mockCriteria)

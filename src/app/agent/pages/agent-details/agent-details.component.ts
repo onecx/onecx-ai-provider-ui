@@ -8,7 +8,16 @@ import { Observable, map } from 'rxjs'
 
 import { Action, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
 
-import { Agent, AgentFilter, AgentFilterKeyEnum, AgentGroup, Model, Provider, Scaffold, Tool } from 'src/app/shared/generated'
+import {
+  Agent,
+  AgentFilter,
+  AgentFilterKeyEnum,
+  AgentGroup,
+  Model,
+  Provider,
+  Scaffold,
+  Tool
+} from 'src/app/shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { selectAgentDetailsViewModel } from './agent-details.selectors'
 import { AgentDetailsViewModel } from './agent-details.viewmodel'

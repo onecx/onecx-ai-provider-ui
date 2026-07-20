@@ -408,7 +408,7 @@ describe('AgentDetailsComponent', () => {
     expect(await statusDetailItem?.getValue()).toEqual('LIVE')
   })
 
-  it('handles missing details (covers optional chaining)', async () => {
+  it('should render empty header details when details are missing', async () => {
     store.overrideSelector(selectAgentDetailsViewModel, {
       ...baseAgentDetailsViewModel,
       details: undefined
@@ -733,8 +733,8 @@ describe('AgentDetailsComponent', () => {
       const filterEntry = component.filtersFormArray.at(0) as FormGroup
       filterEntry.removeControl('key')
       filterEntry.removeControl('value')
-      ;['provider', 'model', 'name', 'description', 'additionalPrompt', 'scaffold', 'tools', 'groups'].forEach((control) =>
-        component.formGroup.removeControl(control)
+      ;['provider', 'model', 'name', 'description', 'additionalPrompt', 'scaffold', 'tools', 'groups'].forEach(
+        (control) => component.formGroup.removeControl(control)
       )
 
       component.save()

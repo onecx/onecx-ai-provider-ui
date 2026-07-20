@@ -9,7 +9,14 @@ import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
 import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
-import { AgentGroupService, AgentService, ModelService, ProviderService, ScaffoldService, ToolService } from 'src/app/shared/generated'
+import {
+  AgentGroupService,
+  AgentService,
+  ModelService,
+  ProviderService,
+  ScaffoldService,
+  ToolService
+} from 'src/app/shared/generated'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsEffects } from './agent-details.effects'
