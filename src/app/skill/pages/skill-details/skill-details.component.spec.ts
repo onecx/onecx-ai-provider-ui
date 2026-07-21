@@ -164,7 +164,7 @@ describe('SkillDetailsComponent', () => {
   it('should show available header actions', async () => {
     const pageHeader = await skillDetails.getHeader()
     const inlineActions = await pageHeader.getInlineActionButtons()
-    expect(inlineActions.length).toBe(3)
+    expect(inlineActions).toHaveLength(3)
 
     const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     expect(backAction).toBeTruthy()
@@ -313,7 +313,7 @@ describe('SkillDetailsComponent', () => {
 
     const pageHeader = await skillDetails.getHeader()
     const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails.length).toBe(5)
+    expect(objectDetails).toHaveLength(5)
 
     const label = TestBed.inject(TranslateService).instant('SKILL_DETAILS.FORM.CHANGE_ME')
     const testDetailItem = await pageHeader.getObjectInfoByLabel(label)

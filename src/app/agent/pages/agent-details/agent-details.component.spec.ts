@@ -558,14 +558,14 @@ describe('AgentDetailsComponent', () => {
 
   describe('filters', () => {
     it('should add and remove filter form groups', () => {
-      expect(component.filtersFormArray.length).toBe(0)
+      expect(component.filtersFormArray).toHaveLength(0)
 
       component.addFilter()
       component.addFilter()
-      expect(component.filtersFormArray.length).toBe(2)
+      expect(component.filtersFormArray).toHaveLength(2)
 
       component.removeFilter(0)
-      expect(component.filtersFormArray.length).toBe(1)
+      expect(component.filtersFormArray).toHaveLength(1)
     })
 
     it('should pick the first fully filled filter row when saving', () => {
