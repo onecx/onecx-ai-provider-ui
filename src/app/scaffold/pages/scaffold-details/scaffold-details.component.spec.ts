@@ -185,7 +185,7 @@ describe('ScaffoldDetailsComponent', () => {
   it('should have 4 inline actions', async () => {
     const pageHeader = await scaffoldDetails.getHeader()
     const inlineActions = await pageHeader.getInlineActionButtons()
-    expect(inlineActions.length).toBe(4)
+    expect(inlineActions).toHaveLength(4)
 
     const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     expect(backAction).toBeTruthy()
@@ -320,7 +320,7 @@ describe('ScaffoldDetailsComponent', () => {
 
     const pageHeader = await scaffoldDetails.getHeader()
     const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails.length).toBe(5)
+    expect(objectDetails).toHaveLength(5)
 
     const label = TestBed.inject(TranslateService).instant('SCAFFOLD_DETAILS.FORM.NAME')
     const testDetailItem = await pageHeader.getObjectInfoByLabel(label)
