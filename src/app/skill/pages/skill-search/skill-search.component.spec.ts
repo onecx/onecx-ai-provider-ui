@@ -176,6 +176,7 @@ describe('SkillSearchComponent', () => {
 
   it('should dispatch resetButtonClicked action on resetSearch', (done) => {
     store.scannedActions$.pipe(ofType(skillSearchActions.resetButtonClicked)).subscribe(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.resetButtonClicked())
       done()
     })
 
