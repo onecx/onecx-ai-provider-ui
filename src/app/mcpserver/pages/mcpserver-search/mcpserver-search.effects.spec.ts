@@ -58,8 +58,7 @@ describe('MCPServerSearchEffects', () => {
     actions$ = new ReplaySubject(1)
 
     mcpService = {
-      findToolByCriteria: jest.fn(),
-      createTool: jest.fn()
+      findToolByCriteria: jest.fn()
     } as unknown as jest.Mocked<ToolService>
 
     router = {
@@ -254,7 +253,7 @@ describe('MCPServerSearchEffects', () => {
             }
           }) as never
         )
-        mcpService.createTool.mockReturnValue(of({ id: '1' }) as never)
+        mcpService.createTool = jest.fn().mockReturnValue(of({ id: '1' }) as never)
 
         const actionPromise = firstValueFrom(effects.createButtonClicked$)
 
