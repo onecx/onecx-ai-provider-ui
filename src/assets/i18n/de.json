@@ -105,7 +105,8 @@
       "SEARCH_RESULTS_LOADING_FAILED": "Suchergebnisse konnten nicht geladen werden.",
       "SEARCH_CONFIG_CREATION_FAILED": "Suchkonfiguration konnte nicht erstellt werden.",
       "SEARCH_CONFIG_UPDATE_FAILED": "Suchkonfiguration konnte nicht aktualisiert werden.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Suchkonfigurationen konnten nicht geladen werden."
+      "SEARCH_CONFIGS_LOADING_FAILED": "Suchkonfigurationen konnten nicht geladen werden.",
+      "SKILLS_LOADING_FAILED": "Fähigkeiten konnten nicht geladen werden."
     },
     "HEADER_ARIA_LABEL": "Seitenkopf mit Suche",
     "PREDEFINED_GROUP": {

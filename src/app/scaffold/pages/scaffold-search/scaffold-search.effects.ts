@@ -293,6 +293,10 @@ export class ScaffoldSearchEffects {
     {
       action: scaffoldSearchActions.scaffoldSearchResultsLoadingFailed,
       key: 'SCAFFOLD_SEARCH.ERROR_MESSAGES.SEARCH_RESULTS_LOADING_FAILED'
+    },
+    {
+      action: scaffoldSearchActions.scaffoldSkillsLoadingFailed,
+      key: 'SCAFFOLD_SEARCH.ERROR_MESSAGES.SKILLS_LOADING_FAILED'
     }
   ]
 

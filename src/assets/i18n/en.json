@@ -106,7 +106,8 @@
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
       "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
       "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed.",
+      "SKILLS_LOADING_FAILED": "Loading skills failed."
     },
     "HEADER_ARIA_LABEL": "Page Header with Search",
     "PREDEFINED_GROUP": {

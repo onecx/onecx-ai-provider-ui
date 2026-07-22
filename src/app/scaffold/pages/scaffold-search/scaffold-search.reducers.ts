@@ -100,5 +100,12 @@ export const scaffoldSearchReducer = createReducer(
       ...state,
       skills
     })
+  ),
+  on(
+    scaffoldSearchActions.scaffoldSkillsLoadingFailed,
+    (state: ScaffoldSearchState): ScaffoldSearchState => ({
+      ...state,
+      skills: []
+    })
   )
 )
