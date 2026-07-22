@@ -125,6 +125,14 @@ describe('scaffoldSearchReducer', () => {
     expect(nextState.skills).toEqual(skills)
   })
 
+  it('should set searchLoadingIndicator=false when scaffoldSkillsLoadingFailed', () => {
+    const preState = { ...reducers.initialState, searchLoadingIndicator: true }
+    const action = scaffoldSearchActions.scaffoldSkillsLoadingFailed({ error: null })
+    const nextState = reducers.scaffoldSearchReducer(preState, action)
+
+    expect(nextState.searchLoadingIndicator).toBe(false)
+  })
+
   it('should not change state when routerNavigatedAction fails schema parse', () => {
     const { routerNavigatedAction } = require('@ngrx/router-store')
     const mockSchema = require('./scaffold-search.parameters')
