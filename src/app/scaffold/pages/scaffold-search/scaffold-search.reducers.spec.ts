@@ -8,7 +8,6 @@ import {
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import * as reducers from './scaffold-search.reducers'
 
-// ACTION S11: Change test data in the whole document
 describe('scaffoldSearchReducer', () => {
   it('should reset results and criteria on resetButtonClicked', () => {
     const preState = { ...reducers.initialState, results: [{ id: '1' }], criteria: { name: 'val' } }
@@ -125,12 +124,13 @@ describe('scaffoldSearchReducer', () => {
     expect(nextState.skills).toEqual(skills)
   })
 
-  it('should set searchLoadingIndicator=false when scaffoldSkillsLoadingFailed', () => {
-    const preState = { ...reducers.initialState, searchLoadingIndicator: true }
+  it('should clear skills and leave searchLoadingIndicator untouched on scaffoldSkillsLoadingFailed', () => {
+    const preState = { ...reducers.initialState, skills: [{ id: '1', name: 'Skill 1' }], searchLoadingIndicator: true }
     const action = scaffoldSearchActions.scaffoldSkillsLoadingFailed({ error: null })
     const nextState = reducers.scaffoldSearchReducer(preState, action)
 
-    expect(nextState.searchLoadingIndicator).toBe(false)
+    expect(nextState.skills).toEqual([])
+    expect(nextState.searchLoadingIndicator).toBe(true)
   })
 
   it('should not change state when routerNavigatedAction fails schema parse', () => {
