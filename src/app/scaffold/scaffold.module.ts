@@ -9,6 +9,7 @@ import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { TabViewModule } from 'primeng/tabview'
+import { TextareaModule } from 'primeng/textarea'
 import { ScaffoldDetailsComponent } from './pages/scaffold-details/scaffold-details.component'
 import { ScaffoldDetailsEffects } from './pages/scaffold-details/scaffold-details.effects'
 
@@ -47,6 +48,7 @@ import { routes } from './scaffold.routes'
     TooltipModule,
     MultiSelectModule,
     TabViewModule,
+    TextareaModule,
     StoreModule.forFeature(scaffoldFeature),
     EffectsModule.forFeature([ScaffoldDetailsEffects, ScaffoldDetailsEffects, ScaffoldSearchEffects]),
     TranslateModule

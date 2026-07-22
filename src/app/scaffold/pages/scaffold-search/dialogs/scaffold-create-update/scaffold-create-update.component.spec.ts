@@ -12,6 +12,7 @@ import { provideUserServiceMock } from '@onecx/angular-integration-interface/moc
 import { MultiSelectModule } from 'primeng/multiselect'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { TextareaModule } from 'primeng/textarea'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -44,6 +45,7 @@ describe('ScaffoldCreateUpdateComponent', () => {
         MultiSelectModule,
         FloatLabelModule,
         InputTextModule,
+        TextareaModule,
         TranslateTestingModule.withTranslations({
           en: require('./src/assets/i18n/en.json'),
           de: require('./src/assets/i18n/de.json')
