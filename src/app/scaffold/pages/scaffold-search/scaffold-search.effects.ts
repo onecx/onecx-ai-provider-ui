@@ -8,7 +8,13 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { CreateScaffoldRequest, Scaffold, ScaffoldService, UpdateScaffoldRequest } from '../../../shared/generated'
+import {
+  CreateScaffoldRequest,
+  Scaffold,
+  ScaffoldService,
+  SkillService,
+  UpdateScaffoldRequest
+} from '../../../shared/generated'
 import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
 
 import { Injectable, inject } from '@angular/core'
@@ -24,11 +30,30 @@ export class ScaffoldSearchEffects {
   private readonly actions$ = inject(Actions)
   private readonly route = inject(ActivatedRoute)
   private readonly scaffoldService = inject(ScaffoldService)
+  private readonly skillService = inject(SkillService)
   private readonly portalDialogService = inject(PortalDialogService)
   private readonly router = inject(Router)
   private readonly store = inject(Store)
   private readonly messageService = inject(PortalMessageService)
   private readonly exportDataService = inject(ExportDataService)
+
+  loadSkills$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(scaffoldSearchActions.loadSkills),
+      switchMap(() =>
+        this.skillService.findSkillByCriteria({}).pipe(
+          map((res) => scaffoldSearchActions.scaffoldSkillsReceived({ skills: res.stream ?? [] })),
+          catchError((error) =>
+            of(
+              scaffoldSearchActions.scaffoldSkillsLoadingFailed({
+                error
+              })
+            )
+          )
+        )
+      )
+    )
+  })
 
   syncParamsToUrl$ = createEffect(
     () => {
@@ -81,18 +106,23 @@ export class ScaffoldSearchEffects {
   editButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(scaffoldSearchActions.editScaffoldButtonClicked),
-      concatLatestFrom(() => this.store.select(scaffoldSearchSelectors.selectResults)),
-      map(([action, results]) => {
-        return results.find((item) => item.id == action.id)
+      concatLatestFrom(() => [
+        this.store.select(scaffoldSearchSelectors.selectResults),
+        this.store.select(scaffoldSearchSelectors.selectSkills)
+      ]),
+      map(([action, results, skills]) => {
+        const itemToEdit = results.find((item) => item.id === action.id)
+        return { itemToEdit, skills }
       }),
-      mergeMap((itemToEdit) => {
+      mergeMap(({ itemToEdit, skills }) => {
         return this.portalDialogService.openDialog<Scaffold | undefined>(
           'SCAFFOLD_CREATE_UPDATE.UPDATE.HEADER',
           {
             type: ScaffoldCreateUpdateComponent,
             inputs: {
               vm: {
-                itemToEdit
+                itemToEdit,
+                skills
               }
             }
           },
@@ -115,8 +145,11 @@ export class ScaffoldSearchEffects {
         }
         const itemToEditId = dialogResult.result.id
         const itemToEdit: UpdateScaffoldRequest = {
-          modificationCount: dialogResult.result.modificationCount,
-          name: dialogResult.result.name
+          modificationCount: dialogResult.result.modificationCount ?? 0,
+          name: dialogResult.result.name,
+          systemPrompt: dialogResult.result.systemPrompt,
+          sourceProduct: dialogResult.result.sourceProduct,
+          skills: dialogResult.result.skills
         }
         return this.scaffoldService.updateScaffoldById(itemToEditId, itemToEdit).pipe(
           map(() => {
@@ -143,14 +176,16 @@ export class ScaffoldSearchEffects {
   createButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(scaffoldSearchActions.createScaffoldButtonClicked),
-      switchMap(() => {
+      concatLatestFrom(() => this.store.select(scaffoldSearchSelectors.selectSkills)),
+      switchMap(([, skills]) => {
         return this.portalDialogService.openDialog<Scaffold | undefined>(
           'SCAFFOLD_CREATE_UPDATE.CREATE.HEADER',
           {
             type: ScaffoldCreateUpdateComponent,
             inputs: {
               vm: {
-                itemToEdit: {}
+                itemToEdit: {},
+                skills: skills
               }
             }
           },
@@ -169,7 +204,10 @@ export class ScaffoldSearchEffects {
           throw new Error('DialogResult was not set as expected!')
         }
         const toCreateItem: CreateScaffoldRequest = {
-          name: dialogResult.result.name
+          name: dialogResult.result.name,
+          systemPrompt: dialogResult.result.systemPrompt,
+          sourceProduct: dialogResult.result.sourceProduct,
+          skills: dialogResult.result.skills
         }
         return this.scaffoldService.createScaffold(toCreateItem).pipe(
           map(() => {
@@ -255,6 +293,10 @@ export class ScaffoldSearchEffects {
     {
       action: scaffoldSearchActions.scaffoldSearchResultsLoadingFailed,
       key: 'SCAFFOLD_SEARCH.ERROR_MESSAGES.SEARCH_RESULTS_LOADING_FAILED'
+    },
+    {
+      action: scaffoldSearchActions.scaffoldSkillsLoadingFailed,
+      key: 'SCAFFOLD_SEARCH.ERROR_MESSAGES.SKILLS_LOADING_FAILED'
     }
   ]
 

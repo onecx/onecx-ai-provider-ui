@@ -8,7 +8,6 @@ import {
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import * as reducers from './scaffold-search.reducers'
 
-// ACTION S11: Change test data in the whole document
 describe('scaffoldSearchReducer', () => {
   it('should reset results and criteria on resetButtonClicked', () => {
     const preState = { ...reducers.initialState, results: [{ id: '1' }], criteria: { name: 'val' } }
@@ -114,6 +113,23 @@ describe('scaffoldSearchReducer', () => {
     const nextState = reducers.scaffoldSearchReducer(preState, action)
 
     expect(nextState.criteria).toEqual({ foo: 'bar' })
+    expect(nextState.searchLoadingIndicator).toBe(true)
+  })
+
+  it('should store skills on scaffoldSkillsReceived', () => {
+    const skills = [{ id: '1', name: 'Skill 1' }, { id: '2', name: 'Skill 2' }]
+    const action = scaffoldSearchActions.scaffoldSkillsReceived({ skills })
+    const nextState = reducers.scaffoldSearchReducer(reducers.initialState, action)
+
+    expect(nextState.skills).toEqual(skills)
+  })
+
+  it('should clear skills and leave searchLoadingIndicator untouched on scaffoldSkillsLoadingFailed', () => {
+    const preState = { ...reducers.initialState, skills: [{ id: '1', name: 'Skill 1' }], searchLoadingIndicator: true }
+    const action = scaffoldSearchActions.scaffoldSkillsLoadingFailed({ error: null })
+    const nextState = reducers.scaffoldSearchReducer(preState, action)
+
+    expect(nextState.skills).toEqual([])
     expect(nextState.searchLoadingIndicator).toBe(true)
   })
 

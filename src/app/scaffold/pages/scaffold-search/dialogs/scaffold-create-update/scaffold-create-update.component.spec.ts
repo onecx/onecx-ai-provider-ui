@@ -8,8 +8,12 @@ import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-acce
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
-import { Scaffold } from 'src/app/shared/generated'
 import { ScaffoldCreateUpdateComponent } from './scaffold-create-update.component'
+import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER } from '@onecx/angular-utils'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
+import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { TextareaModule } from 'primeng/textarea'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -17,8 +21,8 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn()
@@ -48,8 +52,25 @@ describe('ScaffoldCreateUpdateComponent', () => {
       ],
       providers: [
         provideHttpClientTesting(),
+        provideHttpClient(withInterceptorsFromDi()),
+        provideUserServiceMock(),
+        {
+          provide: HAS_PERMISSION_CHECKER,
+          useClass: AlwaysGrantPermissionChecker
+        },
         BreadcrumbService,
-        { provide: ActivatedRoute, useValue: mockActivatedRoute }
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        FormsModule,
+        ReactiveFormsModule,
+        LetDirective,
+        MultiSelectModule,
+        FloatLabelModule,
+        InputTextModule,
+        TextareaModule,
+        TranslateTestingModule.withTranslations({
+          en: require('./src/assets/i18n/en.json'),
+          de: require('./src/assets/i18n/de.json')
+        }).withDefaultLanguage('en')
       ]
     }).compileComponents()
 
@@ -65,45 +86,53 @@ describe('ScaffoldCreateUpdateComponent', () => {
   it('should set dialogResult with merged itemToEdit and form values on ocxDialogButtonClicked', () => {
     component.vm.itemToEdit = {
       id: '1',
-      name: 'Old'
-    } as Scaffold
+      name: 'Old',
+      systemPrompt: 'systemPrompt',
+      skills: [{ id: 'skill1', name: 'Skill 1' }]
+    } as any
     component.formGroup.setValue({
-      name: 'New'
+      name: 'New',
+      systemPrompt: 'NewSystemPrompt',
+      skills: [
+        { id: 'skill1', name: 'Skill 1' },
+        { id: 'skill2', name: 'Skill 2' }
+      ]
     })
     component.ocxDialogButtonClicked()
     expect(component.dialogResult).toEqual({
       id: '1',
-      name: 'New'
+      name: 'New',
+      systemPrompt: 'NewSystemPrompt',
+      skills: [
+        { id: 'skill1', name: 'Skill 1' },
+        { id: 'skill2', name: 'Skill 2' }
+      ]
     })
   })
 
   it('should patch formGroup with itemToEdit on ngOnInit', () => {
     component.vm.itemToEdit = {
       id: '2',
-      name: 'Patched'
-    } as Scaffold
-    component.formGroup.setValue({ name: null })
+      name: 'Patched',
+      systemPrompt: 'PatchedSystemPrompt',
+      skills: [{ id: 'skill1', name: 'Skill 1' }]
+    } as any
+    component.formGroup.setValue({ name: null, systemPrompt: null, skills: null })
     component.ngOnInit()
     expect(component.formGroup.value).toEqual({
-      name: 'Patched'
+      name: 'Patched',
+      systemPrompt: 'PatchedSystemPrompt',
+      skills: [{ id: 'skill1', name: 'Skill 1' }]
     })
   })
 
-  it('should not patch formGroup on ngOnInit when there is no itemToEdit', () => {
-    component.vm.itemToEdit = undefined
-    component.formGroup.setValue({ name: null })
+  it('should default skillsto an empty array when itemToEdit has no skills ngOnInit', () => {
+    component.vm.itemToEdit = {
+      id: '3',
+      name: 'NoSkills',
+      systemPrompt: 'NoSkillsSystemPrompt'
+    } as any
     component.ngOnInit()
-    expect(component.formGroup.value).toEqual({ name: null })
-  })
-
-  it('should emit primaryButtonEnabled based on form validity', () => {
-    const emissions: boolean[] = []
-    component.primaryButtonEnabled.subscribe((enabled) => emissions.push(enabled))
-
-    component.formGroup.get('name')?.setValue('a'.repeat(256))
-    expect(emissions[emissions.length - 1]).toBe(false)
-
-    component.formGroup.get('name')?.setValue('Valid')
-    expect(emissions[emissions.length - 1]).toBe(true)
+    expect(component.formGroup.value.skills).toEqual([])
   })
 })

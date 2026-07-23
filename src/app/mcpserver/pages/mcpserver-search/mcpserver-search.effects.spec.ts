@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageServiceMock, providePortalMessageServiceMock } from '@onecx/angular-integration-interface/mocks'
-import { MonoTypeOperatorFunction, ReplaySubject, map, of, take, throwError } from 'rxjs'
+import { MonoTypeOperatorFunction, ReplaySubject, map, of, take, throwError, firstValueFrom } from 'rxjs'
 import { Tool, ToolPageResult, ToolService, ToolType } from 'src/app/shared/generated'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { McpserverCreateUpdateComponent } from './dialogs/mcpserver-create-update/mcpserver-create-update.component'
@@ -248,6 +248,34 @@ describe('MCPServerSearchEffects', () => {
           totalPages: 1
         }) as never
       )
+    })
+
+    describe('createButtonClicked$', () => {
+      it('should include MCP type in create request payload', async () => {
+        const portalDialogService = TestBed.inject(PortalDialogService) as jest.Mocked<PortalDialogService>
+        portalDialogService.openDialog.mockReturnValue(
+          of({
+            button: 'primary',
+            result: {
+              name: 'my-mcp-tool',
+              description: 'my description'
+            }
+          }) as never
+        )
+        mcpService.createTool = jest.fn().mockReturnValue(of({ id: '1' }) as never)
+
+        const actionPromise = firstValueFrom(effects.createButtonClicked$)
+
+        actions$.next(MCPServerSearchActions.createMcpserverButtonClicked())
+
+        const action = await actionPromise
+        expect(mcpService.createTool).toHaveBeenCalledWith({
+          name: 'my-mcp-tool',
+          description: 'my description',
+          type: ToolType.Mcp
+        })
+        expect(action).toEqual(MCPServerSearchActions.createMcpserverSucceeded())
+      })
     })
 
     it('should call performSearch with criteria from store on router navigation', (done) => {

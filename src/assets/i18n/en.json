@@ -106,7 +106,8 @@
       "SEARCH_RESULTS_LOADING_FAILED": "Loading search results failed.",
       "SEARCH_CONFIG_CREATION_FAILED": "Create search configuration failed.",
       "SEARCH_CONFIG_UPDATE_FAILED": "Update search configuration failed.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed."
+      "SEARCH_CONFIGS_LOADING_FAILED": "Loading search configurations failed.",
+      "SKILLS_LOADING_FAILED": "Loading skills failed."
     },
     "HEADER_ARIA_LABEL": "Page Header with Search",
     "PREDEFINED_GROUP": {
@@ -157,7 +158,13 @@
       }
     },
     "FORM": {
-      "NAME": "Name"
+      "NAME": "Name",
+      "SYSTEM_PROMPT": "System Prompt",
+      "SOURCE_PRODUCT": "Source Product",
+      "SKILLS": "Skills",
+      "NO_SKILLS": "No skills available",
+      "SKILLS_LOADING": "Loading skills...",
+      "SKILLS_LOAD_FAILED": "Could not load skills"
     }
   },
   "SKILL_CREATE_UPDATE": {

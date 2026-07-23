@@ -99,6 +99,7 @@ export class ScaffoldSearchComponent implements OnInit {
       }
     ])
     this.viewModel$.subscribe((vm) => this.scaffoldSearchFormGroup.patchValue(vm.searchCriteria))
+    this.store.dispatch(scaffoldSearchActions.loadSkills())
   }
 
   resultComponentStateChanged(state: InteractiveDataViewComponentState) {

@@ -50,7 +50,7 @@
       "SYSTEM_PROMPT": "System-Prompt",
       "SOURCE": "Quelle",
       "SOURCE_PRODUCT": "Quellprodukt",
-      "SKILLS": "Fähigkeiten",
+      "SKILLS": "Skills",
       "TOOLS": "Tools (MCP)"
     },
     "TABS": {
@@ -105,7 +105,8 @@
       "SEARCH_RESULTS_LOADING_FAILED": "Suchergebnisse konnten nicht geladen werden.",
       "SEARCH_CONFIG_CREATION_FAILED": "Suchkonfiguration konnte nicht erstellt werden.",
       "SEARCH_CONFIG_UPDATE_FAILED": "Suchkonfiguration konnte nicht aktualisiert werden.",
-      "SEARCH_CONFIGS_LOADING_FAILED": "Suchkonfigurationen konnten nicht geladen werden."
+      "SEARCH_CONFIGS_LOADING_FAILED": "Suchkonfigurationen konnten nicht geladen werden.",
+      "SKILLS_LOADING_FAILED": "Fähigkeiten konnten nicht geladen werden."
     },
     "HEADER_ARIA_LABEL": "Seitenkopf mit Suche",
     "PREDEFINED_GROUP": {
@@ -156,7 +157,13 @@
       }
     },
     "FORM": {
-      "NAME": "Name"
+      "NAME": "Name",
+      "SYSTEM_PROMPT": "System-Prompt",
+      "SOURCE_PRODUCT": "Quellprodukt",
+      "SKILLS": "Skills",
+      "NO_SKILLS": "Keine Skills verfügbar",
+      "SKILLS_LOADING": "Skills werden geladen...",
+      "SKILLS_LOAD_FAILED": "Skills konnten nicht geladen werden"
     }
   },
   "SKILL_CREATE_UPDATE": {
@@ -483,7 +490,7 @@
         "TITLE": "Provider",
         "SUBTITLE": "Modell-Backends",
         "DESCRIPTION": "Konfigurieren Sie externe Modell-Provider und deren Konnektivität."
-      },      
+      },
       "TOOL": {
         "TITLE": "Tools (MCP)",
         "SUBTITLE": "Ausführungserweiterungen",

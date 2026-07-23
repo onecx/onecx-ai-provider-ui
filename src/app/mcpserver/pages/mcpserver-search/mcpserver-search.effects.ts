@@ -174,7 +174,8 @@ export class MCPServerSearchEffects {
         }
         const toCreateItem: CreateToolRequest = {
           name: dialogResult.result.name,
-          description: dialogResult.result.description
+          description: dialogResult.result.description,
+          type: ToolType.Mcp
         }
         return this.toolService.createTool(toCreateItem).pipe(
           map(() => {

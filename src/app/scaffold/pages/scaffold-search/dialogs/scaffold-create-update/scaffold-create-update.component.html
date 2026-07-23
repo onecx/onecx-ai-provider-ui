@@ -16,5 +16,36 @@
         </label>
       </p-floatlabel>
     </div>
+
+    <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate">
+      <p-floatlabel variant="on" controlErrorAnchor>
+        <textarea
+          pInputTextarea
+          id="system_prompt"
+          formControlName="systemPrompt"
+          name="systemPrompt"
+          class="w-full"
+          rows="4"
+        ></textarea>
+        <label for="system_prompt"> {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate }} </label>
+      </p-floatlabel>
+    </div>
+
+    <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.SKILLS' | translate">
+      <p-floatlabel variant="on" controlErrorAnchor>
+        <p-multiSelect
+          inputId="scaffold_create_update_form_skills"
+          [options]="vm.skills"
+          optionLabel="name"
+          dataKey="id"
+          formControlName="skills"
+          appendTo="body"
+          display="chip"
+          class="w-full"
+        >
+        </p-multiSelect>
+        <label for="scaffold_create_update_form_skills"> {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SKILLS' | translate }} </label>
+      </p-floatlabel>
+    </div>
   </div>
 </form>

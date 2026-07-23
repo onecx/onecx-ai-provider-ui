@@ -4,7 +4,7 @@ import { map } from 'rxjs'
 
 import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '@onecx/angular-accelerator'
 
-import { Scaffold } from 'src/app/shared/generated'
+import { Scaffold, Skill } from 'src/app/shared/generated'
 import { ScaffoldCreateUpdateViewModel } from './scaffold-create-update.viewmodel'
 
 @Component({
@@ -22,7 +22,8 @@ export class ScaffoldCreateUpdateComponent
     OnInit
 {
   @Input() public vm: ScaffoldCreateUpdateViewModel = {
-    itemToEdit: undefined
+    itemToEdit: undefined,
+    skills: []
   }
 
   public formGroup: FormGroup
@@ -33,7 +34,9 @@ export class ScaffoldCreateUpdateComponent
 
   constructor() {
     this.formGroup = new FormGroup({
-      name: new FormControl(null, [Validators.required, Validators.maxLength(255)])
+      name: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+      systemPrompt: new FormControl(null, [Validators.maxLength(4000)]),
+      skills: new FormControl<Skill[]>([])
     })
     this.formGroup.statusChanges
       .pipe(
@@ -54,7 +57,8 @@ export class ScaffoldCreateUpdateComponent
   ngOnInit() {
     if (this.vm.itemToEdit) {
       this.formGroup.patchValue({
-        ...this.vm.itemToEdit
+        ...this.vm.itemToEdit,
+        skills: this.vm.itemToEdit.skills ?? []
       })
     }
   }
