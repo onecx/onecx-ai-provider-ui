@@ -598,7 +598,7 @@ describe('MCPServerSearchEffects', () => {
       mcpService.createTool.mockReturnValue(of({} as unknown as HttpEvent<Tool>))
 
       effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
-        expect(mcpService.createTool).toHaveBeenCalledWith({ name: 'New Server', description: 'desc' })
+        expect(mcpService.createTool).toHaveBeenCalledWith({ name: 'New Server', description: 'desc', type: ToolType.Mcp })
         expect(successSpy).toHaveBeenCalledWith({
           summaryKey: 'MCPSERVER_CREATE_UPDATE.CREATE.SUCCESS'
         })

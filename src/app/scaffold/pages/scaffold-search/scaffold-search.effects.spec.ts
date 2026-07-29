@@ -746,7 +746,7 @@ describe('ScaffoldSearchEffects', () => {
   })
 
   describe('editButtonClicked$', () => {
-    const item = { id: '1', name: 'Item 1' }
+    const item = { id: '1', name: 'Item 1', modificationCount: 3 }
     const mockSkills = [{ id: 'skill-1', name: 'Skill 1' }]
 
     beforeEach(() => {
@@ -806,7 +806,7 @@ describe('ScaffoldSearchEffects', () => {
     })
 
     it('should dispatch updateScaffoldFailed and show an error message when the API update call fails', (done) => {
-      const dialog = { button: 'primary', result: { ...item } }
+      const dialog = { button: 'primary', result: { ...item, modificationCount: 3 } }
       portalDialogService.openDialog.mockReturnValue(of(dialog) as never)
       scaffoldService.updateScaffoldById.mockReturnValue(throwError(() => 'Update failed'))
 

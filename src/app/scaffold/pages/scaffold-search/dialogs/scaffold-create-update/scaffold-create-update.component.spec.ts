@@ -48,7 +48,9 @@ describe('ScaffoldCreateUpdateComponent', () => {
         TranslateTestingModule.withTranslations({
           de: require('../../../../../../assets/i18n/de.json'),
           en: require('../../../../../../assets/i18n/en.json')
-        }).withDefaultLanguage('en')
+        }).withDefaultLanguage('en'),
+        MultiSelectModule,
+        TextareaModule
       ],
       providers: [
         provideHttpClientTesting(),
@@ -59,18 +61,7 @@ describe('ScaffoldCreateUpdateComponent', () => {
           useClass: AlwaysGrantPermissionChecker
         },
         BreadcrumbService,
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        FormsModule,
-        ReactiveFormsModule,
-        LetDirective,
-        MultiSelectModule,
-        FloatLabelModule,
-        InputTextModule,
-        TextareaModule,
-        TranslateTestingModule.withTranslations({
-          en: require('./src/assets/i18n/en.json'),
-          de: require('./src/assets/i18n/de.json')
-        }).withDefaultLanguage('en')
+        { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ]
     }).compileComponents()
 
@@ -126,7 +117,7 @@ describe('ScaffoldCreateUpdateComponent', () => {
     })
   })
 
-  it('should default skillsto an empty array when itemToEdit has no skills ngOnInit', () => {
+  it('should default skills to an empty array when itemToEdit has no skills ngOnInit', () => {
     component.vm.itemToEdit = {
       id: '3',
       name: 'NoSkills',
