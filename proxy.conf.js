@@ -1,16 +1,18 @@
-const bypassFn = function (req, res) {
-  try {
-    if (req.method === 'OPTIONS') {
-      res.setHeader('Allow', 'GET, POST, HEAD, PUT, DELETE, OPTIONS')
-      res.setHeader('Access-Control-Allow-Origin', '*')
-      res.setHeader('Access-Control-Allow-Methods', '*')
-      res.setHeader('Access-Control-Allow-Headers', '*')
-      return res.send('')
-    } else {
-      return null
-    }
-  } catch (error) {
-    console.log('error', error)
+/**
+ * Used in local environment:
+ *   Request proxy to rewrite URLs and prevent CORS errors
+ */
+const logFn = function (req, res) {
+  //console.log(new Date().toISOString() + `: bypassing ${req.method} ${req.url} `)
+}
+const onProxyRes = function (proxyRes, req, res) {
+  logFn(req, res)
+  if (req.method.toUpperCase() === 'OPTIONS') {
+    res.setHeader('Allow', 'GET, POST, HEAD, PUT, DELETE, OPTIONS')
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', '*')
+    res.setHeader('Access-Control-Allow-Headers', '*')
+    return res.send('')
   }
 }
 
@@ -23,17 +25,7 @@ const PROXY_CONFIG = {
     },
     changeOrigin: true,
     logLevel: 'debug',
-    bypass: bypassFn
-  },
-  '/mfe/onecx-ai-provider-ui': {
-    target: 'http://localhost:4200/',
-    secure: false,
-    pathRewrite: {
-      '^.*/mfe/onecx-ai-provider-ui': ''
-    },
-    changeOrigin: true,
-    logLevel: 'debug',
-    bypass: bypassFn
+    onProxyRes: onProxyRes
   }
 }
 

@@ -1,87 +1,35 @@
-const webpack = require('webpack')
 const { ModifySourcePlugin, ReplaceOperation } = require('modify-source-webpack-plugin')
 const { ModifyEntryPlugin } = require('@angular-architects/module-federation/src/utils/modify-entry-plugin')
 const { share, withModuleFederationPlugin } = require('@angular-architects/module-federation/webpack')
 const config = withModuleFederationPlugin({
-  name: 'onecx-ai-provider-ui-app',
+  name: 'onecx-ai-provider-ui',
   filename: 'remoteEntry.js',
   exposes: {
     './OnecxAiUiProviderModule': './src/bootstrap.ts'
   },
   shared: share({
-    '@angular/core': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@angular/platform-browser': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@angular/forms': {
-      requiredVersion: 'auto',
-      includeSecondaries: true,
-      eager: false
-    },
-    '@angular/common': {
-      requiredVersion: 'auto',
-      includeSecondaries: {
-        skip: ['@angular/common/http/testing']
-      }
-    },
-    '@angular/common/http': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@angular/router': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    rxjs: {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    primeng: {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/accelerator': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/angular-accelerator': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/angular-auth': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/angular-remote-components': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/angular-webcomponents': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/angular-utils': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@onecx/integration-interface': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    },
-    '@ngx-translate/core': {
-      requiredVersion: 'auto'
-    },
-    '@onecx/angular-standalone-shell': {
-      requiredVersion: 'auto',
-      includeSecondaries: true
-    }
-  }),
-  sharedMappings: ['@onecx/angular-accelerator']
+    '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
+    '@angular/common': { requiredVersion: 'auto', includeSecondaries: { skip: ['@angular/common/http/testing'] } },
+    '@angular/common/http': { requiredVersion: 'auto', includeSecondaries: true },
+    '@angular/forms': { requiredVersion: 'auto', includeSecondaries: true },
+    '@angular/platform-browser': { requiredVersion: 'auto', includeSecondaries: true },
+    '@angular/router': { requiredVersion: 'auto', includeSecondaries: true },
+    '@ngx-translate/core': { requiredVersion: 'auto' },
+    primeng: { requiredVersion: 'auto', includeSecondaries: true },
+    rxjs: { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/accelerator': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-accelerator': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-auth': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-integration-interface': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-remote-components': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-testing': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-utils': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-webcomponents': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/angular-standalone-shell': { requiredVersion: 'auto', includeSecondaries: true },
+    '@onecx/integration-interface': { requiredVersion: 'auto', includeSecondaries: true }
+  })
 })
+config.devServer = { allowedHosts: 'all' }
 
 const plugins = config.plugins.filter((plugin) => !(plugin instanceof ModifyEntryPlugin))
 
@@ -89,12 +37,12 @@ const modifyPrimeNgPlugin = new ModifySourcePlugin({
   rules: [
     {
       test: (module) => {
-        return module.resource.includes('primeng')
+        return module.resource && module.resource.includes('primeng')
       },
       operations: [
         new ReplaceOperation(
           'all',
-          String.raw`document\.createElement\(([^)]+)\)`,
+          'document\\.createElement\\(([^)]+)\\)',
           'document.createElementFromPrimeNg({"this": this, "arguments": Array.from(arguments), element: $1})'
         ),
         new ReplaceOperation('all', 'Theme.setLoadedStyleName', '(function(_){})')
@@ -114,7 +62,7 @@ const modifyMaterialPlugin = new ModifySourcePlugin({
       operations: [
         new ReplaceOperation(
           'all',
-          String.raw`document\.createElement\(`,
+          'document\\.createElement\\(',
           'document.createElementFromMaterial({"this": this, "arguments": Array.from(arguments)},'
         )
       ]
@@ -124,32 +72,9 @@ const modifyMaterialPlugin = new ModifySourcePlugin({
 
 module.exports = {
   ...config,
-  plugins: [
-    new webpack.DefinePlugin({
-      ngDevMode: 'undefined'
-    }),
-    ...plugins,
-    modifyPrimeNgPlugin,
-    modifyMaterialPlugin
-  ],
-  output: {
-    uniqueName: 'onecx-ai-provider-ui',
-    publicPath: 'auto'
-  },
-  experiments: {
-    ...config.experiments,
-    topLevelAwait: true
-  },
-  optimization: {
-    runtimeChunk: false,
-    splitChunks: false
-  },
-  module: {
-    ...config.module,
-    parser: {
-      javascript: {
-        importMeta: false
-      }
-    }
-  }
+  plugins: [...plugins, modifyPrimeNgPlugin, modifyMaterialPlugin],
+  module: { parser: { javascript: { importMeta: false } } },
+  output: { uniqueName: 'onecx-chat-ui', publicPath: 'auto' },
+  experiments: { ...config.experiments, topLevelAwait: true },
+  optimization: { runtimeChunk: false, splitChunks: false }
 }

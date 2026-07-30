@@ -10,13 +10,13 @@ app:
       enabled: true
       specs:
         main:
-          exposedModule: ./OnecxAiUiProviderModule
-          description: OneCX OnecxAiUi Provider Module
-          note: OneCX OnecxAiUi Provider UI module auto import via MF operator
+          exposedModule: ./OneCXAiProviderModule
+          description: OneCX Ai Provider UI Module
+          note: OneCX Ai Provider UI module auto import via MF operator
           type: MODULE
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-ai-provider-ui
-          tagName: onecx-ai-provider-ui-webcomponent
+          tagName: ocx-ai-provider-component
     permission:
       enabled: true
       spec:

@@ -26,7 +26,7 @@
       "DESCRIPTION": "Beschreibung"
     }
   },
- "SCAFFOLD_DETAILS": {
+  "SCAFFOLD_DETAILS": {
     "CHANGE_ME": "ACTION D3: Adjust translation keys for details header",
     "HEADER": "Scaffold Details",
     "SUB_HEADER": "Anzeigen von Scaffold Details",

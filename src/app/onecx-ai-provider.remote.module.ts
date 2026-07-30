@@ -74,10 +74,10 @@ effectProvidersForWorkaround.forEach((p) => (p.ɵprov.providedIn = null))
     provideThemeConfig()
   ]
 })
-export class OnecxAiUiProviderModule implements DoBootstrap {
+export class OneCXAiProviderModule implements DoBootstrap {
   constructor(private readonly injector: Injector) {}
 
   ngDoBootstrap(): void {
-    createAppEntrypoint(AppEntrypointComponent, 'onecx-ai-provider-ui-webcomponent', this.injector)
+    createAppEntrypoint(AppEntrypointComponent, 'ocx-ai-provider-component', this.injector)
   }
 }

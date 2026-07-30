@@ -125,31 +125,31 @@
               </div>
 
               @if (vm.modelsLoadingIndicator) {
-              <span>{{ 'PROVIDER_DETAILS.MODELS.LOADING' | translate }}</span>
+                <span>{{ 'PROVIDER_DETAILS.MODELS.LOADING' | translate }}</span>
               } @else if (vm.models.length === 0) {
-              <span>{{ 'PROVIDER_DETAILS.MODELS.EMPTY' | translate }}</span>
+                <span>{{ 'PROVIDER_DETAILS.MODELS.EMPTY' | translate }}</span>
               } @else {
-              <div class="flex flex-column gap-2">
-                @for (model of vm.models; track model.id ?? model.modelIdentifier ?? $index) {
-                <div
-                  class="flex align-items-center justify-content-between gap-2 border-1 surface-border border-round px-3 py-2"
-                >
-                  <span>{{ model.modelIdentifier || model.name }}</span>
-                  <button
-                    pButton
-                    type="button"
-                    icon="pi pi-trash"
-                    severity="danger"
-                    [text]="true"
-                    [attr.aria-label]="'PROVIDER_DETAILS.MODELS.DELETE' | translate"
-                    [disabled]="!vm.editMode || vm.modelMutationInProgress"
-                    (click)="deleteModel(model)"
-                  >
-                    <span class="hidden">{{ 'PROVIDER_DETAILS.MODELS.DELETE' | translate }}</span>
-                  </button>
+                <div class="flex flex-column gap-2">
+                  @for (model of vm.models; track model.id ?? model.modelIdentifier ?? $index) {
+                    <div
+                      class="flex align-items-center justify-content-between gap-2 border-1 surface-border border-round px-3 py-2"
+                    >
+                      <span>{{ model.modelIdentifier || model.name }}</span>
+                      <button
+                        pButton
+                        type="button"
+                        icon="pi pi-trash"
+                        severity="danger"
+                        [text]="true"
+                        [attr.aria-label]="'PROVIDER_DETAILS.MODELS.DELETE' | translate"
+                        [disabled]="!vm.editMode || vm.modelMutationInProgress"
+                        (click)="deleteModel(model)"
+                      >
+                        <span class="hidden">{{ 'PROVIDER_DETAILS.MODELS.DELETE' | translate }}</span>
+                      </button>
+                    </div>
+                  }
                 </div>
-                }
-              </div>
               }
             </div>
           </p-tabPanel>

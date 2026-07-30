@@ -9,8 +9,8 @@ import {
 } from '@onecx/angular-accelerator'
 
 import { scaffoldSearchActions } from './scaffold-search.actions'
-import * as reducers from './scaffold-search.reducers'
 import { scaffoldSearchCriteriasSchema } from './scaffold-search.parameters'
+import * as reducers from './scaffold-search.reducers'
 
 describe('scaffoldSearchReducer', () => {
   it('should reset results and criteria on resetButtonClicked', () => {
