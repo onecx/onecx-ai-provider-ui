@@ -49,7 +49,8 @@ export class AgentDetailsComponent implements OnInit {
         {
           label: 'AGENT_DETAILS.FORM.STATUS',
           labelPipe: TranslatePipe,
-          value: vm.details?.status
+          value: vm.details?.status ? `AGENT_STATUS.${vm.details.status}` : undefined,
+          valuePipe: TranslatePipe
         },
         {
           label: 'AGENT_DETAILS.FORM.VERSION',

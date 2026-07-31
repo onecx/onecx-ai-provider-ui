@@ -407,7 +407,7 @@ describe('AgentDetailsComponent', () => {
 
     const translatedStatusLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.STATUS')
     const statusDetailItem = await pageHeader.getObjectInfoByLabel(translatedStatusLabel)
-    expect(await statusDetailItem?.getValue()).toEqual('LIVE')
+    expect(await statusDetailItem?.getValue()).toEqual('Live')
   })
 
   it('should render empty header details when details are missing', async () => {

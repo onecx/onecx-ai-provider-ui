@@ -33,6 +33,10 @@
           class="w-full"
           [attr.aria-label]="'AGENT_CREATE_UPDATE.FORM.STATUS' | translate"
         >
+          <ng-template let-status pTemplate="item"> {{ ('AGENT_STATUS.' + status) | translate }} </ng-template>
+          <ng-template let-status pTemplate="selectedItem">
+            {{ status ? (('AGENT_STATUS.' + status) | translate) : '' }}
+          </ng-template>
         </p-select>
         <label class="ocx-required-label" for="agent_detail_form_status">
           {{ 'AGENT_CREATE_UPDATE.FORM.STATUS' | translate }}
