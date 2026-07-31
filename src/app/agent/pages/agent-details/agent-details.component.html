@@ -188,53 +188,51 @@
                     </div>
 
                     <div formArrayName="filters" class="flex flex-column gap-2">
-                      <div
-                        class="flex align-items-center gap-2 flex-wrap"
-                        *ngFor="let filterGroup of filtersFormArray.controls; let i = index"
-                        [formGroupName]="i"
-                      >
-                        <div style="flex: 1 1 14rem; min-width: 14rem">
-                          <p-autoComplete
-                            formControlName="key"
-                            [suggestions]="filterKeySuggestions"
-                            (completeMethod)="searchFilterKeys($any($event))"
-                            [dropdown]="true"
-                            [inputId]="'agent_detail_filter_key_' + i"
-                            class="w-full"
-                            [forceSelection]="true"
-                          ></p-autoComplete>
+                      @for (filterGroup of filtersFormArray.controls; track $index; let i = $index) {
+                        <div class="flex align-items-center gap-2 flex-wrap" [formGroupName]="i">
+                          <div style="flex: 1 1 14rem; min-width: 14rem">
+                            <p-autoComplete
+                              formControlName="key"
+                              [suggestions]="filterKeySuggestions"
+                              (completeMethod)="searchFilterKeys($any($event))"
+                              [dropdown]="true"
+                              [inputId]="'agent_detail_filter_key_' + i"
+                              class="w-full"
+                              [forceSelection]="true"
+                            ></p-autoComplete>
+                          </div>
+                          <span class="font-medium">:</span>
+                          <p-floatlabel
+                            variant="on"
+                            controlErrorAnchor
+                            class="flex-1"
+                            style="flex: 2 1 20rem; min-width: 18rem"
+                          >
+                            <input
+                              pInputText
+                              type="text"
+                              [id]="'agent_detail_filter_value_' + i"
+                              class="w-full pt-3 pb-2 text-responsive"
+                              formControlName="value"
+                            />
+                            <label [for]="'agent_detail_filter_value_' + i">
+                              {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTER_VALUE' | translate }}
+                            </label>
+                          </p-floatlabel>
+                          <button
+                            pButton
+                            type="button"
+                            icon="pi pi-trash"
+                            severity="danger"
+                            [text]="true"
+                            [attr.aria-label]="'AGENT_DETAILS.ASSIGNMENTS.REMOVE_FILTER' | translate"
+                            [disabled]="!vm.editMode"
+                            (click)="removeFilter(i)"
+                          >
+                            <span class="hidden">{{ 'AGENT_DETAILS.ASSIGNMENTS.REMOVE_FILTER' | translate }}</span>
+                          </button>
                         </div>
-                        <span class="font-medium">:</span>
-                        <p-floatlabel
-                          variant="on"
-                          controlErrorAnchor
-                          class="flex-1"
-                          style="flex: 2 1 20rem; min-width: 18rem"
-                        >
-                          <input
-                            pInputText
-                            type="text"
-                            [id]="'agent_detail_filter_value_' + i"
-                            class="w-full pt-3 pb-2 text-responsive"
-                            formControlName="value"
-                          />
-                          <label [for]="'agent_detail_filter_value_' + i">
-                            {{ 'AGENT_DETAILS.ASSIGNMENTS.FILTER_VALUE' | translate }}
-                          </label>
-                        </p-floatlabel>
-                        <button
-                          pButton
-                          type="button"
-                          icon="pi pi-trash"
-                          severity="danger"
-                          [text]="true"
-                          [attr.aria-label]="'AGENT_DETAILS.ASSIGNMENTS.REMOVE_FILTER' | translate"
-                          [disabled]="!vm.editMode"
-                          (click)="removeFilter(i)"
-                        >
-                          <span class="hidden">{{ 'AGENT_DETAILS.ASSIGNMENTS.REMOVE_FILTER' | translate }}</span>
-                        </button>
-                      </div>
+                      }
                     </div>
                   </div>
                 </p-tabpanel>

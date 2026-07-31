@@ -11,32 +11,34 @@
 
   <ocx-content>
     <div class="grid mt-0">
-      <div class="col-12 md:col-6 xl:col-4" *ngFor="let panel of navigationPanels">
-        <a
-          class="dashboard-card-link block h-full"
-          [routerLink]="panel.route"
-          [attr.aria-label]="(panel.titleKey | translate) + ' - ' + ('DASHBOARD.ACTIONS.OPEN_SEARCH' | translate)"
-        >
-          <p-card styleClass="h-full">
-            <ng-template pTemplate="header">
-              <div class="flex align-items-center justify-content-between p-3 pb-0">
-                <div class="flex align-items-center gap-2">
-                  <i [class]="panel.icon + ' text-xl text-primary'"></i>
-                  <span class="text-xl font-semibold">{{ panel.titleKey | translate }}</span>
+      @for (panel of navigationPanels; track panel) {
+        <div class="col-12 md:col-6 xl:col-4">
+          <a
+            class="dashboard-card-link block h-full"
+            [routerLink]="panel.route"
+            [attr.aria-label]="(panel.titleKey | translate) + ' - ' + ('DASHBOARD.ACTIONS.OPEN_SEARCH' | translate)"
+          >
+            <p-card styleClass="h-full">
+              <ng-template pTemplate="header">
+                <div class="flex align-items-center justify-content-between p-3 pb-0">
+                  <div class="flex align-items-center gap-2">
+                    <i [class]="panel.icon + ' text-xl text-primary'"></i>
+                    <span class="text-xl font-semibold">{{ panel.titleKey | translate }}</span>
+                  </div>
+                  <span class="text-sm text-color-secondary">{{ panel.subtitleKey | translate }}</span>
                 </div>
-                <span class="text-sm text-color-secondary">{{ panel.subtitleKey | translate }}</span>
+              </ng-template>
+
+              <p class="mt-0 mb-4 text-color-secondary line-height-3">{{ panel.descriptionKey | translate }}</p>
+
+              <div class="flex justify-content-end text-primary font-medium align-items-center gap-2">
+                <span>{{ 'DASHBOARD.ACTIONS.OPEN_SEARCH' | translate }}</span>
+                <i class="pi pi-arrow-right"></i>
               </div>
-            </ng-template>
-
-            <p class="mt-0 mb-4 text-color-secondary line-height-3">{{ panel.descriptionKey | translate }}</p>
-
-            <div class="flex justify-content-end text-primary font-medium align-items-center gap-2">
-              <span>{{ 'DASHBOARD.ACTIONS.OPEN_SEARCH' | translate }}</span>
-              <i class="pi pi-arrow-right"></i>
-            </div>
-          </p-card>
-        </a>
-      </div>
+            </p-card>
+          </a>
+        </div>
+      }
     </div>
   </ocx-content>
 </ocx-portal-page>

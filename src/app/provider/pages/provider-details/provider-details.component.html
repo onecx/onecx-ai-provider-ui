@@ -38,7 +38,7 @@
                     {{ 'PROVIDER_DETAILS.FORM.NAME' | translate }}
                   </label>
                 </p-floatlabel>
-  
+
                 <p-floatlabel variant="on" controlErrorAnchor>
                   <input
                     pInputText
@@ -51,7 +51,7 @@
                     {{ 'PROVIDER_DETAILS.FORM.DESCRIPTION' | translate }}
                   </label>
                 </p-floatlabel>
-  
+
                 <p-floatlabel variant="on" controlErrorAnchor>
                   <p-select
                     id="Provider_detail_type"
@@ -63,7 +63,7 @@
                   </p-select>
                   <label for="Provider_detail_type"> {{ 'PROVIDER_DETAILS.FORM.TYPE' | translate }} </label>
                 </p-floatlabel>
-  
+
                 <p-floatlabel variant="on" controlErrorAnchor>
                   <input
                     pInputText
@@ -76,7 +76,7 @@
                     {{ 'PROVIDER_DETAILS.FORM.LLMURL' | translate }}
                   </label>
                 </p-floatlabel>
-  
+
                 <div *ocxIfPermission="'PROVIDER#CHANGE_API_KEY'">
                   <p-floatlabel variant="on" controlErrorAnchor>
                     <p-password
@@ -90,7 +90,7 @@
                     <label for="Provider_detail_apiKey">{{ 'PROVIDER_DETAILS.FORM.APIKEY' | translate }}</label>
                   </p-floatlabel>
                 </div>
-  
+
                 <p-floatlabel variant="on" controlErrorAnchor>
                   <p-select
                     id="Provider_detail_authMode"
@@ -104,7 +104,7 @@
                 </p-floatlabel>
               </div>
             </p-tabpanel>
-  
+
             <p-tabpanel value="1">
               <div class="flex flex-column gap-3 mt-3">
                 <div class="flex flex-column md:flex-row md:align-items-end gap-2">
@@ -132,7 +132,7 @@
                     {{ 'PROVIDER_DETAILS.MODELS.CREATE' | translate }}
                   </button>
                 </div>
-  
+
                 @if (vm.modelsLoadingIndicator) {
                   <span>{{ 'PROVIDER_DETAILS.MODELS.LOADING' | translate }}</span>
                 } @else if (vm.models.length === 0) {
