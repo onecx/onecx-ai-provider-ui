@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing'
 import { HttpEvent } from '@angular/common/http'
-import { ActivatedRoute, Router } from '@angular/router'
-import { RouterTestingModule } from '@angular/router/testing'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Store } from '@ngrx/store'
@@ -100,7 +99,7 @@ describe('MCPServerSearchEffects', () => {
     } as unknown as ActivatedRoute
 
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterModule.forRoot([])],
       providers: [
         { provide: PortalDialogService, useValue: portalDialogService },
         MCPServerSearchEffects,

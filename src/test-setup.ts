@@ -9,14 +9,20 @@ Object.defineProperty(HTMLElement.prototype, 'ariaLabel', {
   configurable: true
 })
 
-globalThis.matchMedia =
-  globalThis.matchMedia ||
-  function () {
-    return {
-      addListener: jest.fn(),
-      removeListener: jest.fn()
-    }
-  }
+/* Mock matchMedia for tests */
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn()
+  }))
+})
 
 // @ts-expect-error https://thymikee.github.io/jest-preset-angular/docs/getting-started/test-environment
 globalThis.ngJest = {
@@ -42,4 +48,15 @@ console.error = (message, ...optionalParams) => {
     return
   }
   originalConsoleError(message, ...optionalParams)
+}
+
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    observe() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    unobserve() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    disconnect() {}
+  }
 }

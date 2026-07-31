@@ -8,7 +8,6 @@ import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem }
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { PrimeIcons } from 'primeng/api'
 import { FloatLabelModule } from 'primeng/floatlabel'
-import { InputTextarea } from 'primeng/inputtextarea'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
 import { Observable, map } from 'rxjs'
@@ -17,6 +16,7 @@ import { Skill } from 'src/app/shared/generated'
 import { skillDetailsActions } from './skill-details.actions'
 import { selectSkillDetailsViewModel } from './skill-details.selectors'
 import { SkillDetailsViewModel } from './skill-details.viewmodel'
+import { Textarea } from 'primeng/textarea'
 
 @Component({
   selector: 'app-skill-details',
@@ -31,7 +31,7 @@ import { SkillDetailsViewModel } from './skill-details.viewmodel'
     ReactiveFormsModule,
     LetDirective,
     InputTextModule,
-    InputTextarea,
+    Textarea,
     PortalPageComponent,
     TooltipModule
   ]

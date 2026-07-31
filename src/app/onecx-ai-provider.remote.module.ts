@@ -13,7 +13,6 @@ import { AngularAuthModule } from '@onecx/angular-auth'
 import { AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
 import { createTranslateLoader, provideThemeConfig, provideTranslationPathFromMeta } from '@onecx/angular-utils'
 import { createAppEntrypoint, initializeRouter } from '@onecx/angular-webcomponents'
-import { provideNavigatedEventStoreConnector } from '@onecx/ngrx-accelerator'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 import { routes } from './app-routing.module'
 import { commonImports } from './app.module'
@@ -69,7 +68,6 @@ effectProvidersForWorkaround.forEach((p) => (p.ɵprov.providedIn = null))
       return initializerFn()
     }),
     provideHttpClient(withInterceptorsFromDi()),
-    provideNavigatedEventStoreConnector(),
     provideTranslationPathFromMeta(import.meta.url, 'assets/i18n/'),
     provideThemeConfig()
   ]

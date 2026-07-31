@@ -1,5 +1,4 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { By } from '@angular/platform-browser'
@@ -22,6 +21,8 @@ import { MCPServerSearchHarness } from './mcpserver-search.harness'
 import { initialState } from './mcpserver-search.reducers'
 import { selectMCPServerSearchViewModel } from './mcpserver-search.selectors'
 import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient } from '@angular/common/http'
 
 describe('MCPServerSearchComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -108,11 +109,12 @@ describe('MCPServerSearchComponent', () => {
           en: require('./src/assets/i18n/en.json'),
           de: require('./src/assets/i18n/de.json')
         }).withDefaultLanguage('en'),
-        HttpClientTestingModule,
         NoopAnimationsModule
       ],
       providers: [
         ...providePermissionService(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         DialogService,
         provideMockStore({
           initialState: { mcpserver: { search: initialState } }
@@ -193,10 +195,16 @@ describe('MCPServerSearchComponent', () => {
     expect(overflowMenuItems).toHaveLength(2)
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    expect(await exportAllActionItem!.getText()).toBe('Export all')
+    expect(exportAllActionItem).toBeDefined()
+
+    const exportAllActionItemText = exportAllActionItem ? await exportAllActionItem.getText() : ''
+    expect(exportAllActionItemText).toBe('Export all')
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    expect(await showHideChartActionItem!.getText()).toBe('Show chart')
+    expect(showHideChartActionItem).toBeDefined()
+
+    const showHideChartActionItemText = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
+    expect(showHideChartActionItemText).toBe('Show chart')
   })
 
   it('should display hide chart action if chart is visible', async () => {
@@ -215,7 +223,10 @@ describe('MCPServerSearchComponent', () => {
     expect(overflowMenuItems).toHaveLength(2)
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    expect(await showHideChartActionItem!.getText()).toEqual('Hide chart')
+    expect(showHideChartActionItem).toBeDefined()
+
+    const showHideChartActionItemTest = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
+    expect(showHideChartActionItemTest).toEqual('Hide chart')
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -257,10 +268,13 @@ describe('MCPServerSearchComponent', () => {
     })
     store.refreshState()
 
-    const diagram = await (await mcpserverSearch.getDiagram())!.getDiagram()
+    const diagramHarness = await mcpserverSearch.getDiagram()
+    const diagram = diagramHarness ? await diagramHarness.getDiagram() : null
+    const totalNumberOfResults = diagram ? await diagram.getTotalNumberOfResults() : 0
+    const sumLabel = diagram ? await diagram.getSumLabel() : ''
 
-    expect(await diagram.getTotalNumberOfResults()).toBe(3)
-    expect(await diagram.getSumLabel()).toEqual('Total')
+    expect(totalNumberOfResults).toBe(3)
+    expect(sumLabel).toEqual('Total')
   })
 
   it('should display correct breadcrumbs', async () => {
@@ -275,7 +289,8 @@ describe('MCPServerSearchComponent', () => {
     const pageHeader = await searchHeader.getPageHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')
 
-    expect(await searchBreadcrumbItem!.getText()).toEqual('Search')
+    const searchBreadcrumbItemText = searchBreadcrumbItem ? await searchBreadcrumbItem.getText() : ''
+    expect(searchBreadcrumbItemText).toEqual('Search')
   })
 
   it('should reset form when search criteria becomes empty object', () => {
@@ -411,20 +426,20 @@ describe('MCPServerSearchComponent', () => {
     const columnGroupSelector = await interactiveDataView?.getCustomGroupColumnSelector()
     expect(columnGroupSelector).toBeTruthy()
 
-    await columnGroupSelector!.openCustomGroupColumnSelectorDialog()
-    const pickList = await columnGroupSelector!.getPicklist()
-    const transferControlButtons = await pickList.getTransferControlsButtons()
+    await (columnGroupSelector ? columnGroupSelector.openCustomGroupColumnSelectorDialog() : Promise.resolve())
+    const pickList = columnGroupSelector ? await columnGroupSelector.getPicklist() : null
+    const transferControlButtons = pickList ? await pickList.getTransferControlsButtons() : []
     expect(transferControlButtons).toHaveLength(4)
 
     // Currently, all columns are selected. Next, we are unselecting all to have a clean test setting.
     const deactivateAllColumnsButton = transferControlButtons[1]
     await deactivateAllColumnsButton.click()
-    const inactiveItems = await pickList.getTargetListItems()
+    const inactiveItems = pickList ? await pickList.getTargetListItems() : []
     await inactiveItems[0].selectItem()
     const activateCurrentColumnButton = transferControlButtons[2]
     await activateCurrentColumnButton.click()
-    const saveButton = await columnGroupSelector!.getSaveButton()
-    await saveButton.click()
+    const saveButton = columnGroupSelector ? await columnGroupSelector.getSaveButton() : null
+    await saveButton?.click()
 
     expect(store.dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -448,7 +463,8 @@ describe('MCPServerSearchComponent', () => {
     await overflowActionButton?.click()
 
     const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    await showChartActionItem!.selectItem()
+    await showChartActionItem?.selectItem()
+
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.chartVisibilityToggled())
   })
 
@@ -614,7 +630,7 @@ describe('MCPServerSearchComponent', () => {
     await overflowActionButton?.click()
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    await exportAllActionItem!.selectItem()
+    await (exportAllActionItem ? exportAllActionItem.selectItem() : Promise.resolve())
 
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.exportButtonClicked())
   })
@@ -677,8 +693,8 @@ describe('MCPServerSearchComponent', () => {
 
     component.headerActions$.subscribe((actions) => {
       const createAction = actions.find((a) => a.labelKey === 'MCPSERVER_CREATE_UPDATE.ACTION.CREATE')
-      expect(createAction).toBeTruthy()
-      createAction!.actionCallback!()
+      createAction?.actionCallback?.()
+
       expect(component.create).toHaveBeenCalled()
       expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.createMcpserverButtonClicked())
       done()

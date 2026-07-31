@@ -144,7 +144,9 @@ describe('ProviderDetailsComponent', () => {
       expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
       const pageHeader = await ProviderDetails.getHeader()
       const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-      expect(await searchBreadcrumbItem!.getText()).toEqual('Details')
+
+      const searchBreadcrumbItemText = searchBreadcrumbItem ? await searchBreadcrumbItem.getText() : ''
+      expect(searchBreadcrumbItemText).toEqual('Details')
     })
 
     it('should display translated headers', async () => {
@@ -217,7 +219,7 @@ describe('ProviderDetailsComponent', () => {
       const actions = await firstValueFrom(component.headerActions$)
       const deleteAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.DELETE')
       expect(deleteAction).toBeDefined()
-      deleteAction!.actionCallback!()
+      deleteAction?.actionCallback?.()
       expect(deleteSpy).toHaveBeenCalledWith('')
     })
 
@@ -251,7 +253,7 @@ describe('ProviderDetailsComponent', () => {
       const deleteAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.DELETE')
 
       expect(deleteAction).toBeDefined()
-      deleteAction!.actionCallback!()
+      deleteAction?.actionCallback?.()
 
       expect(deleteSpy).toHaveBeenCalledWith('1')
     })
@@ -472,7 +474,8 @@ describe('ProviderDetailsComponent', () => {
 
     it('should disable apiKey asynchronously when permission promise resolves to false', fakeAsync(() => {
       jest.spyOn(component['user'], 'hasPermission').mockReturnValue(Promise.resolve(false))
-      const disableSpy = jest.spyOn(component.formGroup.get('apiKey')!, 'disable')
+      const apiKeyControl = component.formGroup.get('apiKey')
+      const disableSpy = apiKeyControl ? jest.spyOn(apiKeyControl, 'disable') : jest.fn()
 
       component.toggleEditMode(true)
       tick()
@@ -483,7 +486,8 @@ describe('ProviderDetailsComponent', () => {
 
     it('should keep apiKey enabled asynchronously when permission promise resolves to true', fakeAsync(() => {
       jest.spyOn(component['user'], 'hasPermission').mockReturnValue(Promise.resolve(true))
-      const disableSpy = jest.spyOn(component.formGroup.get('apiKey')!, 'disable')
+      const apiKeyControl = component.formGroup.get('apiKey')
+      const disableSpy = apiKeyControl ? jest.spyOn(apiKeyControl, 'disable') : jest.fn()
 
       component.toggleEditMode(true)
       tick()
@@ -506,9 +510,10 @@ describe('ProviderDetailsComponent', () => {
     it('should safely call disable on apiKey control if it exists', () => {
       const userMock = { hasPermission: () => false }
       const component = new ProviderDetailsComponent(store, breadcrumbService, userMock as any)
-      jest.spyOn(component.formGroup.get('apiKey')!, 'disable')
+      const apiKeyControl = component.formGroup.get('apiKey')
+      const disableSpy = apiKeyControl ? jest.spyOn(apiKeyControl, 'disable') : jest.fn()
       component.toggleEditMode(true)
-      expect(component.formGroup.get('apiKey')?.disable).toHaveBeenCalled()
+      expect(disableSpy).toHaveBeenCalled()
     })
 
     it('should not throw if apiKey control does not exist', () => {

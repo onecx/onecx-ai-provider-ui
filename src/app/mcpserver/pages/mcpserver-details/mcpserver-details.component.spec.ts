@@ -1,5 +1,4 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
-import { HttpClientTestingModule } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
@@ -23,6 +22,7 @@ import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
 import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 
 describe('MCPServerDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -66,13 +66,15 @@ describe('MCPServerDetailsComponent', () => {
       data: {}
     }
   }
+  const createBaseDetails = (): NonNullable<MCPServerDetailsViewModel['details']> => ({
+    apiKey: '',
+    description: '',
+    name: '',
+    url: ''
+  })
+
   const baseMCPServerDetailsViewModel: MCPServerDetailsViewModel = {
-    details: {
-      apiKey: '',
-      description: '',
-      name: '',
-      url: ''
-    },
+    details: createBaseDetails(),
     detailsLoadingIndicator: false,
     detailsLoaded: true,
     backNavigationPossible: true,
@@ -94,11 +96,11 @@ describe('MCPServerDetailsComponent', () => {
         TranslateTestingModule.withTranslations({
           en: require('./src/assets/i18n/en.json'),
           de: require('./src/assets/i18n/de.json')
-        }).withDefaultLanguage('en'),
-        HttpClientTestingModule
+        }).withDefaultLanguage('en')
       ],
       providers: [
         ...providePermissionService(),
+        provideHttpClientTesting(),
         provideMockStore({
           initialState: { mcpserver: { details: initialState } }
         }),
@@ -141,7 +143,9 @@ describe('MCPServerDetailsComponent', () => {
     expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
     const pageHeader = await mcpserverDetails.getHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-    expect(await searchBreadcrumbItem!.getText()).toEqual('Details')
+    expect(searchBreadcrumbItem).toBeDefined()
+    const breadcrumbText = searchBreadcrumbItem ? await searchBreadcrumbItem.getText() : ''
+    expect(breadcrumbText).toEqual('Details')
   })
 
   it('should display translated headers', async () => {
@@ -260,10 +264,11 @@ describe('MCPServerDetailsComponent', () => {
     const pageHeader = await mcpserverDetails.getHeader()
     const saveAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.SAVE)
     await saveAction?.click()
+    const details = baseMCPServerDetailsViewModel.details ?? createBaseDetails()
 
     expect(store.dispatch).toHaveBeenCalledWith(
       MCPServerDetailsActions.saveButtonClicked({
-        details: baseMCPServerDetailsViewModel.details!
+        details
       })
     )
   })
@@ -292,7 +297,8 @@ describe('MCPServerDetailsComponent', () => {
     await overflowMenuButton?.click()
 
     const overflowMenuItem = await pageHeader.getOverFlowMenuItem('Delete')
-    await overflowMenuItem!.selectItem()
+    expect(overflowMenuItem).toBeDefined()
+    await (overflowMenuItem ? overflowMenuItem.selectItem() : Promise.resolve())
 
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.deleteButtonClicked())
   })

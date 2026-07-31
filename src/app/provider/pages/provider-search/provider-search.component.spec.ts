@@ -112,10 +112,12 @@ describe('ProviderSearchComponent', () => {
     expect(overflowMenuItems).toHaveLength(2)
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    expect(await exportAllActionItem!.getText()).toBe('Export all')
+    const exportAllActionItemText = exportAllActionItem ? await exportAllActionItem.getText() : ''
+    expect(exportAllActionItemText).toBe('Export all')
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    expect(await showHideChartActionItem!.getText()).toBe('Show chart')
+    const showHideChartActionItemText = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
+    expect(showHideChartActionItemText).toBe('Show chart')
   })
 
   it('should display hide chart action if chart is visible', async () => {
@@ -134,7 +136,8 @@ describe('ProviderSearchComponent', () => {
     expect(overflowMenuItems).toHaveLength(2)
 
     const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    expect(await showHideChartActionItem!.getText()).toEqual('Hide chart')
+    const showHideChartActionItemText = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
+    expect(showHideChartActionItemText).toBe('Hide chart')
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -169,10 +172,13 @@ describe('ProviderSearchComponent', () => {
     })
     store.refreshState()
 
-    const diagram = await (await ProviderSearch.getDiagram())!.getDiagram()
+    const diagramHarness = await ProviderSearch.getDiagram()
+    const diagram = diagramHarness ? await diagramHarness.getDiagram() : null
+    const totalResults = diagram ? await diagram.getTotalNumberOfResults() : 0
+    const sumLabel = diagram ? await diagram.getSumLabel() : ''
 
-    expect(await diagram.getTotalNumberOfResults()).toBe(3)
-    expect(await diagram.getSumLabel()).toEqual('Total')
+    expect(totalResults).toBe(3)
+    expect(sumLabel).toEqual('Total')
   })
 
   it('should display correct breadcrumbs', async () => {
@@ -221,7 +227,7 @@ describe('ProviderSearchComponent', () => {
     await overflowActionButton?.click()
 
     const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    await exportAllActionItem!.selectItem()
+    await (exportAllActionItem ? exportAllActionItem.selectItem() : Promise.resolve())
 
     expect(store.dispatch).toHaveBeenCalledWith(ProviderSearchActions.exportButtonClicked())
   })
@@ -487,7 +493,7 @@ describe('ProviderSearchComponent', () => {
     await overflowActionButton?.click()
 
     const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    await showChartActionItem!.selectItem()
+    await (showChartActionItem ? showChartActionItem.selectItem() : Promise.resolve())
     expect(store.dispatch).toHaveBeenCalledWith(ProviderSearchActions.chartVisibilityToggled())
   })
 
@@ -510,8 +516,7 @@ describe('ProviderSearchComponent', () => {
     component.ngOnInit()
     component.headerActions$.subscribe((actions) => {
       const createAction = actions.find((a) => a.labelKey === 'PROVIDER_CREATE_UPDATE.ACTION.CREATE')
-      expect(createAction).toBeTruthy()
-      createAction!.actionCallback!()
+      createAction?.actionCallback?.()
       expect(component.create).toHaveBeenCalled()
       expect(store.dispatch).toHaveBeenCalledWith(ProviderSearchActions.createProviderButtonClicked())
       done()

@@ -623,8 +623,9 @@ describe('AgentSearchComponent', () => {
 
     component.headerActions$.subscribe((actions) => {
       const createAction = actions.find((a) => a.labelKey === 'AGENT_CREATE_UPDATE.ACTION.CREATE')
-      expect(createAction).toBeTruthy()
-      createAction!.actionCallback!()
+      const callback = createAction?.actionCallback
+      callback?.()
+
       expect(component.create).toHaveBeenCalled()
       expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.createAgentButtonClicked())
       done()

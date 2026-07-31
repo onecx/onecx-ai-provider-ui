@@ -655,7 +655,9 @@ describe('ScaffoldSearchComponent', () => {
 
     component.headerActions$.subscribe((actions) => {
       const createAction = actions.find((a) => a.labelKey === 'SCAFFOLD_CREATE_UPDATE.ACTION.CREATE')
-      createAction!.actionCallback!()
+      const callback = createAction?.actionCallback
+      callback?.()
+
       expect(createSpy).toHaveBeenCalled()
       done()
     })
