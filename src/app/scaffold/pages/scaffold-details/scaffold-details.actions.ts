@@ -1,4 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
+
 import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 
 export const scaffoldDetailsActions = createActionGroup({

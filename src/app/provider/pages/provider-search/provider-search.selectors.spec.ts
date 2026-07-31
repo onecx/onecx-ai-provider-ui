@@ -1,5 +1,5 @@
-import { selectProviderSearchViewModel, selectDisplayedColumns, selectResults } from './provider-search.selectors'
 import { AuthMode, ProviderType } from 'src/app/shared/generated'
+import { selectProviderSearchViewModel, selectDisplayedColumns, selectResults } from './provider-search.selectors'
 
 describe('ProviderSearch selectors', () => {
   it('should map results to RowListGridData', () => {

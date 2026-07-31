@@ -1,14 +1,16 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER } from '@onecx/angular-utils'
 import { BreadcrumbService, AngularAcceleratorModule } from '@onecx/angular-accelerator'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { AgentCreateUpdateComponent } from './agent-create-update.component'
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+
+import { AgentCreateUpdateComponent } from './agent-create-update.component'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

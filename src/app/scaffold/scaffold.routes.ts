@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+
 import { ScaffoldDetailsComponent } from './pages/scaffold-details/scaffold-details.component'
 import { ScaffoldSearchComponent } from './pages/scaffold-search/scaffold-search.component'
 

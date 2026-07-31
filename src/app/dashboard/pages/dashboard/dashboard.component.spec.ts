@@ -4,10 +4,11 @@ import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateModule } from '@ngx-translate/core'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
-import { PortalPageComponent } from '@onecx/angular-utils'
 import { CardModule } from 'primeng/card'
 import { of } from 'rxjs'
+
+import { PortalPageComponent } from '@onecx/angular-utils'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { DashboardComponent } from './dashboard.component'
 import { selectDashboardViewModel } from './dashboard.selectors'

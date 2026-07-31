@@ -1,4 +1,5 @@
 import { ColumnType } from '@onecx/angular-accelerator'
+
 import * as selectors from './agent-search.selectors'
 
 describe('AgentSearch selectors', () => {

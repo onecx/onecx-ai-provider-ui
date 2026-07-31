@@ -13,7 +13,7 @@ import { filterForNavigatedTo } from '@onecx/ngrx-accelerator'
 
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { Skill, SkillService, UpdateSkillRequest } from '../../../shared/generated'
+import { Skill, SkillService, UpdateSkillRequest } from 'src/app/shared/generated'
 import { skillDetailsActions } from './skill-details.actions'
 import { SkillDetailsComponent } from './skill-details.component'
 import { skillDetailsSelectors } from './skill-details.selectors'

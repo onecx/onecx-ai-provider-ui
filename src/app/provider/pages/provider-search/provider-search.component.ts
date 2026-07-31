@@ -1,6 +1,14 @@
 import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { Store } from '@ngrx/store'
+import { TranslateModule } from '@ngx-translate/core'
+import { LetDirective } from '@ngrx/component'
+import { InputTextModule } from 'primeng/inputtext'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { PrimeIcons } from 'primeng/api'
+import { map, Observable } from 'rxjs'
+
 import { isValidDate } from '@onecx/accelerator'
 import {
   Action,
@@ -10,18 +18,12 @@ import {
   RowListGridData,
   AngularAcceleratorModule
 } from '@onecx/angular-accelerator'
-import { PrimeIcons } from 'primeng/api'
-import { map, Observable } from 'rxjs'
+import { PortalPageComponent } from '@onecx/angular-utils'
+
 import { ProviderSearchActions } from './provider-search.actions'
 import { ProviderSearchCriteria, ProviderSearchCriteriasSchema } from './provider-search.parameters'
 import { selectProviderSearchViewModel } from './provider-search.selectors'
 import { ProviderSearchViewModel } from './provider-search.viewmodel'
-import { TranslateModule } from '@ngx-translate/core'
-import { CommonModule } from '@angular/common'
-import { LetDirective } from '@ngrx/component'
-import { PortalPageComponent } from '@onecx/angular-utils'
-import { InputTextModule } from 'primeng/inputtext'
-import { FloatLabelModule } from 'primeng/floatlabel'
 
 @Component({
   selector: 'app-provider-search',

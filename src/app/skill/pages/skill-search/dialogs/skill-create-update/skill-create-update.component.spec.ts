@@ -4,11 +4,13 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
-import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { distinctUntilChanged, skip, take, toArray } from 'rxjs'
+
+import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
+
 import { Skill } from 'src/app/shared/generated'
 import { SkillCreateUpdateComponent } from './skill-create-update.component'
 

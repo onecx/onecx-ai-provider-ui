@@ -1,5 +1,6 @@
 import { routerNavigatedAction, RouterNavigatedAction } from '@ngrx/router-store'
 import { createReducer, on } from '@ngrx/store'
+
 import { ProviderSearchActions } from './provider-search.actions'
 import { ProviderSearchColumns } from './provider-search.columns'
 import { ProviderSearchCriteriasSchema } from './provider-search.parameters'

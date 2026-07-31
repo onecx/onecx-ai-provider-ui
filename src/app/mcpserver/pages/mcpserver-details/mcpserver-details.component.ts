@@ -1,25 +1,26 @@
+import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
-import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
-import { UserService } from '@onecx/angular-integration-interface'
 import { map, Observable } from 'rxjs'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PrimeIcons } from 'primeng/api'
-import { MCPServerDetailsActions } from './mcpserver-details.actions'
-import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
-import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
-import { CommonModule } from '@angular/common'
-import { PortalPageComponent } from '@onecx/angular-utils'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { PasswordModule } from 'primeng/password'
-import { LetDirective } from '@ngrx/component'
+
+import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
+import { UserService } from '@onecx/angular-integration-interface'
+
+import { MCPServerDetailsActions } from './mcpserver-details.actions'
+import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
+import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
 
 @Component({
   selector: 'app-mcpserver-details',
   templateUrl: './mcpserver-details.component.html',
-  styleUrls: ['./mcpserver-details.component.scss'],
   imports: [
     AngularAcceleratorModule,
     CommonModule,

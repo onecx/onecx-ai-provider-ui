@@ -1,11 +1,12 @@
 import { createSelector } from '@ngrx/store'
+
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
-import { scaffoldFeature } from '../../scaffold.reducers'
-import { initialState } from './scaffold-details.reducers'
-import { ScaffoldDetailsViewModel } from './scaffold-details.viewmodel'
 
 import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
+import { initialState } from './scaffold-details.reducers'
+import { ScaffoldDetailsViewModel } from './scaffold-details.viewmodel'
+import { scaffoldFeature } from '../../scaffold.reducers'
 
 export const scaffoldDetailsSelectors = createChildSelectors(scaffoldFeature.selectDetails, initialState)
 

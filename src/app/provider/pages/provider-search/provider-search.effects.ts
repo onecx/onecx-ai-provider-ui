@@ -4,6 +4,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
+import equal from 'fast-deep-equal'
+import { PrimeIcons } from 'primeng/api'
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+
 import {
   filterForNavigatedTo,
   filterOutOnlyQueryParamsChanged,
@@ -11,16 +15,14 @@ import {
 } from '@onecx/ngrx-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { DialogState, ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
-import equal from 'fast-deep-equal'
-import { PrimeIcons } from 'primeng/api'
-import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
+import { CreateProviderRequest, Provider, ProviderService, UpdateProviderRequest } from 'src/app/shared/generated'
 import { ProviderSearchActions } from './provider-search.actions'
 import { ProviderSearchComponent } from './provider-search.component'
 import { ProviderSearchCriteriasSchema } from './provider-search.parameters'
 import { ProviderSearchSelectors, selectProviderSearchViewModel } from './provider-search.selectors'
 import { ProviderCreateUpdateComponent } from './dialogs/provider-create-update/provider-create-update.component'
-import { CreateProviderRequest, Provider, ProviderService, UpdateProviderRequest } from 'src/app/shared/generated'
 
 @Injectable()
 export class ProviderSearchEffects {

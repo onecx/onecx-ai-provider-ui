@@ -1,4 +1,5 @@
 import { ColumnType } from '@onecx/angular-accelerator'
+
 import * as selectors from './skill-search.selectors'
 
 describe('SkillSearch selectors', () => {

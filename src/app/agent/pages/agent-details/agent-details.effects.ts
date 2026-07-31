@@ -22,7 +22,7 @@ import {
   ScaffoldService,
   ToolService,
   UpdateAgentRequest
-} from '../../../shared/generated'
+} from 'src/app/shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { agentDetailsSelectors } from './agent-details.selectors'

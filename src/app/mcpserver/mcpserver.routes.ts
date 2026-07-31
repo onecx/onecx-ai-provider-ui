@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+
 import { MCPServerDetailsComponent } from './pages/mcpserver-details/mcpserver-details.component'
 import { MCPServerSearchComponent } from './pages/mcpserver-search/mcpserver-search.component'
 

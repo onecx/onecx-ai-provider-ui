@@ -5,6 +5,7 @@ import {
   RowListGridData,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { AgentSearchCriteria } from './agent-search.parameters'
 
 export interface AgentSearchViewModel {

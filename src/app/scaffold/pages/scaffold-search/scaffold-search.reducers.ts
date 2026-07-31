@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store'
-
 import { routerNavigatedAction, RouterNavigatedAction } from '@ngrx/router-store'
+
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { scaffoldSearchColumns } from './scaffold-search.columns'
 import { scaffoldSearchCriteriasSchema } from './scaffold-search.parameters'

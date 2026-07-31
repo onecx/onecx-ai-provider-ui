@@ -17,7 +17,6 @@ type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
 @Component({
   selector: 'app-scaffold-details',
   templateUrl: './scaffold-details.component.html',
-  styleUrls: ['./scaffold-details.component.scss'],
   // eslint-disable-next-line @angular-eslint/prefer-standalone
   standalone: false
 })

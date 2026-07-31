@@ -4,9 +4,9 @@ import { RowListGridData } from '@onecx/angular-accelerator'
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
 
 import { Skill } from 'src/app/shared/generated'
-import { skillFeature } from '../../skill.reducers'
 import { initialState } from './skill-search.reducers'
 import { SkillSearchViewModel } from './skill-search.viewmodel'
+import { skillFeature } from '../../skill.reducers'
 
 export const skillSearchSelectors = createChildSelectors(skillFeature.selectSearch, initialState)
 

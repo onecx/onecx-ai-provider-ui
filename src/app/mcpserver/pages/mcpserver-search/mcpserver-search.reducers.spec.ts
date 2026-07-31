@@ -1,8 +1,10 @@
 import { routerNavigatedAction } from '@ngrx/router-store'
+
+import { DiagramComponentState, DiagramType, SearchHeaderComponentState } from '@onecx/angular-accelerator'
+
 import { MCPServerSearchActions } from './mcpserver-search.actions'
 import { mcpserverSearchReducer, initialState } from './mcpserver-search.reducers'
 import { mcpserverSearchCriteriasSchema } from './mcpserver-search.parameters'
-import { DiagramComponentState, DiagramType, SearchHeaderComponentState } from '@onecx/angular-accelerator'
 
 describe('mcpserverSearchReducer', () => {
   it('should parse query params on routerNavigatedAction (success)', () => {

@@ -3,9 +3,11 @@ import { ActivatedRoute, ActivatedRouteSnapshot, EventType, Router } from '@angu
 import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
+import { MonoTypeOperatorFunction, ReplaySubject, map, of, throwError } from 'rxjs'
+
 import { PortalMessageServiceMock, providePortalMessageServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { DialogState, PortalDialogService } from '@onecx/angular-accelerator'
-import { MonoTypeOperatorFunction, ReplaySubject, map, of, throwError } from 'rxjs'
+
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
 import { selectRouteParams, selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { Tool as MCPServer, ToolService } from 'src/app/shared/generated'

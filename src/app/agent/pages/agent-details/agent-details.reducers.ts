@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
+
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsState } from './agent-details.state'
 

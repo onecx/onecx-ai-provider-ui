@@ -4,19 +4,20 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Store } from '@ngrx/store'
 import { LetDirective } from '@ngrx/component'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
-import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
-import { PortalPageComponent } from '@onecx/angular-utils'
 import { PrimeIcons } from 'primeng/api'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { Textarea } from 'primeng/textarea'
 import { TooltipModule } from 'primeng/tooltip'
 import { Observable, map } from 'rxjs'
+
+import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { Skill } from 'src/app/shared/generated'
 import { skillDetailsActions } from './skill-details.actions'
 import { selectSkillDetailsViewModel } from './skill-details.selectors'
 import { SkillDetailsViewModel } from './skill-details.viewmodel'
-import { Textarea } from 'primeng/textarea'
 
 @Component({
   selector: 'app-skill-details',

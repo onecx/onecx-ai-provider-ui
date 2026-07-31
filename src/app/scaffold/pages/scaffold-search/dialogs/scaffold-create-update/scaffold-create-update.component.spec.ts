@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
-import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
-import { ScaffoldCreateUpdateComponent } from './scaffold-create-update.component'
-import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER } from '@onecx/angular-utils'
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { TextareaModule } from 'primeng/textarea'
+
+import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
+import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER } from '@onecx/angular-utils'
+import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+
+import { ScaffoldCreateUpdateComponent } from './scaffold-create-update.component'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

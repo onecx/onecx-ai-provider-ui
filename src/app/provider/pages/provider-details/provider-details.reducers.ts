@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
+
 import { ProviderDetailsActions } from './provider-details.actions'
 import { ProviderDetailsState } from './provider-details.state'
 

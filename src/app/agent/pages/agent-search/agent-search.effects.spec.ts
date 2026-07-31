@@ -5,6 +5,9 @@ import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
+import { of, ReplaySubject, throwError } from 'rxjs'
+import { take } from 'rxjs/operators'
+
 import {
   ColumnType,
   DataTableColumn,
@@ -13,8 +16,6 @@ import {
   RowListGridData
 } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { of, ReplaySubject, throwError } from 'rxjs'
-import { take } from 'rxjs/operators'
 
 import { Agent, AgentPageResult, AgentService } from 'src/app/shared/generated'
 import { agentSearchActions } from './agent-search.actions'

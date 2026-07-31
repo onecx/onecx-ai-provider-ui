@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
+
 import { skillDetailsActions } from './skill-details.actions'
 import { SkillDetailsState } from './skill-details.state'
 

@@ -1,4 +1,5 @@
 import { combineReducers, createFeature } from '@ngrx/store'
+
 import { agentDetailsReducer } from './pages/agent-details/agent-details.reducers'
 import { agentSearchReducer } from './pages/agent-search/agent-search.reducers'
 

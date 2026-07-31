@@ -4,6 +4,7 @@ import {
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { Skill } from 'src/app/shared/generated'
 import { SkillSearchCriteria } from './skill-search.parameters'
 

@@ -1,9 +1,11 @@
 import { createSelector } from '@ngrx/store'
+
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
 import { DataTableColumn, RowListGridData } from '@onecx/angular-accelerator'
-import { ProviderFeature } from '../../provider.reducers'
+
 import { initialState } from './provider-search.reducers'
 import { ProviderSearchViewModel } from './provider-search.viewmodel'
+import { ProviderFeature } from '../../provider.reducers'
 
 export const ProviderSearchSelectors = createChildSelectors(ProviderFeature.selectSearch, initialState)
 

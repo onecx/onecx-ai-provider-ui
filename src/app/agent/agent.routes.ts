@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+
 import { AgentDetailsComponent } from './pages/agent-details/agent-details.component'
 import { AgentSearchComponent } from './pages/agent-search/agent-search.component'
 

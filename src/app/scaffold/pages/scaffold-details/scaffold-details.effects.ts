@@ -20,7 +20,7 @@ import {
   Tool,
   ToolService,
   UpdateScaffoldRequest
-} from '../../../shared/generated'
+} from 'src/app/shared/generated'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { ScaffoldDetailsComponent } from './scaffold-details.component'
 import { scaffoldDetailsSelectors } from './scaffold-details.selectors'

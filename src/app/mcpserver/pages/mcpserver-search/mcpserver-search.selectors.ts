@@ -1,9 +1,10 @@
 import { createSelector } from '@ngrx/store'
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
 import { RowListGridData } from '@onecx/angular-accelerator'
-import { mcpserverFeature } from '../../mcpserver.reducers'
+
 import { initialState } from './mcpserver-search.reducers'
 import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
+import { mcpserverFeature } from '../../mcpserver.reducers'
 
 export const mcpserverSearchSelectors = createChildSelectors(mcpserverFeature.selectSearch, initialState)
 

@@ -1,10 +1,12 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
+
 import {
   GroupByCountDiagramComponentState,
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
-import { Agent } from '../../../shared/generated'
+
+import { Agent } from 'src/app/shared/generated'
 import { AgentSearchCriteria } from './agent-search.parameters'
 
 export const agentSearchActions = createActionGroup({

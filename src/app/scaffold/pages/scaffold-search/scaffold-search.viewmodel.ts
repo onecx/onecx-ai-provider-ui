@@ -5,6 +5,7 @@ import {
   RowListGridData,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
 
 export interface ScaffoldSearchViewModel {

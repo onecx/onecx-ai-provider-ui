@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
+
 import { MCPServerDetailsActions } from './mcpserver-details.actions'
 import { MCPServerDetailsState } from './mcpserver-details.state'
 

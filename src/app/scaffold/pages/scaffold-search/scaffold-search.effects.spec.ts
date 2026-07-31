@@ -5,6 +5,9 @@ import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
+import { of, ReplaySubject, throwError } from 'rxjs'
+import { take } from 'rxjs/operators'
+
 import {
   ColumnType,
   DataTableColumn,
@@ -13,11 +16,9 @@ import {
   RowListGridData
 } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { of, ReplaySubject, throwError } from 'rxjs'
-import { take } from 'rxjs/operators'
 
-import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
 import { Scaffold, ScaffoldPageResult, ScaffoldService, SkillPageResult, SkillService } from 'src/app/shared/generated'
+import { ScaffoldCreateUpdateComponent } from './dialogs/scaffold-create-update/scaffold-create-update.component'
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchEffects } from './scaffold-search.effects'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'

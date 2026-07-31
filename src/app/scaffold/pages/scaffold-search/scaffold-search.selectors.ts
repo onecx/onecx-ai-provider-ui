@@ -4,9 +4,9 @@ import { RowListGridData } from '@onecx/angular-accelerator'
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
 
 import { Scaffold } from 'src/app/shared/generated'
-import { scaffoldFeature } from '../../scaffold.reducers'
 import { initialState } from './scaffold-search.reducers'
 import { ScaffoldSearchViewModel } from './scaffold-search.viewmodel'
+import { scaffoldFeature } from '../../scaffold.reducers'
 
 export const scaffoldSearchSelectors = createChildSelectors(scaffoldFeature.selectSearch, initialState)
 

@@ -1,4 +1,5 @@
 import { createSelector } from '@ngrx/store'
+
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
 
 import { dashboardFeature } from '../../dashboard.reducers'

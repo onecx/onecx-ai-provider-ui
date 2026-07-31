@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { Store } from '@ngrx/store'
 import { LetDirective } from '@ngrx/component'
 import { TranslateModule } from '@ngx-translate/core'
-import { PortalPageComponent } from '@onecx/angular-utils'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
 import { FloatLabelModule } from 'primeng/floatlabel'
@@ -26,6 +25,7 @@ import {
   RowListGridData,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { skillSearchActions } from './skill-search.actions'
 import { SkillSearchCriteria, skillSearchCriteriasSchema } from './skill-search.parameters'

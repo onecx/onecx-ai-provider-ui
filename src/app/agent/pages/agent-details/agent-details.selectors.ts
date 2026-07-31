@@ -1,11 +1,12 @@
 import { createSelector } from '@ngrx/store'
+
 import { createChildSelectors } from '@onecx/ngrx-accelerator'
-import { agentFeature } from '../../agent.reducers'
-import { initialState } from './agent-details.reducers'
-import { AgentDetailsViewModel } from './agent-details.viewmodel'
 
 import { Agent } from 'src/app/shared/generated'
 import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.selectors'
+import { agentFeature } from '../../agent.reducers'
+import { initialState } from './agent-details.reducers'
+import { AgentDetailsViewModel } from './agent-details.viewmodel'
 
 export const agentDetailsSelectors = createChildSelectors(agentFeature.selectDetails, initialState)
 

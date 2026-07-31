@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+
 import { SkillDetailsComponent } from './pages/skill-details/skill-details.component'
 import { SkillSearchComponent } from './pages/skill-search/skill-search.component'
 

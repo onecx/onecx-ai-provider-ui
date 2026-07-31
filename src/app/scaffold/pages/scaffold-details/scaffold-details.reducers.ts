@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store'
+
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { ScaffoldDetailsState } from './scaffold-details.state'
 

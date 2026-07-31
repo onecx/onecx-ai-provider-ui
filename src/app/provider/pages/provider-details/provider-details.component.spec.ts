@@ -1,26 +1,28 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
+import { ReactiveFormsModule } from '@angular/forms'
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { firstValueFrom } from 'rxjs'
+
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
 import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
-import { TranslateTestingModule } from 'ngx-translate-testing'
+import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+
 import { ProviderDetailsComponent } from './provider-details.component'
 import { ProviderDetailsHarness } from './provider-details.harness'
 import { initialState } from './provider-details.reducers'
 import { selectProviderDetailsViewModel } from './provider-details.selectors'
 import { ProviderDetailsViewModel } from './provider-details.viewmodel'
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { ReactiveFormsModule } from '@angular/forms'
-import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { ProviderSearchActions } from '../provider-search/provider-search.actions'
 import { ProviderDetailsActions } from './provider-details.actions'
-import { firstValueFrom } from 'rxjs'
 
 describe('ProviderDetailsComponent', () => {
   const origAddEventListener = window.addEventListener

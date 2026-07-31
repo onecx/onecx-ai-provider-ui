@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+
 import { ProviderDetailsComponent } from './pages/provider-details/provider-details.component'
 import { ProviderSearchComponent } from './pages/provider-search/provider-search.component'
 

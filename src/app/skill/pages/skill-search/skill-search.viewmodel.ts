@@ -5,6 +5,7 @@ import {
   RowListGridData,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { SkillSearchCriteria } from './skill-search.parameters'
 
 export interface SkillSearchViewModel {

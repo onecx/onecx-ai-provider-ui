@@ -1,4 +1,5 @@
 import { DataTableColumn, RowListGridData } from '@onecx/angular-accelerator'
+
 import { ProviderSearchCriteria } from './provider-search.parameters'
 
 export interface ProviderSearchViewModel {

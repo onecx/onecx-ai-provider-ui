@@ -4,9 +4,10 @@ import { Actions } from '@ngrx/effects'
 import { provideMockActions } from '@ngrx/effects/testing'
 import { Action, Store } from '@ngrx/store'
 import { provideMockStore } from '@ngrx/store/testing'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { ReplaySubject } from 'rxjs'
 import { take } from 'rxjs/operators'
+
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import { DashboardActions } from './dashboard.actions'
 import { DashboardEffects } from './dashboard.effects'

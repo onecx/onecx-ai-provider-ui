@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store'
-
 import { routerNavigatedAction, RouterNavigatedAction } from '@ngrx/router-store'
+
 import { skillSearchActions } from './skill-search.actions'
 import { skillSearchColumns } from './skill-search.columns'
 import { skillSearchCriteriasSchema } from './skill-search.parameters'

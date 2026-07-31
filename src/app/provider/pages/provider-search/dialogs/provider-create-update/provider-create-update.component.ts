@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core'
-import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '@onecx/angular-accelerator'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { map } from 'rxjs'
-import { Provider } from 'src/app/shared/generated'
-import { ProviderCreateUpdateViewModel } from './provider-create-update.viewmodel'
 import { TranslateModule } from '@ngx-translate/core'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { map } from 'rxjs'
+
+import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '@onecx/angular-accelerator'
+
+import { Provider } from 'src/app/shared/generated'
+import { ProviderCreateUpdateViewModel } from './provider-create-update.viewmodel'
 
 @Component({
   selector: 'app-provider-create-update',

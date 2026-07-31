@@ -4,6 +4,7 @@ import {
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { Scaffold, Skill } from 'src/app/shared/generated'
 import { ScaffoldSearchCriteria } from './scaffold-search.parameters'
 

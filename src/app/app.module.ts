@@ -9,22 +9,24 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store'
 import { StoreModule } from '@ngrx/store'
 import { provideStoreDevtools, StoreDevtoolsModule } from '@ngrx/store-devtools'
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
-import { AngularAuthModule } from '@onecx/angular-auth'
+
 import {
   createTranslateLoader,
   provideTranslationPathFromMeta,
   provideThemeConfig,
   provideTranslationConnectionService
 } from '@onecx/angular-utils'
+import { AngularAuthModule } from '@onecx/angular-auth'
 import { AngularAcceleratorModule, providePortalDialogService } from '@onecx/angular-accelerator'
 import { APP_CONFIG, AppStateService, ConfigurationService } from '@onecx/angular-integration-interface'
+import { StandaloneShellModule } from '@onecx/angular-standalone-shell'
+
 import { environment } from 'src/environments/environment'
+import { APIConfiguration } from 'src/app/shared/generated'
+import { apiConfigProvider } from 'src/app/shared/utils/apiConfigProvider.utils'
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { metaReducers, reducers } from './app.reducers'
-import { APIConfiguration } from './shared/generated'
-import { apiConfigProvider } from './shared/utils/apiConfigProvider.utils'
-import { StandaloneShellModule } from '@onecx/angular-standalone-shell'
 
 export const commonImports = [CommonModule]
 

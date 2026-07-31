@@ -1,21 +1,26 @@
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
-import { RowListGridData } from '@onecx/angular-accelerator'
-
-import { provideHttpClient } from '@angular/common/http'
 import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { DialogService } from 'primeng/dynamicdialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
+
 import {
   AngularAcceleratorModule,
   BreadcrumbService,
   ColumnType,
-  providePortalDialogService
+  providePortalDialogService,
+  RowListGridData
 } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { provideUserServiceMock, UserServiceMock } from '@onecx/angular-integration-interface/mocks'
@@ -25,11 +30,6 @@ import {
   PortalPageComponent,
   TranslationConnectionService
 } from '@onecx/angular-utils'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { DialogService } from 'primeng/dynamicdialog'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { InputTextModule } from 'primeng/inputtext'
-import { TooltipModule } from 'primeng/tooltip'
 
 import { agentSearchActions } from './agent-search.actions'
 import { agentSearchColumns } from './agent-search.columns'

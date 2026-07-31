@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { TranslateModule } from '@ngx-translate/core'
+
 import { startsWith } from '@onecx/angular-webcomponents'
+
 export const routes: Routes = [
   {
     // Adjust the matcher to match the feature route.

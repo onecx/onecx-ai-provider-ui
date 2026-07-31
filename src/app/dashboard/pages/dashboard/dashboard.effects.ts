@@ -2,8 +2,9 @@ import { Injectable, SkipSelf } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Actions, createEffect } from '@ngrx/effects'
 import { Action, Store } from '@ngrx/store'
-import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { tap } from 'rxjs'
+
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 @Injectable()
 export class DashboardEffects {

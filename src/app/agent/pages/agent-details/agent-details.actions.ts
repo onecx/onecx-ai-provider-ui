@@ -1,4 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
+
 import { Agent, AgentGroup, Model, Provider, Scaffold, Tool } from 'src/app/shared/generated'
 
 export const agentDetailsActions = createActionGroup({

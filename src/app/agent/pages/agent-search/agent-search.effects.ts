@@ -1,18 +1,18 @@
+import { Injectable, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+import equal from 'fast-deep-equal'
+
 import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
-import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
-import { Agent, AgentService, CreateAgentRequest, UpdateAgentRequest } from '../../../shared/generated'
-
-import { Injectable, inject } from '@angular/core'
-import equal from 'fast-deep-equal'
-
+import { Agent, AgentService, CreateAgentRequest, UpdateAgentRequest } from 'src/app/shared/generated'
 import { agentSearchActions } from './agent-search.actions'
 import { AgentSearchComponent } from './agent-search.component'
 import { AgentCreateUpdateComponent } from './dialogs/agent-create-update/agent-create-update.component'

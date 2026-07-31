@@ -1,3 +1,5 @@
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient } from '@angular/common/http'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
@@ -9,11 +11,13 @@ import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+import { DialogService } from 'primeng/dynamicdialog'
+
 import { AngularAcceleratorModule, ColumnType, DiagramType } from '@onecx/angular-accelerator'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { DialogService } from 'primeng/dynamicdialog'
+
 import { MCPServerSearchActions } from './mcpserver-search.actions'
 import { mcpserverSearchColumns } from './mcpserver-search.columns'
 import { MCPServerSearchComponent } from './mcpserver-search.component'
@@ -21,8 +25,6 @@ import { MCPServerSearchHarness } from './mcpserver-search.harness'
 import { initialState } from './mcpserver-search.reducers'
 import { selectMCPServerSearchViewModel } from './mcpserver-search.selectors'
 import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { provideHttpClient } from '@angular/common/http'
 
 describe('MCPServerSearchComponent', () => {
   const origAddEventListener = window.addEventListener

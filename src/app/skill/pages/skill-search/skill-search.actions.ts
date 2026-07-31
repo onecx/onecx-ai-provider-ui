@@ -1,10 +1,12 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
+
 import {
   GroupByCountDiagramComponentState,
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
-import { Skill } from '../../../shared/generated'
+
+import { Skill } from 'src/app/shared/generated'
 import { SkillSearchCriteria } from './skill-search.parameters'
 
 export const skillSearchActions = createActionGroup({

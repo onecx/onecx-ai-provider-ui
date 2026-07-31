@@ -4,13 +4,15 @@ import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
+import { catchError, map, of, switchMap, tap } from 'rxjs'
+
 import { filterForNavigatedTo } from '@onecx/ngrx-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
-import { catchError, map, of, switchMap, tap } from 'rxjs'
+
 import { selectRouteParam } from 'src/app/shared/selectors/router.selectors'
+import { ModelService, ProviderService, UpdateProviderRequest } from 'src/app/shared/generated'
 import { ProviderDetailsActions } from './provider-details.actions'
 import { ProviderDetailsComponent } from './provider-details.component'
-import { ModelService, ProviderService, UpdateProviderRequest } from 'src/app/shared/generated'
 import { ProviderDetailsSelectors } from './provider-details.selectors'
 
 @Injectable()

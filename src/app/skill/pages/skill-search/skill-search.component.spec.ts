@@ -1,18 +1,28 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideHttpClient } from '@angular/common/http'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
-import { RowListGridData } from '@onecx/angular-accelerator'
-import { PrimeIcons } from 'primeng/api'
-
-import { provideHttpClient } from '@angular/common/http'
 import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import { AngularAcceleratorModule, ColumnType, providePortalDialogService } from '@onecx/angular-accelerator'
+import { TranslateTestingModule } from 'ngx-translate-testing'
+
+import { DialogService } from 'primeng/dynamicdialog'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
+import { TooltipModule } from 'primeng/tooltip'
+import { PrimeIcons } from 'primeng/api'
+
+import {
+  AngularAcceleratorModule,
+  ColumnType,
+  providePortalDialogService,
+  RowListGridData
+} from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
 import { provideUserServiceMock, UserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import {
@@ -21,11 +31,6 @@ import {
   PortalPageComponent,
   TranslationConnectionService
 } from '@onecx/angular-utils'
-import { TranslateTestingModule } from 'ngx-translate-testing'
-import { DialogService } from 'primeng/dynamicdialog'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { InputTextModule } from 'primeng/inputtext'
-import { TooltipModule } from 'primeng/tooltip'
 
 import { skillSearchActions } from './skill-search.actions'
 import { skillSearchColumns } from './skill-search.columns'

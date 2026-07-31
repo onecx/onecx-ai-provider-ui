@@ -1,19 +1,19 @@
+import { Injectable, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
+import equal from 'fast-deep-equal'
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+
 import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
-import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+
 import { CreateSkillRequest, Skill, SkillService, UpdateSkillRequest } from 'src/app/shared/generated'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { SkillCreateUpdateComponent } from './dialogs/skill-create-update/skill-create-update.component'
-
-import { Injectable, inject } from '@angular/core'
-import equal from 'fast-deep-equal'
-
 import { skillSearchActions } from './skill-search.actions'
 import { SkillSearchComponent } from './skill-search.component'
 import { skillSearchCriteriasSchema } from './skill-search.parameters'

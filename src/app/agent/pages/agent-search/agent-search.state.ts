@@ -4,6 +4,7 @@ import {
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { Agent } from 'src/app/shared/generated'
 import { AgentSearchCriteria } from './agent-search.parameters'
 

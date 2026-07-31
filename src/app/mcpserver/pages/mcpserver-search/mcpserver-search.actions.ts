@@ -1,9 +1,11 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
+
 import {
   GroupByCountDiagramComponentState,
   InteractiveDataViewComponentState,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+
 import { Tool as MCPServer } from 'src/app/shared/generated'
 import { MCPServerSearchCriteria } from './mcpserver-search.parameters'
 
