@@ -1,8 +1,12 @@
+import { AsyncPipe } from '@angular/common'
 import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Store } from '@ngrx/store'
+import { TranslateModule } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { TooltipModule } from 'primeng/tooltip'
 import { map, Observable } from 'rxjs'
 
 import {
@@ -19,16 +23,12 @@ import {
   RowListGridData,
   SearchHeaderComponentState
 } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchCriteria, scaffoldSearchCriteriasSchema } from './scaffold-search.parameters'
 import { selectScaffoldSearchViewModel } from './scaffold-search.selectors'
 import { ScaffoldSearchViewModel } from './scaffold-search.viewmodel'
-import { TranslateModule } from '@ngx-translate/core'
-import { AsyncPipe } from '@angular/common'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { TooltipModule } from 'primeng/tooltip'
-import { PortalPageComponent } from '@onecx/angular-utils'
 
 @Component({
   selector: 'app-scaffold-search',

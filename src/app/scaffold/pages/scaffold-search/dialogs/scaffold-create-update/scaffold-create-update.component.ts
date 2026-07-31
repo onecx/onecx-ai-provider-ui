@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { TranslateModule } from '@ngx-translate/core'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { map } from 'rxjs'
@@ -8,7 +9,6 @@ import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '
 
 import { Scaffold, Skill } from 'src/app/shared/generated'
 import { ScaffoldCreateUpdateViewModel } from './scaffold-create-update.viewmodel'
-import { TranslateModule } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-scaffold-create-update',

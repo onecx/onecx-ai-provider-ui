@@ -1,21 +1,21 @@
+import { AsyncPipe } from '@angular/common'
 import { Component, OnInit, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
+import { FloatLabelModule } from 'primeng/floatlabel'
 import { MultiSelectModule } from 'primeng/multiselect'
+import { TabsModule } from 'primeng/tabs'
 import { Observable, map } from 'rxjs'
 
 import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { selectScaffoldDetailsViewModel } from './scaffold-details.selectors'
 import { ScaffoldDetailsViewModel } from './scaffold-details.viewmodel'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { TabViewModule } from 'primeng/tabview'
-import { AsyncPipe } from '@angular/common'
-import { PortalPageComponent } from '@onecx/angular-utils'
 
 type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
 
@@ -25,7 +25,7 @@ type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
     TranslateModule,
     MultiSelectModule,
     FloatLabelModule,
-    TabViewModule,
+    TabsModule,
     ReactiveFormsModule,
     AsyncPipe,
     AngularAcceleratorModule,

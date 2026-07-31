@@ -4,9 +4,16 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
+import { ButtonModule } from 'primeng/button'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { AutoCompleteModule } from 'primeng/autocomplete'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { TabsModule } from 'primeng/tabs'
+import { SelectModule } from 'primeng/select'
 import { Observable, map } from 'rxjs'
 
 import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import {
   Agent,
@@ -21,13 +28,6 @@ import {
 import { agentDetailsActions } from './agent-details.actions'
 import { selectAgentDetailsViewModel } from './agent-details.selectors'
 import { AgentDetailsViewModel } from './agent-details.viewmodel'
-import { ButtonModule } from 'primeng/button'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { AutoCompleteModule } from 'primeng/autocomplete'
-import { MultiSelectModule } from 'primeng/multiselect'
-import { TabViewModule } from 'primeng/tabview'
-import { SelectModule } from 'primeng/select'
-import { PortalPageComponent } from '@onecx/angular-utils'
 
 @Component({
   selector: 'app-agent-details',
@@ -38,7 +38,7 @@ import { PortalPageComponent } from '@onecx/angular-utils'
     AutoCompleteModule,
     ReactiveFormsModule,
     MultiSelectModule,
-    TabViewModule,
+    TabsModule,
     SelectModule,
     AsyncPipe,
     AngularAcceleratorModule,

@@ -12,7 +12,7 @@ import { PasswordModule } from 'primeng/password'
 import { TooltipModule } from 'primeng/tooltip'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { SelectModule } from 'primeng/select'
-import { TabViewModule } from 'primeng/tabview'
+import { TabsModule } from 'primeng/tabs'
 import { ButtonModule } from 'primeng/button'
 
 import { Action, AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
@@ -41,7 +41,7 @@ import { ProviderSearchActions } from '../provider-search/provider-search.action
     PortalPageComponent,
     TooltipModule,
     SelectModule,
-    TabViewModule,
+    TabsModule,
     ButtonModule
   ]
 })

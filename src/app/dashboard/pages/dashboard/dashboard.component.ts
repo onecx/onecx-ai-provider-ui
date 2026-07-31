@@ -1,14 +1,15 @@
 import { Component } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { Store } from '@ngrx/store'
+import { TranslateModule } from '@ngx-translate/core'
+import { CardModule } from 'primeng/card'
 import { Observable } from 'rxjs'
+
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { selectDashboardViewModel } from './dashboard.selectors'
 import { DashboardViewModel } from './dashboard.viewmodel'
-import { TranslateModule } from '@ngx-translate/core'
-import { CardModule } from 'primeng/card'
-import { PortalPageComponent } from '@onecx/angular-utils'
-import { RouterModule } from '@angular/router'
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 interface DashboardPanel {
   titleKey: string
