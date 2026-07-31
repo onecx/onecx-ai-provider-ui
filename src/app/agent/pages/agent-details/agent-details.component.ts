@@ -13,6 +13,7 @@ import {
   AgentFilter,
   AgentFilterKeyEnum,
   AgentGroup,
+  AgentStatus,
   Model,
   Provider,
   Scaffold,
@@ -33,6 +34,7 @@ export class AgentDetailsComponent implements OnInit {
   private readonly store = inject(Store)
   private readonly breadcrumbService = inject(BreadcrumbService)
   readonly filterKeys = Object.values(AgentFilterKeyEnum)
+  readonly statusOptions = Object.values(AgentStatus)
   filterKeySuggestions: string[] = [...this.filterKeys]
 
   viewModel$: Observable<AgentDetailsViewModel> = this.store.select(selectAgentDetailsViewModel)
@@ -139,6 +141,7 @@ export class AgentDetailsComponent implements OnInit {
   constructor() {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
+      status: new FormControl(AgentStatus.Draft, [Validators.required]),
       description: new FormControl(null, [Validators.maxLength(4000)]),
       additionalPrompt: new FormControl(null, [Validators.maxLength(4000)]),
       provider: new FormControl<Provider | null>(null),
@@ -156,6 +159,7 @@ export class AgentDetailsComponent implements OnInit {
       if (!vm.editMode) {
         this.formGroup.patchValue({
           name: vm.details?.name,
+          status: vm.details?.status ?? AgentStatus.Draft,
           description: vm.details?.description,
           additionalPrompt: vm.details?.additionalPrompt,
           provider: vm.details?.model?.provider ?? null,
@@ -216,6 +220,7 @@ export class AgentDetailsComponent implements OnInit {
     const details: Agent = {
       ...this.currentDetails,
       name: this.formGroup.get('name')?.value,
+      status: this.formGroup.get('status')?.value,
       description: this.formGroup.get('description')?.value,
       additionalPrompt: this.formGroup.get('additionalPrompt')?.value,
       model: selectedModel ? { ...selectedModel, provider: selectedProvider ?? selectedModel.provider } : undefined,

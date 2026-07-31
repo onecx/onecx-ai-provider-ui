@@ -19,7 +19,7 @@ import { ButtonModule } from 'primeng/button'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { SelectModule } from 'primeng/select'
 import { TabViewModule } from 'primeng/tabview'
-import { AgentFilterKeyEnum, AgentGroupService } from 'src/app/shared/generated'
+import { AgentFilterKeyEnum, AgentGroupService, AgentStatus } from 'src/app/shared/generated'
 
 import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
@@ -262,6 +262,7 @@ describe('AgentDetailsComponent', () => {
     const agent = { id: '123' }
     const agentForm = {
       name: 'title',
+      status: AgentStatus.Draft,
       description: 'description',
       additionalPrompt: 'prompt',
       provider: null,
@@ -293,6 +294,7 @@ describe('AgentDetailsComponent', () => {
         details: {
           id: '123',
           name: 'title',
+          status: AgentStatus.Draft,
           description: 'description',
           additionalPrompt: 'prompt',
           model: undefined,
@@ -456,6 +458,7 @@ describe('AgentDetailsComponent', () => {
     expect(component.formGroup.getRawValue()).toEqual(
       expect.objectContaining({
         name: 'title',
+        status: 'LIVE',
         description: 'description',
         additionalPrompt: 'prompt',
         provider: null,
@@ -515,6 +518,23 @@ describe('AgentDetailsComponent', () => {
           details: expect.objectContaining({
             model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } },
             scaffold: { id: 'scaffold-1', name: 'Scaffold 1' }
+          })
+        })
+      )
+    })
+
+    it('should include the selected status in the save payload', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.patchValue({
+        status: AgentStatus.Live
+      })
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            status: AgentStatus.Live
           })
         })
       )
@@ -733,9 +753,17 @@ describe('AgentDetailsComponent', () => {
       const filterEntry = component.filtersFormArray.at(0) as FormGroup
       filterEntry.removeControl('key')
       filterEntry.removeControl('value')
-      ;['provider', 'model', 'name', 'description', 'additionalPrompt', 'scaffold', 'tools', 'groups'].forEach(
-        (control) => component.formGroup.removeControl(control)
-      )
+      ;[
+        'provider',
+        'model',
+        'name',
+        'status',
+        'description',
+        'additionalPrompt',
+        'scaffold',
+        'tools',
+        'groups'
+      ].forEach((control) => component.formGroup.removeControl(control))
 
       component.save()
 

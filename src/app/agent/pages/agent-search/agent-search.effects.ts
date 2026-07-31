@@ -174,6 +174,7 @@ export class AgentSearchEffects {
             if (!dialogResult.result?.id || dialogResult.result.modificationCount == undefined) {
               throw new Error('DialogResult was not set as expected!')
             }
+            console.log('dialogResult', dialogResult)
             const itemToEditId = dialogResult.result.id
             const itemToEdit: UpdateAgentRequest = {
               modificationCount: dialogResult.result.modificationCount,
