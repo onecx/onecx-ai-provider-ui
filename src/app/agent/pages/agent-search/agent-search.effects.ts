@@ -6,7 +6,7 @@ import { Action, Store } from '@ngrx/store'
 import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 import { filterForNavigatedTo, filterOutQueryParamsHaveNotChanged } from '@onecx/ngrx-accelerator'
-import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs'
+import { catchError, map, of, switchMap, tap } from 'rxjs'
 import { selectUrl } from 'src/app/shared/selectors/router.selectors'
 import { Agent, AgentService, CreateAgentRequest, UpdateAgentRequest } from '../../../shared/generated'
 
@@ -118,7 +118,8 @@ export class AgentSearchEffects {
         }
         const toCreateItem: CreateAgentRequest = {
           name: dialogResult.result.name,
-          description: dialogResult.result.description
+          description: dialogResult.result.description,
+          status: dialogResult.result.status
         }
 
         return this.agentService.createAgent(toCreateItem).pipe(
@@ -146,56 +147,59 @@ export class AgentSearchEffects {
   editButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(agentSearchActions.editAgentButtonClicked),
-      concatLatestFrom(() => this.store.select(agentSearchSelectors.selectResults)),
-      map(([action, results]) => results.find((item) => item.id == action.id)),
-      mergeMap((itemToEdit) => {
-        return this.portalDialogService.openDialog<Agent | undefined>(
-          'AGENT_CREATE_UPDATE.UPDATE.HEADER',
-          {
-            type: AgentCreateUpdateComponent,
-            inputs: {
-              vm: {
-                itemToEdit
+      switchMap(({ id }) => {
+        return this.agentService.getAgent(String(id)).pipe(
+          switchMap((itemToEdit) => {
+            return this.portalDialogService.openDialog<Agent | undefined>(
+              'AGENT_CREATE_UPDATE.UPDATE.HEADER',
+              {
+                type: AgentCreateUpdateComponent,
+                inputs: {
+                  vm: {
+                    itemToEdit
+                  }
+                }
+              },
+              'AGENT_CREATE_UPDATE.UPDATE.FORM.SAVE',
+              'AGENT_CREATE_UPDATE.UPDATE.FORM.CANCEL',
+              {
+                baseZIndex: 100
               }
+            )
+          }),
+          switchMap((dialogResult) => {
+            if (!dialogResult || dialogResult.button == 'secondary') {
+              return of(agentSearchActions.updateAgentCancelled())
             }
-          },
-          'AGENT_CREATE_UPDATE.UPDATE.FORM.SAVE',
-          'AGENT_CREATE_UPDATE.UPDATE.FORM.CANCEL',
-          {
-            baseZIndex: 100
-          }
-        )
-      }),
-      switchMap((dialogResult) => {
-        if (!dialogResult || dialogResult.button == 'secondary') {
-          return of(agentSearchActions.updateAgentCancelled())
-        }
-        if (!dialogResult.result?.id || dialogResult.result.modificationCount == undefined) {
-          throw new Error('DialogResult was not set as expected!')
-        }
-        const itemToEditId = dialogResult.result.id
-        const itemToEdit: UpdateAgentRequest = {
-          modificationCount: dialogResult.result.modificationCount,
-          name: dialogResult.result.name,
-          description: dialogResult.result.description
-        }
+            if (!dialogResult.result?.id || dialogResult.result.modificationCount == undefined) {
+              throw new Error('DialogResult was not set as expected!')
+            }
+            const itemToEditId = dialogResult.result.id
+            const itemToEdit: UpdateAgentRequest = {
+              modificationCount: dialogResult.result.modificationCount,
+              name: dialogResult.result.name,
+              description: dialogResult.result.description,
+              status: dialogResult.result.status
+            }
 
-        return this.agentService.updateAgent(itemToEditId, itemToEdit).pipe(
-          map(() => {
-            this.messageService.success({
-              summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.SUCCESS'
+            return this.agentService.updateAgent(itemToEditId, itemToEdit).pipe(
+              map(() => {
+                this.messageService.success({
+                  summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.SUCCESS'
+                })
+                return agentSearchActions.updateAgentSucceeded()
+              })
+            )
+          }),
+          catchError((error) => {
+            this.messageService.error({
+              summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.ERROR'
             })
-            return agentSearchActions.updateAgentSucceeded()
-          })
-        )
-      }),
-      catchError((error) => {
-        this.messageService.error({
-          summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.ERROR'
-        })
-        return of(
-          agentSearchActions.updateAgentFailed({
-            error
+            return of(
+              agentSearchActions.updateAgentFailed({
+                error
+              })
+            )
           })
         )
       })

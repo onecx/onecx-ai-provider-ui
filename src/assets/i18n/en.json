@@ -444,7 +444,8 @@
     },
     "FORM": {
       "NAME": "Name",
-      "DESCRIPTION": "Description"
+      "DESCRIPTION": "Description",
+      "STATUS": "Status"
     },
     "CREATE": {
       "HEADER": "Create Agent",

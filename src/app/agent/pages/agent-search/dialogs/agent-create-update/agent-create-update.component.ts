@@ -4,15 +4,16 @@ import { TranslateModule } from '@ngx-translate/core'
 import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '@onecx/angular-accelerator'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { SelectModule } from 'primeng/select'
 import { map } from 'rxjs'
-import { Agent } from 'src/app/shared/generated'
+import { Agent, AgentStatus } from 'src/app/shared/generated'
 import { AgentCreateUpdateViewModel } from './agent-create-update.viewmodel'
 
 @Component({
   selector: 'app-agent-create-update',
   templateUrl: './agent-create-update.component.html',
   styleUrls: ['./agent-create-update.component.scss'],
-  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule]
+  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule, SelectModule]
 })
 export class AgentCreateUpdateComponent
   implements
@@ -26,6 +27,7 @@ export class AgentCreateUpdateComponent
   }
 
   public formGroup: FormGroup
+  public readonly statusOptions = Object.values(AgentStatus)
 
   primaryButtonEnabled = new EventEmitter<boolean>()
   dialogResult: Agent | undefined = undefined
@@ -33,7 +35,8 @@ export class AgentCreateUpdateComponent
   constructor() {
     this.formGroup = new FormGroup({
       name: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
-      description: new FormControl(null, [Validators.maxLength(255)])
+      description: new FormControl(null, [Validators.maxLength(255)]),
+      status: new FormControl(AgentStatus.Draft, [Validators.required])
     })
     this.formGroup.statusChanges
       .pipe(
@@ -55,7 +58,8 @@ export class AgentCreateUpdateComponent
     if (this.vm.itemToEdit) {
       this.formGroup.patchValue({
         name: this.vm.itemToEdit.name,
-        description: this.vm.itemToEdit.description
+        description: this.vm.itemToEdit.description,
+        status: this.vm.itemToEdit.status ?? AgentStatus.Draft
       })
     }
   }

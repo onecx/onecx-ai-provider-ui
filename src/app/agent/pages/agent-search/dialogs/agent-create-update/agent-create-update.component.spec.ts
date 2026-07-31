@@ -9,6 +9,7 @@ import { TranslateTestingModule } from 'ngx-translate-testing'
 import { AgentCreateUpdateComponent } from './agent-create-update.component'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { AgentStatus } from 'src/app/shared/generated'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -66,21 +67,28 @@ describe('AgentCreateUpdateComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('should default status to DRAFT', () => {
+    expect(component.formGroup.value.status).toEqual(AgentStatus.Draft)
+  })
+
   it('should set dialogResult with merged itemToEdit and form values on ocxDialogButtonClicked', () => {
     component.vm.itemToEdit = {
       id: '1',
       name: 'Old',
-      description: 'OldDesc'
+      description: 'OldDesc',
+      status: AgentStatus.Live
     } as any
     component.formGroup.setValue({
       name: 'New',
-      description: 'NewDesc'
+      description: 'NewDesc',
+      status: AgentStatus.Deprecated
     })
     component.ocxDialogButtonClicked()
     expect(component.dialogResult).toEqual({
       id: '1',
       name: 'New',
-      description: 'NewDesc'
+      description: 'NewDesc',
+      status: AgentStatus.Deprecated
     })
   })
 
@@ -88,31 +96,43 @@ describe('AgentCreateUpdateComponent', () => {
     component.vm.itemToEdit = {
       id: '2',
       name: 'Patched',
-      description: 'PatchedDesc'
+      description: 'PatchedDesc',
+      status: AgentStatus.Live
     } as any
-    component.formGroup.setValue({ name: null, description: null })
+    component.formGroup.setValue({ name: null, description: null, status: AgentStatus.Draft })
     component.ngOnInit()
     expect(component.formGroup.value).toEqual({
       name: 'Patched',
-      description: 'PatchedDesc'
+      description: 'PatchedDesc',
+      status: AgentStatus.Live
     })
+  })
+
+  it('should default status to DRAFT when itemToEdit has no status', () => {
+    component.vm.itemToEdit = {
+      id: '3',
+      name: 'NoStatus',
+      description: 'Desc'
+    } as any
+    component.ngOnInit()
+    expect(component.formGroup.value.status).toEqual(AgentStatus.Draft)
   })
 
   it('should not patch formGroup on ngOnInit when there is no itemToEdit', () => {
     component.vm.itemToEdit = undefined
-    component.formGroup.setValue({ name: null, description: null })
+    component.formGroup.setValue({ name: null, description: null, status: AgentStatus.Draft })
     component.ngOnInit()
-    expect(component.formGroup.value).toEqual({ name: null, description: null })
+    expect(component.formGroup.value).toEqual({ name: null, description: null, status: AgentStatus.Draft })
   })
 
   it('should emit primaryButtonEnabled based on form validity', () => {
     const emissions: boolean[] = []
     component.primaryButtonEnabled.subscribe((enabled) => emissions.push(enabled))
 
-    component.formGroup.setValue({ name: null, description: null })
+    component.formGroup.setValue({ name: null, description: null, status: AgentStatus.Draft })
     expect(emissions[emissions.length - 1]).toBe(false)
 
-    component.formGroup.setValue({ name: 'Valid', description: null })
+    component.formGroup.setValue({ name: 'Valid', description: null, status: AgentStatus.Draft })
     expect(emissions[emissions.length - 1]).toBe(true)
   })
 })

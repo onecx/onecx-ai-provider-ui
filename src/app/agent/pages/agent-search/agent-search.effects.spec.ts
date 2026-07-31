@@ -55,6 +55,7 @@ describe('AgentSearchEffects', () => {
       createAgent: jest.fn(),
       updateAgent: jest.fn(),
       deleteAgent: jest.fn(),
+      getAgent: jest.fn(),
       findAgentBySearchCriteria: jest.fn()
     } as unknown as jest.Mocked<AgentService>
 
@@ -481,12 +482,19 @@ describe('AgentSearchEffects', () => {
 
     it('should create the agent and dispatch createAgentSucceeded on success', (done) => {
       portalDialogService.openDialog.mockReturnValue(
-        of({ button: 'primary', result: { name: 'New Agent', description: 'desc' } }) as never
+        of({
+          button: 'primary',
+          result: { name: 'New Agent', description: 'desc', status: 'DRAFT' }
+        }) as never
       )
       agentService.createAgent.mockReturnValue(of({} as unknown as HttpEvent<Agent>))
 
       effects.createButtonClicked$.pipe(take(1)).subscribe((action) => {
-        expect(agentService.createAgent).toHaveBeenCalledWith({ name: 'New Agent', description: 'desc' })
+        expect(agentService.createAgent).toHaveBeenCalledWith({
+          name: 'New Agent',
+          description: 'desc',
+          status: 'DRAFT'
+        })
         expect(messageService.success).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.CREATE.SUCCESS' })
         expect(action).toEqual(agentSearchActions.createAgentSucceeded())
         done()
@@ -510,17 +518,17 @@ describe('AgentSearchEffects', () => {
   })
 
   describe('editButtonClicked$', () => {
-    const item = { id: 'agent-1', name: 'Agent 1', modificationCount: 3 }
+    const item = { id: 'agent-1', name: 'Agent 1', modificationCount: 3, status: 'DRAFT' }
 
     beforeEach(() => {
-      store.overrideSelector(agentSearchSelectors.selectResults, [item])
-      store.refreshState()
+      agentService.getAgent.mockReturnValue(of(item as unknown as HttpEvent<Agent>))
     })
 
-    it('should open the update dialog with the item found in the results', (done) => {
+    it('should load the agent and open the update dialog with it', (done) => {
       portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
 
       effects.editButtonClicked$.pipe(take(1)).subscribe(() => {
+        expect(agentService.getAgent).toHaveBeenCalledWith('agent-1')
         expect(portalDialogService.openDialog).toHaveBeenCalledWith(
           'AGENT_CREATE_UPDATE.UPDATE.HEADER',
           {
@@ -535,6 +543,19 @@ describe('AgentSearchEffects', () => {
           'AGENT_CREATE_UPDATE.UPDATE.FORM.CANCEL',
           { baseZIndex: 100 }
         )
+        done()
+      })
+
+      actions$.next(agentSearchActions.editAgentButtonClicked({ id: 'agent-1' }))
+    })
+
+    it('should dispatch updateAgentFailed when getAgent fails', (done) => {
+      agentService.getAgent.mockReturnValue(throwError(() => 'Load failed'))
+
+      effects.editButtonClicked$.pipe(take(1)).subscribe((action) => {
+        expect(action).toEqual(agentSearchActions.updateAgentFailed({ error: 'Load failed' }))
+        expect(portalDialogService.openDialog).not.toHaveBeenCalled()
+        expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.ERROR' })
         done()
       })
 
@@ -595,7 +616,13 @@ describe('AgentSearchEffects', () => {
       portalDialogService.openDialog.mockReturnValue(
         of({
           button: 'primary',
-          result: { id: 'agent-1', name: 'Updated', description: 'desc', modificationCount: 3 }
+          result: {
+            id: 'agent-1',
+            name: 'Updated',
+            description: 'desc',
+            modificationCount: 3,
+            status: 'LIVE'
+          }
         }) as never
       )
       agentService.updateAgent.mockReturnValue(of({} as unknown as HttpEvent<Agent>))
@@ -604,7 +631,8 @@ describe('AgentSearchEffects', () => {
         expect(agentService.updateAgent).toHaveBeenCalledWith('agent-1', {
           modificationCount: 3,
           name: 'Updated',
-          description: 'desc'
+          description: 'desc',
+          status: 'LIVE'
         })
         expect(messageService.success).toHaveBeenCalledWith({ summaryKey: 'AGENT_CREATE_UPDATE.UPDATE.SUCCESS' })
         expect(action).toEqual(agentSearchActions.updateAgentSucceeded())

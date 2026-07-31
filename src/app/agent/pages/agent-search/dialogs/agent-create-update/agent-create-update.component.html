@@ -19,9 +19,26 @@
           formControlName="description"
           [attr.aria-label]="'AGENT_CREATE_UPDATE.FORM.DESCRIPTION' | translate"
         />
-        <label class="ocx-required-label" for="agent_detail_form_description">
+        <label for="agent_detail_form_description">
           {{ 'AGENT_CREATE_UPDATE.FORM.DESCRIPTION' | translate }}</label
         >
+      </p-floatlabel>
+    </div>
+
+    <div [title]="'AGENT_CREATE_UPDATE.FORM.STATUS' | translate">
+      <p-floatlabel variant="on" controlErrorAnchor>
+        <p-select
+          inputId="agent_detail_form_status"
+          formControlName="status"
+          [options]="statusOptions"
+          appendTo="body"
+          class="w-full"
+          [attr.aria-label]="'AGENT_CREATE_UPDATE.FORM.STATUS' | translate"
+        >
+        </p-select>
+        <label class="ocx-required-label" for="agent_detail_form_status">
+          {{ 'AGENT_CREATE_UPDATE.FORM.STATUS' | translate }}
+        </label>
       </p-floatlabel>
     </div>
   </div>
