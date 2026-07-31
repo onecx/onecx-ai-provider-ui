@@ -1,18 +1,20 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { FloatLabelModule } from 'primeng/floatlabel'
 import { map } from 'rxjs'
 
 import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '@onecx/angular-accelerator'
 
 import { Scaffold, Skill } from 'src/app/shared/generated'
 import { ScaffoldCreateUpdateViewModel } from './scaffold-create-update.viewmodel'
+import { TranslateModule } from '@ngx-translate/core'
 
 @Component({
   selector: 'app-scaffold-create-update',
+  imports: [TranslateModule, MultiSelectModule, ReactiveFormsModule, FloatLabelModule],
   templateUrl: './scaffold-create-update.component.html',
-  styleUrls: ['./scaffold-create-update.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  styleUrls: ['./scaffold-create-update.component.scss']
 })
 export class ScaffoldCreateUpdateComponent
   implements

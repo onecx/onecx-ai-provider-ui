@@ -28,7 +28,6 @@ import { ProviderSearchActions } from '../provider-search/provider-search.action
 @Component({
   selector: 'app-provider-details',
   templateUrl: './provider-details.component.html',
-  styleUrls: ['./provider-details.component.scss'],
   imports: [
     AngularAcceleratorModule,
     CommonModule,

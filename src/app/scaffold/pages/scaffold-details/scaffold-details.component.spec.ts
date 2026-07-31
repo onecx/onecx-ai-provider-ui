@@ -116,7 +116,6 @@ describe('ScaffoldDetailsComponent', () => {
         }).withDefaultLanguage('en'),
         MultiSelectModule
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

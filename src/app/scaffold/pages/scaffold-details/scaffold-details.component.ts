@@ -1,24 +1,37 @@
 import { Component, OnInit, inject } from '@angular/core'
-import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Store } from '@ngrx/store'
-import { TranslatePipe } from '@ngx-translate/core'
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
+import { MultiSelectModule } from 'primeng/multiselect'
 import { Observable, map } from 'rxjs'
 
-import { Action, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
+import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
 
 import { Scaffold, Skill, Tool } from 'src/app/shared/generated'
 import { scaffoldDetailsActions } from './scaffold-details.actions'
 import { selectScaffoldDetailsViewModel } from './scaffold-details.selectors'
 import { ScaffoldDetailsViewModel } from './scaffold-details.viewmodel'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { TabViewModule } from 'primeng/tabview'
+import { AsyncPipe } from '@angular/common'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
 
 @Component({
   selector: 'app-scaffold-details',
-  templateUrl: './scaffold-details.component.html',
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  imports: [
+    TranslateModule,
+    MultiSelectModule,
+    FloatLabelModule,
+    TabViewModule,
+    ReactiveFormsModule,
+    AsyncPipe,
+    AngularAcceleratorModule,
+    PortalPageComponent
+  ],
+  templateUrl: './scaffold-details.component.html'
 })
 export class ScaffoldDetailsComponent implements OnInit {
   private readonly store = inject(Store)

@@ -26,8 +26,8 @@ import { MCPServerSearchEffects } from './pages/mcpserver-search/mcpserver-searc
 
 @NgModule({
   providers: [providePortalDialogService(), ...providePermissionService()],
-  declarations: [McpserverCreateUpdateComponent],
   imports: [
+    McpserverCreateUpdateComponent,
     FloatLabelModule,
     InputTextModule,
     CommonModule,

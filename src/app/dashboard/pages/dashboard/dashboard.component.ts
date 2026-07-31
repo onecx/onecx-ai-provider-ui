@@ -4,6 +4,11 @@ import { Observable } from 'rxjs'
 
 import { selectDashboardViewModel } from './dashboard.selectors'
 import { DashboardViewModel } from './dashboard.viewmodel'
+import { TranslateModule } from '@ngx-translate/core'
+import { CardModule } from 'primeng/card'
+import { PortalPageComponent } from '@onecx/angular-utils'
+import { RouterModule } from '@angular/router'
+import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 interface DashboardPanel {
   titleKey: string
@@ -15,10 +20,9 @@ interface DashboardPanel {
 
 @Component({
   selector: 'app-dashboard',
+  imports: [TranslateModule, CardModule, PortalPageComponent, RouterModule, AngularAcceleratorModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
   viewModel$: Observable<DashboardViewModel>

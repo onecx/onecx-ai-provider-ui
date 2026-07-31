@@ -31,8 +31,9 @@ import { routes } from './agent.routes'
 
 @NgModule({
   providers: [providePortalDialogService(), PermissionService],
-  declarations: [AgentDetailsComponent, AgentSearchComponent],
   imports: [
+    AgentDetailsComponent,
+    AgentSearchComponent,
     FloatLabelModule,
     TabViewModule,
     SelectModule,

@@ -137,7 +137,6 @@ describe('AgentDetailsComponent', () => {
           en: require('./src/assets/i18n/en.json')
         }).withDefaultLanguage('en')
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

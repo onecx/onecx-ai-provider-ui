@@ -22,8 +22,8 @@ import { routes } from './dashboard.routes'
 
 @NgModule({
   providers: [providePortalDialogService(), PermissionService],
-  declarations: [DashboardComponent],
   imports: [
+    DashboardComponent,
     CommonModule,
     SharedModule,
     LetDirective,

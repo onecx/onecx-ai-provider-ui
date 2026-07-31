@@ -1,5 +1,5 @@
 import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
-import { FormBuilder, FormGroup } from '@angular/forms'
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Store } from '@ngrx/store'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
@@ -7,6 +7,7 @@ import { map, Observable } from 'rxjs'
 
 import {
   Action,
+  AngularAcceleratorModule,
   BreadcrumbService,
   buildSearchCriteria,
   DataSortDirection,
@@ -23,13 +24,25 @@ import { scaffoldSearchActions } from './scaffold-search.actions'
 import { ScaffoldSearchCriteria, scaffoldSearchCriteriasSchema } from './scaffold-search.parameters'
 import { selectScaffoldSearchViewModel } from './scaffold-search.selectors'
 import { ScaffoldSearchViewModel } from './scaffold-search.viewmodel'
+import { TranslateModule } from '@ngx-translate/core'
+import { AsyncPipe } from '@angular/common'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { TooltipModule } from 'primeng/tooltip'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 @Component({
   selector: 'app-scaffold-search',
+  imports: [
+    TranslateModule,
+    AsyncPipe,
+    ReactiveFormsModule,
+    AngularAcceleratorModule,
+    FloatLabelModule,
+    TooltipModule,
+    PortalPageComponent
+  ],
   templateUrl: './scaffold-search.component.html',
-  styleUrls: ['./scaffold-search.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  styleUrls: ['./scaffold-search.component.scss']
 })
 export class ScaffoldSearchComponent implements OnInit {
   private readonly breadcrumbService = inject(BreadcrumbService)

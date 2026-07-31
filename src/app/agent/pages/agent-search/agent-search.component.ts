@@ -1,5 +1,5 @@
 import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
-import { FormBuilder, FormGroup } from '@angular/forms'
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Store } from '@ngrx/store'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
@@ -7,6 +7,7 @@ import { map, Observable } from 'rxjs'
 
 import {
   Action,
+  AngularAcceleratorModule,
   BreadcrumbService,
   buildSearchCriteria,
   DataSortDirection,
@@ -23,13 +24,25 @@ import { agentSearchActions } from './agent-search.actions'
 import { AgentSearchCriteria, agentSearchCriteriasSchema } from './agent-search.parameters'
 import { selectAgentSearchViewModel } from './agent-search.selectors'
 import { AgentSearchViewModel } from './agent-search.viewmodel'
+import { TooltipModule } from 'primeng/tooltip'
+import { TranslateModule } from '@ngx-translate/core'
+import { AsyncPipe } from '@angular/common'
+import { FloatLabelModule } from 'primeng/floatlabel'
+import { PortalPageComponent } from '@onecx/angular-utils'
 
 @Component({
   selector: 'app-agent-search',
+  imports: [
+    TooltipModule,
+    TranslateModule,
+    AsyncPipe,
+    AngularAcceleratorModule,
+    FloatLabelModule,
+    ReactiveFormsModule,
+    PortalPageComponent
+  ],
   templateUrl: './agent-search.component.html',
-  styleUrls: ['./agent-search.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  standalone: false
+  styleUrls: ['./agent-search.component.scss']
 })
 export class AgentSearchComponent implements OnInit {
   private readonly breadcrumbService = inject(BreadcrumbService)

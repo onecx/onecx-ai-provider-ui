@@ -28,13 +28,11 @@ import { SharedModule } from '../shared/shared.module'
 
 @NgModule({
   providers: [providePortalDialogService(), PermissionService],
-  declarations: [
+  imports: [
     ScaffoldCreateUpdateComponent,
     ScaffoldDetailsComponent,
     ScaffoldDetailsComponent,
-    ScaffoldSearchComponent
-  ],
-  imports: [
+    ScaffoldSearchComponent,
     FloatLabelModule,
     InputTextModule,
     FloatLabelModule,
