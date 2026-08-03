@@ -1,5 +1,6 @@
 import { Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule } from '@ngx-translate/core'
 import { CardModule } from 'primeng/card'
@@ -21,7 +22,7 @@ interface DashboardPanel {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [TranslateModule, CardModule, PortalPageComponent, RouterModule, AngularAcceleratorModule],
+  imports: [TranslateModule, CardModule, PortalPageComponent, RouterModule, AngularAcceleratorModule, LetDirective],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

@@ -1,11 +1,13 @@
 import { AsyncPipe } from '@angular/common'
 import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
 import { DatePicker } from 'primeng/datepicker'
 import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
 import { map, Observable } from 'rxjs'
 
@@ -39,7 +41,9 @@ import { AgentSearchViewModel } from './agent-search.viewmodel'
     AngularAcceleratorModule,
     FloatLabelModule,
     ReactiveFormsModule,
-    PortalPageComponent
+    PortalPageComponent,
+    LetDirective,
+    InputTextModule
   ],
   templateUrl: './agent-search.component.html',
   styleUrls: ['./agent-search.component.scss']

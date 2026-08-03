@@ -18,17 +18,17 @@
     </div>
 
     <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate">
-      <p-floatlabel variant="on" controlErrorAnchor>
-        <textarea
-          pInputTextarea
-          id="system_prompt"
-          formControlName="systemPrompt"
-          name="systemPrompt"
-          class="w-full"
-          rows="4"
-        ></textarea>
-        <label for="system_prompt"> {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate }} </label>
-      </p-floatlabel>
+      <span id="system_prompt" class="absolute message-label text-sm">
+        {{ 'SCAFFOLD_CREATE_UPDATE.FORM.SYSTEM_PROMPT' | translate }}
+      </span>
+      <textarea
+        pInputTextarea
+        aria-labelledby="system_prompt"
+        formControlName="systemPrompt"
+        name="systemPrompt"
+        class="w-full p-1 border-round-md"
+        rows="4"
+      ></textarea>
     </div>
 
     <div [title]="'SCAFFOLD_CREATE_UPDATE.FORM.SKILLS' | translate">
