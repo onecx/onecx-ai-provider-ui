@@ -27,7 +27,6 @@ import { ProviderSearchActions } from '../provider-search/provider-search.action
 
 @Component({
   selector: 'app-provider-details',
-  templateUrl: './provider-details.component.html',
   imports: [
     AngularAcceleratorModule,
     CommonModule,
@@ -43,7 +42,9 @@ import { ProviderSearchActions } from '../provider-search/provider-search.action
     SelectModule,
     TabsModule,
     ButtonModule
-  ]
+  ],
+  templateUrl: './provider-details.component.html',
+  styleUrls: ['./provider-details.component.scss']
 })
 export class ProviderDetailsComponent implements OnInit {
   viewModel$!: Observable<ProviderDetailsViewModel>

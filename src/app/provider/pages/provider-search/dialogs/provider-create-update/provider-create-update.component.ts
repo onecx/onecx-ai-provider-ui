@@ -12,8 +12,9 @@ import { ProviderCreateUpdateViewModel } from './provider-create-update.viewmode
 
 @Component({
   selector: 'app-provider-create-update',
+  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule],
   templateUrl: './provider-create-update.component.html',
-  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule]
+  styleUrls: ['./provider-create-update.component.scss']
 })
 export class ProviderCreateUpdateComponent
   implements

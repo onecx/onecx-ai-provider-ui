@@ -20,7 +20,6 @@ import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
 
 @Component({
   selector: 'app-mcpserver-details',
-  templateUrl: './mcpserver-details.component.html',
   imports: [
     AngularAcceleratorModule,
     CommonModule,
@@ -31,7 +30,9 @@ import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
     TranslateModule,
     ReactiveFormsModule,
     PortalPageComponent
-  ]
+  ],
+  templateUrl: './mcpserver-details.component.html',
+  styleUrls: ['./mcpserver-details.component.scss']
 })
 export class MCPServerDetailsComponent implements OnInit {
   viewModel$: Observable<MCPServerDetailsViewModel> = this.store.select(selectMCPServerDetailsViewModel)

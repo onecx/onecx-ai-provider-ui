@@ -21,8 +21,6 @@ import { SkillDetailsViewModel } from './skill-details.viewmodel'
 
 @Component({
   selector: 'app-skill-details',
-  templateUrl: './skill-details.component.html',
-  styleUrls: ['./skill-details.component.scss'],
   imports: [
     AngularAcceleratorModule,
     CommonModule,
@@ -35,7 +33,9 @@ import { SkillDetailsViewModel } from './skill-details.viewmodel'
     Textarea,
     PortalPageComponent,
     TooltipModule
-  ]
+  ],
+  templateUrl: './skill-details.component.html',
+  styleUrls: ['./skill-details.component.scss']
 })
 export class SkillDetailsComponent implements OnInit {
   private readonly store = inject(Store)

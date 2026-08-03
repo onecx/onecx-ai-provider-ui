@@ -13,8 +13,9 @@ import { AgentCreateUpdateViewModel } from './agent-create-update.viewmodel'
 
 @Component({
   selector: 'app-agent-create-update',
+  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule, SelectModule],
   templateUrl: './agent-create-update.component.html',
-  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule, SelectModule]
+  styleUrls: ['./agent-create-update.component.scss']
 })
 export class AgentCreateUpdateComponent
   implements

@@ -13,7 +13,8 @@ import { McpserverCreateUpdateViewModel } from './mcpserver-create-update.viewmo
 @Component({
   selector: 'app-mcpserver-create-update',
   imports: [InputTextModule, TranslateModule, FloatLabelModule, ReactiveFormsModule],
-  templateUrl: './mcpserver-create-update.component.html'
+  templateUrl: './mcpserver-create-update.component.html',
+  styleUrls: ['./mcpserver-create-update.component.scss']
 })
 export class McpserverCreateUpdateComponent
   implements

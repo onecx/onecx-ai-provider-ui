@@ -1,0 +1,12 @@
+/* **********************************************
+ *  FORM - Control Improvements
+ * **********************************************/
+
+@mixin ocx-required-label {
+  // Keep a visible required marker even when external theme styles are missing.
+  .p-floatlabel > label.ocx-required-label::after {
+    content: ' *';
+    color: var(--red-500, #ef4444);
+    font-weight: 600;
+  }
+}

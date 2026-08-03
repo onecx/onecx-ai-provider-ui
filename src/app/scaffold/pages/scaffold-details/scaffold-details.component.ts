@@ -33,7 +33,8 @@ type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
     PortalPageComponent,
     LetDirective
   ],
-  templateUrl: './scaffold-details.component.html'
+  templateUrl: './scaffold-details.component.html',
+  styleUrls: ['./scaffold-details.component.scss']
 })
 export class ScaffoldDetailsComponent implements OnInit {
   private readonly store = inject(Store)

@@ -1,7 +1,3 @@
 @use '/src/app/_provider-mixins.scss' as *;
 
 @include ocx-required-label;
-
-:host ::ng-deep .ocx-card {
-  padding: 0px !important;
-}
