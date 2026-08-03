@@ -74,7 +74,7 @@ module.exports = {
   ...config,
   plugins: [...plugins, modifyPrimeNgPlugin, modifyMaterialPlugin],
   module: { parser: { javascript: { importMeta: false } } },
-  output: { uniqueName: 'onecx-chat-ui', publicPath: 'auto' },
+  output: { uniqueName: 'onecx-ai-provider-ui', publicPath: 'auto' },
   experiments: { ...config.experiments, topLevelAwait: true },
   optimization: { runtimeChunk: false, splitChunks: false }
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
+import { InputTextModule } from 'primeng/inputtext'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { map } from 'rxjs'
 
@@ -11,7 +12,7 @@ import { McpserverCreateUpdateViewModel } from './mcpserver-create-update.viewmo
 
 @Component({
   selector: 'app-mcpserver-create-update',
-  imports: [TranslateModule, FloatLabelModule, ReactiveFormsModule],
+  imports: [InputTextModule, TranslateModule, FloatLabelModule, ReactiveFormsModule],
   templateUrl: './mcpserver-create-update.component.html'
 })
 export class McpserverCreateUpdateComponent

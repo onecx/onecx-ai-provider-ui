@@ -78,6 +78,6 @@ export class OneCXAiProviderModule implements DoBootstrap {
   constructor(private readonly injector: Injector) {}
 
   ngDoBootstrap(): void {
-    createAppEntrypoint(AppEntrypointComponent, 'ocx-ai-provider-component', this.injector)
+    createAppEntrypoint(AppEntrypointComponent, 'onecx-ai-provider-ui-webcomponent', this.injector)
   }
 }

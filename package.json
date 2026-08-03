@@ -73,7 +73,7 @@
     "keycloak-js": "^25.0.6",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
-    "primeng": "^19.0.0",
+    "primeng": "^19.1.4",
     "rxjs": "~7.8.1",
     "zod": "^3.22.1",
     "zone.js": "0.15.1"
