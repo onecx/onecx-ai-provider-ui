@@ -120,8 +120,8 @@ describe('AgentDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AgentDetailsComponent],
       imports: [
+        AgentDetailsComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,

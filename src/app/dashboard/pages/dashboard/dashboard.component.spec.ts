@@ -22,8 +22,8 @@ describe('DashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DashboardComponent],
       imports: [
+        DashboardComponent,
         LetDirective,
         RouterModule.forRoot([]),
         TranslateModule.forRoot(),

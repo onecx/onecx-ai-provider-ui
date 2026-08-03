@@ -53,7 +53,6 @@ describe('ProviderSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [],
       imports: [
         AngularAcceleratorModule,
         LetDirective,

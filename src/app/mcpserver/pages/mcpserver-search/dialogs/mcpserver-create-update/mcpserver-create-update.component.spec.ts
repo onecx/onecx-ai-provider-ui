@@ -36,8 +36,8 @@ describe('McpserverCreateUpdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [McpserverCreateUpdateComponent],
       imports: [
+        McpserverCreateUpdateComponent,
         AngularAcceleratorModule,
         FloatLabelModule,
         InputTextModule,

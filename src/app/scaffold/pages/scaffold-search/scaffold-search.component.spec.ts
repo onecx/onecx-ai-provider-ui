@@ -111,8 +111,8 @@ describe('ScaffoldSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScaffoldSearchComponent],
       imports: [
+        ScaffoldSearchComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,

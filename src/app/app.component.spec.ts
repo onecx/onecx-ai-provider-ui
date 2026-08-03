@@ -13,7 +13,6 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [],
       imports: [
         AppComponent,
         AngularAcceleratorModule,

@@ -34,7 +34,6 @@ describe('ProviderCreateUpdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [],
       imports: [
         AngularAcceleratorModule,
         FormsModule,

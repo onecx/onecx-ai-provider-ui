@@ -110,8 +110,8 @@ describe('AgentSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AgentSearchComponent],
       imports: [
+        AgentSearchComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,

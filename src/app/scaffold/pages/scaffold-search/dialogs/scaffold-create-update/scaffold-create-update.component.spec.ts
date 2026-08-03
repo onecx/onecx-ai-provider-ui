@@ -39,8 +39,8 @@ describe('ScaffoldCreateUpdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScaffoldCreateUpdateComponent],
       imports: [
+        ScaffoldCreateUpdateComponent,
         AngularAcceleratorModule,
         FloatLabelModule,
         InputTextModule,

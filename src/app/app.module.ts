@@ -31,7 +31,6 @@ import { metaReducers, reducers } from './app.reducers'
 export const commonImports = [CommonModule]
 
 @NgModule({
-  declarations: [],
   imports: [
     ...commonImports,
     AngularAuthModule,

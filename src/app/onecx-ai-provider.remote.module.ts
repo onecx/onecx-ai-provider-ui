@@ -29,7 +29,6 @@ const effectProvidersForWorkaround = [EffectsRunner, EffectSources, Actions]
 effectProvidersForWorkaround.forEach((p) => (p.ɵprov.providedIn = null))
 
 @NgModule({
-  declarations: [],
   imports: [
     ...commonImports,
     AngularAcceleratorModule,

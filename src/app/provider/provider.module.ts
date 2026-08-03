@@ -22,7 +22,6 @@ import { ProviderCreateUpdateComponent } from './pages/provider-search/dialogs/p
 
 @NgModule({
   providers: [providePortalDialogService(), ...providePermissionService()],
-  declarations: [],
   imports: [
     CommonModule,
     SharedModule,

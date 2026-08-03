@@ -25,7 +25,6 @@ import { routes } from './skill.routes'
 
 @NgModule({
   providers: [providePortalDialogService(), ...providePermissionService()],
-  declarations: [],
   imports: [
     CommonModule,
     SkillCreateUpdateComponent,

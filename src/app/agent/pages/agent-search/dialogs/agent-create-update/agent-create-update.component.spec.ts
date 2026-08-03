@@ -34,7 +34,6 @@ describe('AgentCreateUpdateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [],
       imports: [
         AngularAcceleratorModule,
         FormsModule,

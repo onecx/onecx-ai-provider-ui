@@ -99,7 +99,6 @@ describe('MCPServerSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [],
       imports: [
         AngularAcceleratorModule,
         LetDirective,

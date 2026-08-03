@@ -103,8 +103,8 @@ describe('ScaffoldDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScaffoldDetailsComponent],
       imports: [
+        ScaffoldDetailsComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,
