@@ -1,6 +1,7 @@
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { Component, OnInit, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
@@ -42,7 +43,8 @@ import { AgentDetailsViewModel } from './agent-details.viewmodel'
     SelectModule,
     AsyncPipe,
     AngularAcceleratorModule,
-    PortalPageComponent
+    PortalPageComponent,
+    LetDirective
   ],
   templateUrl: './agent-details.component.html',
   styleUrls: ['./agent-details.component.scss']

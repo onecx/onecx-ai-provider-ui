@@ -1,6 +1,7 @@
 import { AsyncPipe } from '@angular/common'
 import { Component, OnInit, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
@@ -29,7 +30,8 @@ type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
     ReactiveFormsModule,
     AsyncPipe,
     AngularAcceleratorModule,
-    PortalPageComponent
+    PortalPageComponent,
+    LetDirective
   ],
   templateUrl: './scaffold-details.component.html'
 })

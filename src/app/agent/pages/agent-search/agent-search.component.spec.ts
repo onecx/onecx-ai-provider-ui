@@ -272,13 +272,13 @@ describe('AgentSearchComponent', () => {
   })
 
   it('should display correct breadcrumbs', async () => {
-    const breadcrumbService = TestBed.inject(BreadcrumbService)
-    jest.spyOn(breadcrumbService, 'setItems')
+    const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
+    const spy = jest.spyOn(breadcrumbService, 'setItems')
 
     component.ngOnInit()
     fixture.detectChanges()
 
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(1)
     const searchHeader = await agentSearch.getHeader()
     const pageHeader = await searchHeader.getPageHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')

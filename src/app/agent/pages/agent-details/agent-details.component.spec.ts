@@ -82,7 +82,6 @@ describe('AgentDetailsComponent', () => {
   let component: AgentDetailsComponent
   let fixture: ComponentFixture<AgentDetailsComponent>
   let store: MockStore<Store>
-  let breadcrumbService: BreadcrumbService
   let agentDetails: AgentDetailsHarness
   const agentGroupService = {
     findAgentGroupByCriteria: jest.fn(),
@@ -175,7 +174,6 @@ describe('AgentDetailsComponent', () => {
 
     fixture = TestBed.createComponent(AgentDetailsComponent)
     component = fixture.componentInstance
-    breadcrumbService = TestBed.inject(BreadcrumbService)
     fixture.detectChanges()
     agentDetails = await TestbedHarnessEnvironment.harnessForFixture(fixture, AgentDetailsHarness)
   })
@@ -185,12 +183,13 @@ describe('AgentDetailsComponent', () => {
   })
 
   it('should display correct breadcrumbs', async () => {
-    jest.spyOn(breadcrumbService, 'setItems')
+    const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
+    const spy = jest.spyOn(breadcrumbService, 'setItems')
 
     component.ngOnInit()
     fixture.detectChanges()
 
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(1)
     const pageHeader = await agentDetails.getHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
     expect(await searchBreadcrumbItem?.getText()).toEqual('Details')

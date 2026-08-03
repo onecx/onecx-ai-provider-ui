@@ -78,7 +78,6 @@ describe('ScaffoldDetailsComponent', () => {
   let component: ScaffoldDetailsComponent
   let fixture: ComponentFixture<ScaffoldDetailsComponent>
   let store: MockStore<Store>
-  let breadcrumbService: BreadcrumbService
   let scaffoldDetails: ScaffoldDetailsHarness
 
   const mockActivatedRoute = {
@@ -153,7 +152,6 @@ describe('ScaffoldDetailsComponent', () => {
 
     fixture = TestBed.createComponent(ScaffoldDetailsComponent)
     component = fixture.componentInstance
-    breadcrumbService = TestBed.inject(BreadcrumbService)
     fixture.detectChanges()
     scaffoldDetails = await TestbedHarnessEnvironment.harnessForFixture(fixture, ScaffoldDetailsHarness)
   })
@@ -163,12 +161,13 @@ describe('ScaffoldDetailsComponent', () => {
   })
 
   it('should display correct breadcrumbs', async () => {
-    jest.spyOn(breadcrumbService, 'setItems')
+    const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
+    const spy = jest.spyOn(breadcrumbService, 'setItems')
 
     component.ngOnInit()
     fixture.detectChanges()
 
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(1)
     const pageHeader = await scaffoldDetails.getHeader()
     const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
     expect(await searchBreadcrumbItem?.getText()).toEqual('Details')
