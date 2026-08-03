@@ -29,7 +29,7 @@ import {
   TranslationConnectionService
 } from '@onecx/angular-utils'
 
-import { AgentFilterKeyEnum, AgentGroupService } from 'src/app/shared/generated'
+import { AgentFilterKeyEnum, AgentGroupService, AgentStatus } from 'src/app/shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { AgentDetailsHarness } from './agent-details.harness'
@@ -259,6 +259,7 @@ describe('AgentDetailsComponent', () => {
     const agent = { id: '123' }
     const agentForm = {
       name: 'title',
+      status: AgentStatus.Draft,
       description: 'description',
       additionalPrompt: 'prompt',
       provider: null,
@@ -290,6 +291,7 @@ describe('AgentDetailsComponent', () => {
         details: {
           id: '123',
           name: 'title',
+          status: AgentStatus.Draft,
           description: 'description',
           additionalPrompt: 'prompt',
           model: undefined,
@@ -402,7 +404,7 @@ describe('AgentDetailsComponent', () => {
 
     const translatedStatusLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.STATUS')
     const statusDetailItem = await pageHeader.getObjectInfoByLabel(translatedStatusLabel)
-    expect(await statusDetailItem?.getValue()).toEqual('LIVE')
+    expect(await statusDetailItem?.getValue()).toEqual('Live')
   })
 
   it('should render empty header details when details are missing', async () => {
@@ -453,6 +455,7 @@ describe('AgentDetailsComponent', () => {
     expect(component.formGroup.getRawValue()).toEqual(
       expect.objectContaining({
         name: 'title',
+        status: 'LIVE',
         description: 'description',
         additionalPrompt: 'prompt',
         provider: null,
@@ -512,6 +515,23 @@ describe('AgentDetailsComponent', () => {
           details: expect.objectContaining({
             model: { id: 'model-1', provider: { id: 'provider-1', name: 'Provider 1' } },
             scaffold: { id: 'scaffold-1', name: 'Scaffold 1' }
+          })
+        })
+      )
+    })
+
+    it('should include the selected status in the save payload', () => {
+      jest.spyOn(store, 'dispatch')
+      component.formGroup.patchValue({
+        status: AgentStatus.Live
+      })
+
+      component.save()
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.saveButtonClicked({
+          details: expect.objectContaining({
+            status: AgentStatus.Live
           })
         })
       )
@@ -730,9 +750,17 @@ describe('AgentDetailsComponent', () => {
       const filterEntry = component.filtersFormArray.at(0) as FormGroup
       filterEntry.removeControl('key')
       filterEntry.removeControl('value')
-      ;['provider', 'model', 'name', 'description', 'additionalPrompt', 'scaffold', 'tools', 'groups'].forEach(
-        (control) => component.formGroup.removeControl(control)
-      )
+      ;[
+        'provider',
+        'model',
+        'name',
+        'status',
+        'description',
+        'additionalPrompt',
+        'scaffold',
+        'tools',
+        'groups'
+      ].forEach((control) => component.formGroup.removeControl(control))
 
       component.save()
 

@@ -16,7 +16,7 @@ app:
           type: MODULE
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-ai-provider-ui
-          tagName: ocx-ai-provider-component
+          tagName: onecx-ai-provider-ui-webcomponent
     permission:
       enabled: true
       spec:

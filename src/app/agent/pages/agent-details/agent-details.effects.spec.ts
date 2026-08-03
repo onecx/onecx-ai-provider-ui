@@ -12,6 +12,7 @@ import { PortalMessageService } from '@onecx/angular-integration-interface'
 import {
   AgentGroupService,
   AgentService,
+  AgentStatus,
   ModelService,
   ProviderService,
   ScaffoldService,
@@ -375,7 +376,7 @@ describe('AgentDetailsEffects', () => {
 
   describe('saveButtonClicked$', () => {
     it('should dispatch updateAgentSucceeded', async () => {
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1, status: AgentStatus.Draft }
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       agentService.updateAgent.mockReturnValueOnce(of(mockDetails))
 
@@ -385,24 +386,54 @@ describe('AgentDetailsEffects', () => {
       expect(action).toEqual(agentDetailsActions.updateAgentSucceeded({ details: mockDetails }))
       expect(selectSpy).toHaveBeenCalledTimes(1)
       expect(agentService.updateAgent).toHaveBeenCalledTimes(1)
+      expect(agentService.updateAgent).toHaveBeenCalledWith(
+        '123',
+        expect.objectContaining({
+          modificationCount: 1,
+          status: AgentStatus.Draft
+        })
+      )
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'AGENT_DETAILS.UPDATE.SUCCESS'
       })
     })
 
     it('should use the existing modificationCount when present', async () => {
-      const mockDetails = { id: '123', modificationCount: 5 }
+      const mockDetails = { id: '123', modificationCount: 5, status: AgentStatus.Live }
       jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       agentService.updateAgent.mockReturnValueOnce(of(mockDetails))
 
-      actions$.next(agentDetailsActions.saveButtonClicked({ details: mockDetails }))
+      actions$.next(
+        agentDetailsActions.saveButtonClicked({
+          details: { ...mockDetails, status: AgentStatus.Deprecated, name: 'Updated' }
+        })
+      )
       await firstValueFrom(effects.saveButtonClicked$)
 
-      expect(agentService.updateAgent).toHaveBeenCalledWith('123', expect.objectContaining({ modificationCount: 5 }))
+      expect(agentService.updateAgent).toHaveBeenCalledWith(
+        '123',
+        expect.objectContaining({
+          modificationCount: 5,
+          status: AgentStatus.Deprecated,
+          name: 'Updated'
+        })
+      )
+    })
+
+    it('should dispatch updateAgentCancelled when modificationCount is missing', async () => {
+      const mockDetails = { id: '123', status: AgentStatus.Draft }
+      const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
+
+      actions$.next(agentDetailsActions.saveButtonClicked({ details: mockDetails }))
+      const action = await firstValueFrom(effects.saveButtonClicked$)
+
+      expect(action).toEqual(agentDetailsActions.updateAgentCancelled())
+      expect(selectSpy).toHaveBeenCalledTimes(1)
+      expect(agentService.updateAgent).not.toHaveBeenCalled()
     })
 
     it('should dispatch updateAgentCancelled', async () => {
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1 }
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
       agentService.updateAgent.mockReturnValueOnce(of({}))
 
@@ -417,7 +448,7 @@ describe('AgentDetailsEffects', () => {
 
     it('should dispatch updateAgentFailed', async () => {
       const mockError = 'updateAgent failed'
-      const mockDetails = { id: '123' }
+      const mockDetails = { id: '123', modificationCount: 1, status: AgentStatus.Draft }
       const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of(mockDetails))
       agentService.updateAgent.mockReturnValueOnce(throwError(() => mockError))
 

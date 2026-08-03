@@ -443,7 +443,8 @@
     },
     "FORM": {
       "NAME": "Name",
-      "DESCRIPTION": "Beschreibung"
+      "DESCRIPTION": "Beschreibung",
+      "STATUS": "Status"
     },
     "CREATE": {
       "HEADER": "Agent erstellen",
@@ -838,5 +839,10 @@
       "OFFLINE": "Offline: Nicht Erreichbar",
       "NODATA": "Keine Daten"
     }
+  },
+  "AGENT_STATUS": {
+    "DRAFT": "Entwurf",
+    "LIVE": "Live",
+    "DEPRECATED": "Veraltet"
   }
 }
