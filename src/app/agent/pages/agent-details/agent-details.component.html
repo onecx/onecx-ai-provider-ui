@@ -58,6 +58,7 @@
                           formControlName="status"
                           [options]="statusOptions"
                           class="w-full"
+                          styleClass="pt-3"
                           [attr.aria-label]="'AGENT_DETAILS.FORM.STATUS' | translate"
                         >
                           <ng-template let-status pTemplate="item">
@@ -106,6 +107,7 @@
                         [filter]="true"
                         [showClear]="true"
                         class="w-full"
+                        styleClass="pt-3"
                         (onChange)="onProviderChanged()"
                       >
                       </p-select>
@@ -121,6 +123,7 @@
                         [filter]="true"
                         [showClear]="true"
                         class="w-full"
+                        styleClass="pt-3"
                       >
                       </p-select>
                       <label for="agent_detail_model"> {{ 'AGENT_DETAILS.FORM.MODEL' | translate }} </label>
@@ -135,6 +138,7 @@
                         [filter]="true"
                         [showClear]="true"
                         class="w-full"
+                        styleClass="pt-3"
                       >
                       </p-select>
                       <label for="agent_detail_scaffold"> {{ 'AGENT_DETAILS.FORM.SCAFFOLD' | translate }} </label>
@@ -148,6 +152,7 @@
                         [optionLabel]="'name'"
                         [filter]="true"
                         class="w-full"
+                        styleClass="pt-3"
                       >
                       </p-multiSelect>
                       <label for="agent_detail_tools"> {{ 'AGENT_DETAILS.FORM.ADDITIONAL_TOOLS' | translate }} </label>
@@ -169,6 +174,7 @@
                         [optionLabel]="'name'"
                         [filter]="true"
                         class="w-full"
+                        styleClass="pt-3"
                       >
                       </p-multiSelect>
                       <label for="agent_detail_groups"> {{ 'AGENT_DETAILS.ASSIGNMENTS.GROUPS' | translate }} </label>
