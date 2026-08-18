@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ExternalAgent } from './externalAgent';
+import { ExternalAgentAbstract } from './externalAgentAbstract';
 
 
 export interface ExternalAgentPageResult { 
@@ -15,6 +15,6 @@ export interface ExternalAgentPageResult {
     number?: number;
     size?: number;
     totalPages?: number;
-    stream?: Array<ExternalAgent>;
+    stream?: Array<ExternalAgentAbstract>;
 }
 

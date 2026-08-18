@@ -32,6 +32,9 @@
                 <p-tab value="1">
                   {{ 'AGENT_DETAILS.TABS.ASSIGNMENTS' | translate }}
                 </p-tab>
+                <p-tab value="2">
+                  {{ 'AGENT_DETAILS.TABS.TOOL_RULES' | translate }}
+                </p-tab>
               </p-tablist>
               <p-tabpanels>
                 <p-tabpanel value="0">
@@ -256,6 +259,40 @@
                         </div>
                       }
                     </div>
+                  </div>
+                </p-tabpanel>
+
+                <p-tabpanel value="2">
+                  <div class="flex flex-column gap-3 mt-3">
+                    <p-floatlabel variant="on" controlErrorAnchor>
+                      <p-select
+                        inputId="agent_detail_tool_rules_tool"
+                        [options]="vm.tools"
+                        optionLabel="name"
+                        optionValue="id"
+                        [filter]="true"
+                        [showClear]="true"
+                        class="w-full"
+                        [(ngModel)]="selectedToolId"
+                        [ngModelOptions]="{standalone: true}"
+                        [placeholder]="'AGENT_DETAILS.TOOL_RULES.SELECT_TOOL' | translate"
+                      >
+                      </p-select>
+                      <label for="agent_detail_tool_rules_tool">
+                        {{ 'AGENT_DETAILS.TOOL_RULES.SELECT_TOOL' | translate }}
+                      </label>
+                    </p-floatlabel>
+
+                    @if (selectedToolId && currentAgentId) {
+                      <app-agent-tool-rules
+                        [agentId]="currentAgentId"
+                        [toolId]="selectedToolId"
+                      ></app-agent-tool-rules>
+                    } @else {
+                      <div class="text-500 p-4 text-center">
+                        {{ 'AGENT_DETAILS.TOOL_RULES.SELECT_TOOL_HINT' | translate }}
+                      </div>
+                    }
                   </div>
                 </p-tabpanel>
               </p-tabpanels>

@@ -323,7 +323,12 @@
     },
     "TABS": {
       "GENERAL": "General",
-      "ASSIGNMENTS": "Assignments"
+      "ASSIGNMENTS": "Assignments",
+      "TOOL_RULES": "Tool Rules"
+    },
+    "TOOL_RULES": {
+      "SELECT_TOOL": "Select MCP Tool",
+      "SELECT_TOOL_HINT": "Select an MCP tool to configure per-agent tool rules"
     },
     "ASSIGNMENTS": {
       "ADD_FILTER": "Add Filter",
@@ -507,6 +512,39 @@
   },
   "DASHBOARD_VIEW": {
     "HEADER": "DASHBOARD Header"
+  },
+  "TOOL_RULES": {
+    "HEADER": "MCP Tool Rules",
+    "REFRESH": "Refresh",
+    "SAVE": "Save",
+    "DELETE": "Delete",
+    "ALLOW": "Allow",
+    "DENY": "Deny",
+    "ALWAYS_ASK": "Always Ask",
+    "ORPHANED": "Orphaned",
+    "ORPHANED_TOOLTIP": "This tool is no longer exposed by the MCP server",
+    "EMPTY": "No tools discovered",
+    "DISCOVERY_ERROR": "Tool discovery failed. Check the MCP server connection.",
+    "COLUMNS": {
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "ANNOTATIONS": "Annotations",
+      "AUTO_DANGER_LEVEL": "Auto Danger Level",
+      "ALLOWED": "Permission",
+      "DANGER_LEVEL": "Danger Level",
+      "ACTIONS": "Actions"
+    },
+    "DANGER_LEVEL": {
+      "SAFE": "Safe",
+      "WARNING": "Warning",
+      "DANGEROUS": "Dangerous"
+    },
+    "ANNOTATIONS": {
+      "READ_ONLY": "read-only",
+      "DESTRUCTIVE": "destructive",
+      "IDEMPOTENT": "idempotent",
+      "OPEN_WORLD": "open-world"
+    }
   },
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Help Article",
