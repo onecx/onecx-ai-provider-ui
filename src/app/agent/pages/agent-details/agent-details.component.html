@@ -274,7 +274,7 @@
                         [showClear]="true"
                         class="w-full"
                         [(ngModel)]="selectedToolId"
-                        [ngModelOptions]="{standalone: true}"
+                        [ngModelOptions]="{ standalone: true }"
                         [placeholder]="'AGENT_DETAILS.TOOL_RULES.SELECT_TOOL' | translate"
                       >
                       </p-select>
@@ -284,10 +284,7 @@
                     </p-floatlabel>
 
                     @if (selectedToolId && currentAgentId) {
-                      <app-agent-tool-rules
-                        [agentId]="currentAgentId"
-                        [toolId]="selectedToolId"
-                      ></app-agent-tool-rules>
+                      <app-agent-tool-rules [agentId]="currentAgentId" [toolId]="selectedToolId"></app-agent-tool-rules>
                     } @else {
                       <div class="text-500 p-4 text-center">
                         {{ 'AGENT_DETAILS.TOOL_RULES.SELECT_TOOL_HINT' | translate }}
