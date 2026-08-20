@@ -54,6 +54,7 @@
             (onChange)="onPermissionChange(row)"
             optionLabel="label"
             optionValue="value"
+            appendTo="body"
           >
             <ng-template pTemplate="selectedItem" let-option>
               {{ option.label | translate }}

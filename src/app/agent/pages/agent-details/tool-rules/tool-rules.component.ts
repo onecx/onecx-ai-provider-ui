@@ -83,7 +83,7 @@ export class AgentToolRulesComponent implements OnChanges {
             description: tool.description,
             annotations: tool.annotations,
             autoDangerLevel: tool.autoDangerLevel,
-            allowed: tool.existingRule?.allowed ?? ToolPermission.Allow,
+            allowed: tool.existingRule?.allowed ?? ToolPermission.Deny,
             existingRule: tool.existingRule,
             orphaned: tool.orphaned ?? false,
             dirty: false,
