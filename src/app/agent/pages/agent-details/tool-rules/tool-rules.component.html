@@ -14,12 +14,12 @@
   <p-table [value]="rows" [loading]="loading" styleClass="p-datatable-sm">
     <ng-template pTemplate="header">
       <tr>
-        <th>{{ 'TOOL_RULES.COLUMNS.NAME' | translate }}</th>
-        <th>{{ 'TOOL_RULES.COLUMNS.DESCRIPTION' | translate }}</th>
-        <th>{{ 'TOOL_RULES.COLUMNS.ANNOTATIONS' | translate }}</th>
-        <th>{{ 'TOOL_RULES.COLUMNS.AUTO_DANGER_LEVEL' | translate }}</th>
-        <th>{{ 'TOOL_RULES.COLUMNS.ALLOWED' | translate }}</th>
-        <th>{{ 'TOOL_RULES.COLUMNS.ACTIONS' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.NAME' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.DESCRIPTION' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.ANNOTATIONS' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.AUTO_DANGER_LEVEL' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.ALLOWED' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.ACTIONS' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-row>

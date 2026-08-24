@@ -12,7 +12,7 @@ import { TooltipModule } from 'primeng/tooltip'
 import {
   AgentMcpToolRule,
   DangerLevel,
-  DiscoveredToolInfo,
+  DiscoveredToolAnnotations,
   ToolPermission,
   ToolService
 } from 'src/app/shared/generated'
@@ -20,7 +20,7 @@ import {
 interface AgentToolRuleRow {
   name: string
   description?: string
-  annotations?: DiscoveredToolInfo['annotations']
+  annotations?: DiscoveredToolAnnotations
   autoDangerLevel?: DangerLevel
   allowed: ToolPermission
   existingRule?: AgentMcpToolRule
@@ -42,8 +42,7 @@ interface AgentToolRuleRow {
     TagModule,
     TooltipModule
   ],
-  templateUrl: './tool-rules.component.html',
-  styleUrls: ['./tool-rules.component.scss']
+  templateUrl: './tool-rules.component.html'
 })
 export class AgentToolRulesComponent implements OnChanges {
   @Input() agentId?: string
