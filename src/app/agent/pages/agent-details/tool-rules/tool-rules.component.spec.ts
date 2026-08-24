@@ -118,6 +118,61 @@ describe('AgentToolRulesComponent', () => {
       expect(component.rows).toHaveLength(0)
     })
 
+    it('defaults tool name to empty string when null', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      const tools: DiscoveredToolInfo[] = [
+        {
+          name: null as any,
+          description: 'No name',
+          autoDangerLevel: DangerLevel.Safe,
+          orphaned: false
+        }
+      ]
+      toolService.getDiscoveredTools.mockReturnValue(of({ tools }) as any)
+
+      component.refresh()
+
+      expect(component.rows[0].name).toBe('')
+    })
+
+    it('defaults orphaned to false when undefined', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      const tools: DiscoveredToolInfo[] = [
+        {
+          name: 'tool',
+          description: 'desc',
+          autoDangerLevel: DangerLevel.Safe,
+          orphaned: undefined as any
+        }
+      ]
+      toolService.getDiscoveredTools.mockReturnValue(of({ tools }) as any)
+
+      component.refresh()
+
+      expect(component.rows[0].orphaned).toBe(false)
+    })
+
+    it('defaults allowed to Deny when existingRule has null allowed', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      const tools: DiscoveredToolInfo[] = [
+        {
+          name: 'tool',
+          description: 'desc',
+          autoDangerLevel: DangerLevel.Safe,
+          existingRule: { id: 'rule-1', modificationCount: 0, allowed: null as any },
+          orphaned: false
+        }
+      ]
+      toolService.getDiscoveredTools.mockReturnValue(of({ tools }) as any)
+
+      component.refresh()
+
+      expect(component.rows[0].allowed).toBe(ToolPermission.Deny)
+    })
+
     it('sets discoveryError on error', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
@@ -224,6 +279,58 @@ describe('AgentToolRulesComponent', () => {
       expect(row.saving).toBe(false)
     })
 
+    it('updates rule with empty string when existingRule id is undefined', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      toolService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
+      toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
+      const existingRule: AgentMcpToolRule = { id: undefined, modificationCount: 1, allowed: ToolPermission.Deny }
+      const row = {
+        name: 'search_docs',
+        description: 'Search',
+        allowed: ToolPermission.Allow,
+        existingRule,
+        orphaned: false,
+        dirty: true,
+        saving: false
+      }
+
+      component.save(row)
+
+      expect(toolService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', '', {
+        modificationCount: 1,
+        allowed: ToolPermission.Allow
+      })
+    })
+
+    it('updates rule with 0 when modificationCount is undefined', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      toolService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
+      toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
+      const existingRule: AgentMcpToolRule = {
+        id: 'rule-1',
+        modificationCount: undefined,
+        allowed: ToolPermission.Deny
+      }
+      const row = {
+        name: 'search_docs',
+        description: 'Search',
+        allowed: ToolPermission.Allow,
+        existingRule,
+        orphaned: false,
+        dirty: true,
+        saving: false
+      }
+
+      component.save(row)
+
+      expect(toolService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
+        modificationCount: 0,
+        allowed: ToolPermission.Allow
+      })
+    })
+
     it('sets saving to false on error', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
@@ -264,6 +371,34 @@ describe('AgentToolRulesComponent', () => {
         name: 'test',
         allowed: ToolPermission.Deny,
         existingRule: { id: undefined },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      component.deleteRule(row)
+      expect(toolService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when toolId is missing', () => {
+      component.agentId = 'agent-1'
+      const row = {
+        name: 'test',
+        allowed: ToolPermission.Deny,
+        existingRule: { id: 'rule-1' },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      component.deleteRule(row)
+      expect(toolService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when existingRule is undefined', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      const row = {
+        name: 'test',
+        allowed: ToolPermission.Deny,
         orphaned: false,
         dirty: false,
         saving: false
