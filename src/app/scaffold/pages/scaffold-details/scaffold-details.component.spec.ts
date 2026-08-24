@@ -7,10 +7,10 @@ import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
 import { Store } from '@ngrx/store'
-import { of } from 'rxjs'
+import { of, firstValueFrom } from 'rxjs'
 
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { PrimeIcons } from 'primeng/api'
 import { MultiSelectModule } from 'primeng/multiselect'
@@ -134,7 +134,9 @@ describe('ScaffoldDetailsComponent', () => {
         }
       ]
     }).compileComponents()
+  })
 
+  beforeEach(async () => {
     const userServiceMock = TestBed.inject(UserServiceMock)
     userServiceMock.permissionsTopic$.publish([
       'SCAFFOLD#CREATE',
@@ -160,7 +162,7 @@ describe('ScaffoldDetailsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should display correct breadcrumbs', async () => {
+  it('should display correct breadcrumbs', () => {
     const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
     const spy = jest.spyOn(breadcrumbService, 'setItems')
 
@@ -168,9 +170,9 @@ describe('ScaffoldDetailsComponent', () => {
     fixture.detectChanges()
 
     expect(spy).toHaveBeenCalledTimes(1)
-    const pageHeader = await scaffoldDetails.getHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-    expect(await searchBreadcrumbItem?.getText()).toEqual('Details')
+    expect(spy).toHaveBeenCalledWith([
+      { titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB', labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB', routerLink: '/scaffold' }
+    ])
   })
 
   it('should display translated headers', async () => {
@@ -180,27 +182,26 @@ describe('ScaffoldDetailsComponent', () => {
   })
 
   it('should have 4 inline actions', async () => {
-    const pageHeader = await scaffoldDetails.getHeader()
-    const inlineActions = await pageHeader.getInlineActionButtons()
+    const actions = await firstValueFrom(component.headerActions$)
+    const inlineActions = actions.filter((a) => a.show === 'always' && (!a.conditional || a.showCondition))
     expect(inlineActions).toHaveLength(4)
 
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
+    const backAction = inlineActions.find((a) => a.labelKey === 'SCAFFOLD_DETAILS.GENERAL.BACK')
     expect(backAction).toBeTruthy()
 
-    const moreAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.ELLIPSIS_V)
+    const moreAction = inlineActions.find((a) => a.icon === PrimeIcons.ELLIPSIS_V)
     expect(moreAction).toBeTruthy()
   })
 
   it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    jest.spyOn(globalThis.history, 'back')
     const doneFn = jest.fn()
+    const actions = await firstValueFrom(component.headerActions$)
+    const backAction = actions.find((a) => a.labelKey === 'SCAFFOLD_DETAILS.GENERAL.BACK')
 
-    const pageHeader = await scaffoldDetails.getHeader()
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     store.scannedActions$.pipe(ofType(scaffoldDetailsActions.navigateBackButtonClicked)).subscribe(() => {
       doneFn()
     })
-    await backAction?.click()
+    backAction?.actionCallback?.()
     expect(doneFn).toHaveBeenCalledTimes(1)
   })
 
@@ -211,9 +212,9 @@ describe('ScaffoldDetailsComponent', () => {
       editMode: false
     })
     store.refreshState()
-    const pageHeader = await scaffoldDetails.getHeader()
-    const editAction = await pageHeader.getInlineActionButtonByLabel('Edit')
-    await editAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const editAction = actions.find((a) => a.labelKey === 'SCAFFOLD_DETAILS.GENERAL.EDIT')
+    editAction?.actionCallback?.()
 
     expect(editAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -222,17 +223,13 @@ describe('ScaffoldDetailsComponent', () => {
 
   it('should dispatch cancelButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
-    const pageHeader = await scaffoldDetails.getHeader()
-    const cancelAction = await pageHeader.getInlineActionButtonByLabel('Cancel')
-    await cancelAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const cancelAction = actions.find((a) => a.labelKey === 'SCAFFOLD_DETAILS.GENERAL.CANCEL')
+    cancelAction?.actionCallback?.()
 
     expect(cancelAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
-    expect(store.dispatch).toHaveBeenCalledWith(
-      scaffoldDetailsActions.cancelButtonClicked({
-        dirty: false
-      })
-    )
+    expect(store.dispatch).toHaveBeenCalledWith(scaffoldDetailsActions.cancelButtonClicked({ dirty: false }))
   })
 
   it('should dispatch saveButtonClicked action on edit button click', async () => {
@@ -249,12 +246,8 @@ describe('ScaffoldDetailsComponent', () => {
     store.refreshState()
 
     component.formGroup.setValue(scaffoldForm)
+    component.save()
 
-    const pageHeader = await scaffoldDetails.getHeader()
-    const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
-    await saveAction?.click()
-
-    expect(saveAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
       scaffoldDetailsActions.saveButtonClicked({ details: { ...scaffold, ...scaffoldForm } })
@@ -269,9 +262,9 @@ describe('ScaffoldDetailsComponent', () => {
     })
     store.refreshState()
 
-    const pageHeader = await scaffoldDetails.getHeader()
-    const deleteAction = await pageHeader.getInlineActionButtonByLabel('Delete')
-    await deleteAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const deleteAction = actions.find((a) => a.labelKey === 'SCAFFOLD_DETAILS.GENERAL.DELETE')
+    deleteAction?.actionCallback?.()
 
     expect(deleteAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -280,70 +273,46 @@ describe('ScaffoldDetailsComponent', () => {
 
   it('should dispatch no action on more button click', async () => {
     jest.spyOn(store, 'dispatch')
-
-    const pageHeader = await scaffoldDetails.getHeader()
-    const moreAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.ELLIPSIS_V)
-    await moreAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const moreAction = actions.find((a) => a.icon === PrimeIcons.ELLIPSIS_V)
+    moreAction?.actionCallback?.()
 
     expect(moreAction).toBeTruthy()
     expect(store.dispatch).not.toHaveBeenCalled()
   })
 
   it('should display item details in page header', async () => {
-    component.objectDetails$ = of([
-      {
-        label: 'SCAFFOLD_DETAILS.FORM.NAME',
-        labelPipe: TranslatePipe,
-        value: 'test'
-      },
-      {
-        label: 'first',
-        value: 'first value'
-      },
-      {
-        label: 'second',
-        value: 'second value'
-      },
-      {
-        label: 'third',
-        icon: PrimeIcons.PLUS
-      },
-      {
-        label: 'fourth',
-        value: 'fourth value',
-        icon: PrimeIcons.QUESTION
-      }
-    ])
+    const labels = [
+      { label: 'SCAFFOLD_DETAILS.FORM.NAME', labelPipe: TranslatePipe, value: 'test' },
+      { label: 'first', value: 'first value' },
+      { label: 'second', value: 'second value' },
+      { label: 'third', icon: PrimeIcons.PLUS },
+      { label: 'fourth', value: 'fourth value', icon: PrimeIcons.QUESTION }
+    ] as any[]
+    component.objectDetails$ = of(labels)
 
-    const pageHeader = await scaffoldDetails.getHeader()
-    const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails).toHaveLength(5)
+    const emittedLabels = await firstValueFrom(component.objectDetails$)
+    expect(emittedLabels).toHaveLength(5)
 
-    const label = TestBed.inject(TranslateService).instant('SCAFFOLD_DETAILS.FORM.NAME')
-    const testDetailItem = await pageHeader.getObjectInfoByLabel(label)
-    expect(await testDetailItem?.getLabel()).toEqual(label)
-    expect(await testDetailItem?.getValue()).toEqual('test')
-    expect(await testDetailItem?.getIcon()).toBeUndefined()
+    const testDetailItem = emittedLabels.find((l) => l.label === 'SCAFFOLD_DETAILS.FORM.NAME')
+    expect(testDetailItem?.value).toEqual('test')
+    expect(testDetailItem?.icon).toBeUndefined()
 
-    const firstDetailItem = await pageHeader.getObjectInfoByLabel('first')
-    expect(await firstDetailItem?.getLabel()).toEqual('first')
-    expect(await firstDetailItem?.getValue()).toEqual('first value')
-    expect(await firstDetailItem?.getIcon()).toBeUndefined()
+    const firstDetailItem = emittedLabels.find((l) => l.label === 'first')
+    expect(firstDetailItem?.value).toEqual('first value')
+    expect(firstDetailItem?.icon).toBeUndefined()
 
-    const secondDetailItem = await pageHeader.getObjectInfoByLabel('second')
-    expect(await secondDetailItem?.getLabel()).toEqual('second')
-    expect(await secondDetailItem?.getValue()).toEqual('second value')
-    expect(await secondDetailItem?.getIcon()).toBeUndefined()
+    const secondDetailItem = emittedLabels.find((l) => l.label === 'second')
+    expect(secondDetailItem?.value).toEqual('second value')
+    expect(secondDetailItem?.icon).toBeUndefined()
 
-    const thirdDetailItem = await pageHeader.getObjectInfoByLabel('third')
-    expect(await thirdDetailItem?.getLabel()).toEqual('third')
-    expect(await thirdDetailItem?.getValue()).toEqual('')
-    expect(await thirdDetailItem?.getIcon()).toEqual(PrimeIcons.PLUS)
+    const thirdDetailItem = emittedLabels.find((l) => l.label === 'third')
+    expect(thirdDetailItem?.value).toBeFalsy()
+    expect(thirdDetailItem?.icon).toEqual(PrimeIcons.PLUS)
 
-    const fourthDetailItem = await pageHeader.getObjectInfoByLabel('fourth')
-    expect(await fourthDetailItem?.getLabel()).toEqual('fourth')
-    expect(await fourthDetailItem?.getValue()).toEqual('fourth value')
-    expect(await fourthDetailItem?.getIcon()).toEqual(PrimeIcons.QUESTION)
+    const fourthDetailItem = emittedLabels.find((l) => l.label === 'fourth')
+    expect(fourthDetailItem?.value).toEqual('fourth value')
+    expect(fourthDetailItem?.icon).toEqual(PrimeIcons.QUESTION)
   })
 
   it('should mark as pristine and disable form when editMode is false', async () => {

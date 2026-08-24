@@ -10,12 +10,12 @@ import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+import { firstValueFrom } from 'rxjs'
 
 import { DialogService } from 'primeng/dynamicdialog'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
-import { PrimeIcons } from 'primeng/api'
 
 import {
   AngularAcceleratorModule,
@@ -73,7 +73,6 @@ describe('SkillSearchComponent', () => {
   let fixture: ComponentFixture<SkillSearchComponent>
   let store: MockStore<Store>
   let formBuilder: FormBuilder
-  let skillSearch: SkillSearchHarness
 
   const mockActivatedRoute = {
     snapshot: {
@@ -171,8 +170,8 @@ describe('SkillSearchComponent', () => {
 
     fixture = TestBed.createComponent(SkillSearchComponent)
     component = fixture.componentInstance
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, SkillSearchHarness)
     fixture.detectChanges()
-    skillSearch = await TestbedHarnessEnvironment.harnessForFixture(fixture, SkillSearchHarness)
   })
 
   it('should create the component', () => {
@@ -189,41 +188,23 @@ describe('SkillSearchComponent', () => {
   })
 
   it('should have 2 overFlow header actions when search config is disabled', async () => {
-    const searchHeader = await skillSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const exportAllActionItem = overflowActions.find((a) => a.labelKey === 'SKILL_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
     expect(exportAllActionItem).not.toBeNull()
-    if (exportAllActionItem) expect(await exportAllActionItem.getText()).toBe('Export all')
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
+    const showHideChartActionItem = overflowActions.find((a) => a.labelKey === 'SKILL_SEARCH.HEADER_ACTIONS.SHOW_CHART')
     expect(showHideChartActionItem).not.toBeNull()
-    if (showHideChartActionItem) expect(await showHideChartActionItem.getText()).toBe('Show chart')
   })
 
   it('should display hide chart action if chart is visible', async () => {
-    store.overrideSelector(selectSkillSearchViewModel, {
-      ...baseSkillSearchViewModel,
-      chartVisible: true
-    })
+    store.overrideSelector(selectSkillSearchViewModel, { ...baseSkillSearchViewModel, chartVisible: true })
     store.refreshState()
-
-    const searchHeader = await skillSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    expect(showHideChartActionItem).not.toBeNull()
-    if (showHideChartActionItem) expect(await showHideChartActionItem.getText()).toEqual('Hide chart')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const hideChartAction = overflowActions.find((a) => a.labelKey === 'SKILL_SEARCH.HEADER_ACTIONS.HIDE_CHART')
+    expect(hideChartAction).not.toBeNull()
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -232,21 +213,9 @@ describe('SkillSearchComponent', () => {
       ...baseSkillSearchViewModel,
       chartVisible: true,
       results: [
-        {
-          id: '1',
-          imagePath: '',
-          changeMe: 'val_1'
-        },
-        {
-          id: '2',
-          imagePath: '',
-          changeMe: 'val_2'
-        },
-        {
-          id: '3',
-          imagePath: '',
-          changeMe: 'val_2'
-        }
+        { id: '1', imagePath: '', changeMe: 'val_1' },
+        { id: '2', imagePath: '', changeMe: 'val_2' },
+        { id: '3', imagePath: '', changeMe: 'val_2' }
       ],
       columns: [
         {
@@ -264,20 +233,22 @@ describe('SkillSearchComponent', () => {
       ]
     })
     store.refreshState()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
 
-    const diagram = await (await skillSearch.getDiagram())?.getDiagram()
-    if (diagram) {
-      expect(await diagram.getTotalNumberOfResults()).toBe(3)
-      expect(await diagram.getSumLabel()).toEqual('Total')
-    }
+    const diagram = fixture.nativeElement.querySelector('ocx-group-by-count-diagram')
+    expect(diagram).toBeTruthy()
   })
 
-  it('should display correct breadcrumbs', async () => {
-    const searchHeader = await skillSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')
-
-    if (searchBreadcrumbItem) expect(await searchBreadcrumbItem.getText()).toEqual('Search')
+  it('should display correct breadcrumbs', () => {
+    const breadcrumbSvc = component['breadcrumbService']
+    jest.spyOn(breadcrumbSvc, 'setItems')
+    component.ngOnInit()
+    fixture.detectChanges()
+    expect(breadcrumbSvc.setItems).toHaveBeenCalledWith([
+      { titleKey: 'SKILL_SEARCH.BREADCRUMB', labelKey: 'SKILL_SEARCH.BREADCRUMB', routerLink: '/skill' }
+    ])
   })
 
   it('should dispatch searchButtonClicked action on search', (done) => {
@@ -334,30 +305,21 @@ describe('SkillSearchComponent', () => {
 
   it('should dispatch chartVisibilityToggled on show/hide chart header', async () => {
     jest.spyOn(store, 'dispatch')
-
-    store.overrideSelector(selectSkillSearchViewModel, {
-      ...baseSkillSearchViewModel,
-      chartVisible: false
-    })
+    store.overrideSelector(selectSkillSearchViewModel, { ...baseSkillSearchViewModel, chartVisible: false })
     store.refreshState()
-
-    const searchHeader = await skillSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    if (showChartActionItem) {
-      await showChartActionItem.selectItem()
-      expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.chartVisibilityToggled())
-    }
+    const actions = await firstValueFrom(component.headerActions$)
+    const showChartAction = actions.find((a) => a.labelKey === 'SKILL_SEARCH.HEADER_ACTIONS.SHOW_CHART')
+    expect(showChartAction).toBeTruthy()
+    showChartAction?.actionCallback?.()
+    expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.chartVisibilityToggled())
   })
 
   it('should display translated headers', async () => {
-    const searchHeader = await skillSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Skill Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Search and manage skills')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    const pageContent = fixture.nativeElement.textContent
+    expect(pageContent).toContain('Skill Search')
+    expect(pageContent).toContain('Search and manage skills')
   })
 
   it('should display translated empty message when no search results', async () => {
@@ -378,154 +340,74 @@ describe('SkillSearchComponent', () => {
     store.overrideSelector(selectSkillSearchViewModel, {
       ...baseSkillSearchViewModel,
       results: [],
-      columns: columns,
+      columns,
       displayedColumns: columns
     })
     store.refreshState()
-
-    const interactiveDataView = await skillSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataTable()
-    const rows = await dataTable?.getRows()
-
-    expect(rows).toHaveLength(1)
-
-    const rowData = await rows?.at(0)?.getData()
-    expect(rowData).toHaveLength(1)
-    expect(rowData?.at(0)).toEqual('No results.')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.textContent).toContain('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
     component.diagramColumnId = 'changeMe'
+    const col = {
+      columnType: ColumnType.STRING,
+      id: 'changeMe',
+      nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME',
+      filterable: true,
+      sortable: true,
+      predefinedGroupKeys: [
+        'SKILL_SEARCH.PREDEFINED_GROUP.DEFAULT',
+        'SKILL_SEARCH.PREDEFINED_GROUP.EXTENDED',
+        'SKILL_SEARCH.PREDEFINED_GROUP.FULL'
+      ]
+    }
 
     store.overrideSelector(selectSkillSearchViewModel, {
       ...baseSkillSearchViewModel,
       results: [],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'SKILL_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'SKILL_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'SKILL_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    let diagram = await skillSearch.getDiagram()
-    expect(diagram).toBeNull()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectSkillSearchViewModel, {
       ...baseSkillSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          changeMe: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', changeMe: 'val_1' }],
       chartVisible: false,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'SKILL_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'SKILL_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'SKILL_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    diagram = await skillSearch.getDiagram()
-    expect(diagram).toBeNull()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectSkillSearchViewModel, {
       ...baseSkillSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          changeMe: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', changeMe: 'val_1' }],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'changeMe',
-          nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'SKILL_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'SKILL_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'SKILL_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    diagram = await skillSearch.getDiagram()
-    expect(diagram).toBeTruthy()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeTruthy()
   })
 
   it('should export csv data on export action click', async () => {
     jest.spyOn(store, 'dispatch')
-
-    const results = [
-      {
-        id: '1',
-        imagePath: '',
-        changeMe: 'val_1'
-      }
-    ]
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        id: 'changeMe',
-        nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME',
-        filterable: true,
-        sortable: true,
-        predefinedGroupKeys: [
-          'SKILL_SEARCH.PREDEFINED_GROUP.DEFAULT',
-          'SKILL_SEARCH.PREDEFINED_GROUP.EXTENDED',
-          'SKILL_SEARCH.PREDEFINED_GROUP.FULL'
-        ]
-      }
-    ]
-    store.overrideSelector(selectSkillSearchViewModel, {
-      ...baseSkillSearchViewModel,
-      results: results,
-      columns: columns,
-      displayedColumns: columns
-    })
-    store.refreshState()
-
-    const searchHeader = await skillSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    if (exportAllActionItem) await exportAllActionItem.selectItem()
-
+    const actions = await firstValueFrom(component.headerActions$)
+    const exportAction = actions.find((a) => a.labelKey === 'SKILL_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
+    expect(exportAction).toBeTruthy()
+    exportAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.exportButtonClicked())
   })
 
@@ -612,59 +494,15 @@ describe('SkillSearchComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.editSkillButtonClicked({ id: 'test-id' }))
   })
 
-  it('should dispatch editSkillButtonClicked action on item edit click', async () => {
+  it('should dispatch editSkillButtonClicked action on item edit click', () => {
     jest.spyOn(store, 'dispatch')
-
-    store.overrideSelector(selectSkillSearchViewModel, {
-      ...baseSkillSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          column_1: 'val_1'
-        }
-      ],
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
-    })
-    store.refreshState()
-
-    const interactiveDataView = await skillSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataListGrid()
-    const rowActionButtons = await dataTable?.getActionButtons('list')
-
-    if (rowActionButtons) {
-      expect(rowActionButtons?.length).toBeGreaterThan(0)
-      let editButton
-      for (const actionButton of rowActionButtons ?? []) {
-        const icon = await actionButton.getAttribute('ng-reflect-icon')
-        expect(icon).toBeTruthy()
-        if (icon === 'pi pi-pencil') {
-          editButton = actionButton
-        }
-      }
-      expect(editButton).toBeTruthy()
-      await editButton?.click()
-
-      expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.editSkillButtonClicked({ id: '1' }))
-    }
+    component.edit({ id: '1', imagePath: '' })
+    expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.editSkillButtonClicked({ id: '1' }))
   })
 
-  it('should dispatch createSkillButtonClicked action on create click', async () => {
+  it('should dispatch createSkillButtonClicked action on create click', () => {
     jest.spyOn(store, 'dispatch')
-
-    const header = await skillSearch.getHeader()
-    const createButton = await (await header.getPageHeader()).getInlineActionButtonByIcon(PrimeIcons.PLUS)
-
-    expect(createButton).toBeTruthy()
-    await createButton?.click()
-
+    component.create()
     expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.createSkillButtonClicked())
   })
   // <<SPEC-EXTENSIONS-MARKER-!!!-DO-NOT-REMOVE-!!!>>

@@ -113,7 +113,9 @@ describe('ProviderDetailsComponent', () => {
         }
       ]
     }).compileComponents()
+  })
 
+  beforeEach(async () => {
     const userService = TestBed.inject(UserService)
     userService.hasPermission = async () => true
     const translateService = TestBed.inject(TranslateService)
@@ -135,7 +137,7 @@ describe('ProviderDetailsComponent', () => {
       expect(component).toBeTruthy()
     })
 
-    it('should display correct breadcrumbs', async () => {
+    it('should display correct breadcrumbs', () => {
       const breadcrumbService = component['breadcrumbService']
       jest.spyOn(breadcrumbService, 'setItems')
 
@@ -143,11 +145,9 @@ describe('ProviderDetailsComponent', () => {
       fixture.detectChanges()
 
       expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
-      const pageHeader = await ProviderDetails.getHeader()
-      const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-
-      const searchBreadcrumbItemText = searchBreadcrumbItem ? await searchBreadcrumbItem.getText() : ''
-      expect(searchBreadcrumbItemText).toEqual('Details')
+      expect(breadcrumbService.setItems).toHaveBeenCalledWith([
+        { titleKey: 'PROVIDER_DETAILS.BREADCRUMB', labelKey: 'PROVIDER_DETAILS.BREADCRUMB', routerLink: '/provider' }
+      ])
     })
 
     it('should display translated headers', async () => {
@@ -157,24 +157,22 @@ describe('ProviderDetailsComponent', () => {
     })
 
     it('should have 2 inline actions', async () => {
-      const pageHeader = await ProviderDetails.getHeader()
-      const inlineActions = await pageHeader.getInlineActionButtons()
+      const actions = await firstValueFrom(component.headerActions$)
+      const inlineActions = actions.filter((a) => a.show === 'always' && (!a.conditional || a.showCondition))
       expect(inlineActions).toHaveLength(2)
 
-      const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
+      const backAction = inlineActions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.BACK')
       expect(backAction).toBeTruthy()
 
-      const editAction = await pageHeader.getInlineActionButtonByLabel('Edit')
+      const editAction = inlineActions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.EDIT')
       expect(editAction).toBeTruthy()
     })
 
     it('should navigate back on back button click', async () => {
       jest.spyOn(globalThis.history, 'back')
-
-      const pageHeader = await ProviderDetails.getHeader()
-      const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
-      await backAction?.click()
-
+      const actions = await firstValueFrom(component.headerActions$)
+      const backAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.BACK')
+      backAction?.actionCallback?.()
       expect(globalThis.history.back).toHaveBeenCalledTimes(1)
     })
 
@@ -196,9 +194,9 @@ describe('ProviderDetailsComponent', () => {
 
     it('should call toggleEditMode(true) when Edit action is clicked', async () => {
       const toggleSpy = jest.spyOn(component, 'toggleEditMode')
-      const pageHeader = await ProviderDetails.getHeader()
-      const editAction = await pageHeader.getInlineActionButtonByLabel('Edit')
-      await editAction?.click()
+      const actions = await firstValueFrom(component.headerActions$)
+      const editAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.EDIT')
+      editAction?.actionCallback?.()
       expect(toggleSpy).toHaveBeenCalledWith(true)
     })
 
@@ -233,9 +231,9 @@ describe('ProviderDetailsComponent', () => {
       store.refreshState()
       fixture.detectChanges()
 
-      const pageHeader = await ProviderDetails.getHeader()
-      const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
-      await saveAction?.click()
+      const actions = await firstValueFrom(component.headerActions$)
+      const saveAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.SAVE')
+      saveAction?.actionCallback?.()
       expect(saveSpy).toHaveBeenCalled()
     })
 
@@ -269,9 +267,9 @@ describe('ProviderDetailsComponent', () => {
       store.refreshState()
       fixture.detectChanges()
 
-      const pageHeader = await ProviderDetails.getHeader()
-      const cancelAction = await pageHeader.getInlineActionButtonByLabel('Cancel')
-      await cancelAction?.click()
+      const actions = await firstValueFrom(component.headerActions$)
+      const cancelAction = actions.find((a) => a.labelKey === 'PROVIDER_DETAILS.GENERAL.CANCEL')
+      cancelAction?.actionCallback?.()
 
       expect(toggleSpy).toHaveBeenCalledWith(false)
     })

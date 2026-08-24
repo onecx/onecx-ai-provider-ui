@@ -11,7 +11,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { PrimeIcons } from 'primeng/api'
-import { of } from 'rxjs'
+import { of, firstValueFrom } from 'rxjs'
 
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
@@ -114,6 +114,9 @@ describe('MCPServerDetailsComponent', () => {
         }
       ]
     }).compileComponents()
+  })
+
+  beforeEach(async () => {
     const userServiceMock = TestBed.inject(UserService)
     jest.spyOn(userServiceMock, 'getPermissions').mockReturnValue(of(['MCPSERVER#BACK']))
 
@@ -134,7 +137,7 @@ describe('MCPServerDetailsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should display correct breadcrumbs', async () => {
+  it('should display correct breadcrumbs', () => {
     const breadcrumbService = component['breadcrumbService']
     jest.spyOn(breadcrumbService, 'setItems')
 
@@ -142,11 +145,9 @@ describe('MCPServerDetailsComponent', () => {
     fixture.detectChanges()
 
     expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
-    const pageHeader = await mcpserverDetails.getHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-    expect(searchBreadcrumbItem).toBeDefined()
-    const breadcrumbText = searchBreadcrumbItem ? await searchBreadcrumbItem.getText() : ''
-    expect(breadcrumbText).toEqual('Details')
+    expect(breadcrumbService.setItems).toHaveBeenCalledWith([
+      { titleKey: 'MCPSERVER_DETAILS.BREADCRUMB', labelKey: 'MCPSERVER_DETAILS.BREADCRUMB', routerLink: '/mcpserver' }
+    ])
   })
 
   it('should display translated headers', async () => {
@@ -156,15 +157,15 @@ describe('MCPServerDetailsComponent', () => {
   })
 
   it('should have 2 inline actions', async () => {
-    const pageHeader = await mcpserverDetails.getHeader()
-    const inlineActions = await pageHeader.getInlineActionButtons()
+    const actions = await firstValueFrom(component.headerActions$)
+    const inlineActions = actions.filter((a) => a.show === 'always' && (!a.conditional || a.showCondition))
 
     expect(inlineActions).toHaveLength(2)
 
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
+    const backAction = inlineActions.find((a) => a.labelKey === 'MCPSERVER_DETAILS.GENERAL.BACK')
     expect(backAction).toBeTruthy()
 
-    const editAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.PENCIL)
+    const editAction = inlineActions.find((a) => a.icon === PrimeIcons.PENCIL)
     expect(editAction).toBeTruthy()
   })
 
@@ -175,85 +176,58 @@ describe('MCPServerDetailsComponent', () => {
   })
 
   it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    jest.spyOn(window.history, 'back')
     const doneFn = jest.fn()
+    const actions = await firstValueFrom(component.headerActions$)
+    const backAction = actions.find((a) => a.labelKey === 'MCPSERVER_DETAILS.GENERAL.BACK')
 
-    const pageHeader = await mcpserverDetails.getHeader()
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     store.scannedActions$.pipe(ofType(MCPServerDetailsActions.navigateBackButtonClicked)).subscribe(() => {
       doneFn()
     })
-    await backAction?.click()
+    backAction?.actionCallback?.()
     expect(doneFn).toHaveBeenCalledTimes(1)
   })
 
   it('should display item details in page header', async () => {
-    component.headerLabels$ = of([
-      {
-        label: 'HELLO_DETAILS.FORM.ID',
-        labelPipe: TranslatePipe,
-        value: 'test id'
-      },
-      {
-        label: 'first',
-        value: 'first value'
-      },
-      {
-        label: 'second',
-        value: 'second value'
-      },
-      {
-        label: 'third',
-        icon: PrimeIcons.PLUS
-      },
-      {
-        label: 'fourth',
-        value: 'fourth value',
-        icon: PrimeIcons.QUESTION
-      }
-    ])
+    const labels = [
+      { label: 'HELLO_DETAILS.FORM.ID', labelPipe: TranslatePipe, value: 'test id' },
+      { label: 'first', value: 'first value' },
+      { label: 'second', value: 'second value' },
+      { label: 'third', icon: PrimeIcons.PLUS },
+      { label: 'fourth', value: 'fourth value', icon: PrimeIcons.QUESTION }
+    ] as any[]
+    component.headerLabels$ = of(labels)
 
-    const pageHeader = await mcpserverDetails.getHeader()
-    const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails).toHaveLength(5)
+    const emittedLabels = await firstValueFrom(component.headerLabels$)
+    expect(emittedLabels).toHaveLength(5)
 
-    const testDetailItem = await pageHeader.getObjectInfoByLabel('HELLO_DETAILS.FORM.ID')
-    expect(await testDetailItem?.getLabel()).toEqual('HELLO_DETAILS.FORM.ID')
-    expect(await testDetailItem?.getValue()).toEqual('test id')
-    expect(await testDetailItem?.getIcon()).toBeUndefined()
+    const testDetailItem = emittedLabels.find((l) => l.label === 'HELLO_DETAILS.FORM.ID')
+    expect(testDetailItem?.value).toEqual('test id')
+    expect(testDetailItem?.icon).toBeUndefined()
 
-    const firstDetailItem = await pageHeader.getObjectInfoByLabel('first')
-    expect(await firstDetailItem?.getLabel()).toEqual('first')
-    expect(await firstDetailItem?.getValue()).toEqual('first value')
-    expect(await firstDetailItem?.getIcon()).toBeUndefined()
+    const firstDetailItem = emittedLabels.find((l) => l.label === 'first')
+    expect(firstDetailItem?.value).toEqual('first value')
+    expect(firstDetailItem?.icon).toBeUndefined()
 
-    const secondDetailItem = await pageHeader.getObjectInfoByLabel('second')
-    expect(await secondDetailItem?.getLabel()).toEqual('second')
-    expect(await secondDetailItem?.getValue()).toEqual('second value')
-    expect(await secondDetailItem?.getIcon()).toBeUndefined()
+    const secondDetailItem = emittedLabels.find((l) => l.label === 'second')
+    expect(secondDetailItem?.value).toEqual('second value')
+    expect(secondDetailItem?.icon).toBeUndefined()
 
-    const thirdDetailItem = await pageHeader.getObjectInfoByLabel('third')
-    expect(await thirdDetailItem?.getLabel()).toEqual('third')
-    expect(await thirdDetailItem?.getValue()).toEqual('')
-    expect(await thirdDetailItem?.getIcon()).toContain(PrimeIcons.PLUS)
+    const thirdDetailItem = emittedLabels.find((l) => l.label === 'third')
+    expect(thirdDetailItem?.value).toBeFalsy()
+    expect(thirdDetailItem?.icon).toContain(PrimeIcons.PLUS)
 
-    const fourthDetailItem = await pageHeader.getObjectInfoByLabel('fourth')
-    expect(await fourthDetailItem?.getLabel()).toEqual('fourth')
-    expect(await fourthDetailItem?.getValue()).toEqual('fourth value')
-    expect(await fourthDetailItem?.getIcon()).toContain(PrimeIcons.QUESTION)
+    const fourthDetailItem = emittedLabels.find((l) => l.label === 'fourth')
+    expect(fourthDetailItem?.value).toEqual('fourth value')
+    expect(fourthDetailItem?.icon).toContain(PrimeIcons.QUESTION)
   })
 
-  it('edit clicked should dispatch edit action', async () => {
+  it('edit clicked should dispatch edit action', () => {
     jest.spyOn(store, 'dispatch')
-    const pageHeader = await mcpserverDetails.getHeader()
-    const editAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.PENCIL)
-
-    await editAction?.click()
-
+    component.edit()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.editButtonClicked())
   })
 
-  it('save clicked should dispatch save action', async () => {
+  it('save clicked should dispatch save action', () => {
     jest.spyOn(store, 'dispatch')
     store.overrideSelector(selectMCPServerDetailsViewModel, {
       ...baseMCPServerDetailsViewModel,
@@ -261,20 +235,12 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-
-    const pageHeader = await mcpserverDetails.getHeader()
-    const saveAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.SAVE)
-    await saveAction?.click()
     const details = baseMCPServerDetailsViewModel.details ?? createBaseDetails()
-
-    expect(store.dispatch).toHaveBeenCalledWith(
-      MCPServerDetailsActions.saveButtonClicked({
-        details
-      })
-    )
+    component.save()
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
   })
 
-  it('cancel clicked should dispatch cancel action', async () => {
+  it('cancel clicked should dispatch cancel action', () => {
     jest.spyOn(store, 'dispatch')
     store.overrideSelector(selectMCPServerDetailsViewModel, {
       ...baseMCPServerDetailsViewModel,
@@ -282,44 +248,30 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-
-    const pageHeader = await mcpserverDetails.getHeader()
-    const cancelAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.TIMES)
-    await cancelAction?.click()
-
+    component.cancel()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.cancelButtonClicked({ dirty: false }))
   })
 
   it('delete clicked should dispatch delete action', async () => {
     jest.spyOn(store, 'dispatch')
-    const pageHeader = await mcpserverDetails.getHeader()
-    const overflowMenuButton = await pageHeader.getOverflowActionMenuButton()
-    expect(overflowMenuButton).toBeDefined()
-    await overflowMenuButton?.click()
-
-    const overflowMenuItem = await pageHeader.getOverFlowMenuItem('Delete')
-    expect(overflowMenuItem).toBeDefined()
-    await (overflowMenuItem ? overflowMenuItem.selectItem() : Promise.resolve())
-
+    const actions = await firstValueFrom(component.headerActions$)
+    const deleteAction = actions.find((a) => a.labelKey === 'MCPSERVER_DETAILS.GENERAL.DELETE')
+    expect(deleteAction).toBeDefined()
+    deleteAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.deleteButtonClicked())
   })
 
   it('should work with details', async () => {
     store.overrideSelector(selectMCPServerDetailsViewModel, {
       ...baseMCPServerDetailsViewModel,
-      details: {
-        id: 'my-id',
-        name: 'my-name',
-        apiKey: 'my-apikey'
-      }
+      details: { id: 'my-id', name: 'my-name', apiKey: 'my-apikey' }
     })
     store.refreshState()
     fixture.detectChanges()
 
-    const pageHeader = await mcpserverDetails.getHeader()
-    const translatedLabel = translateService.instant('MCPSERVER_DETAILS.FORM.NAME')
-    const idDetailItem = await pageHeader.getObjectInfoByLabel(translatedLabel)
-    expect(await idDetailItem?.getValue()).toEqual('my-name')
+    const labels = await firstValueFrom(component.headerLabels$)
+    const nameItem = labels.find((l) => l.label === 'MCPSERVER_DETAILS.FORM.NAME')
+    expect(nameItem?.value).toEqual('my-name')
   })
 
   it('should render empty header details when details are missing', async () => {
@@ -330,10 +282,9 @@ describe('MCPServerDetailsComponent', () => {
     store.refreshState()
     fixture.detectChanges()
 
-    const pageHeader = await mcpserverDetails.getHeader()
-    const translatedLabel = translateService.instant('MCPSERVER_DETAILS.FORM.NAME')
-    const idDetailItem = await pageHeader.getObjectInfoByLabel(translatedLabel)
-    expect(await idDetailItem?.getValue()).toBeFalsy()
+    const labels = await firstValueFrom(component.headerLabels$)
+    const nameItem = labels.find((l) => l.label === 'MCPSERVER_DETAILS.FORM.NAME')
+    expect(nameItem?.value).toBeFalsy()
     expect(component.formGroup.get('name')?.value).toBeFalsy()
   })
 

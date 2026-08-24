@@ -15,7 +15,7 @@ const config: Config = {
   displayName: 'onecx-ai-provider-ui',
   testEnvironment: 'jsdom',
   preset: './jest.preset.js',
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',
