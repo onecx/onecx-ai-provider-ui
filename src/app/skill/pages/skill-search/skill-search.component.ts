@@ -1,5 +1,5 @@
-import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
+import { ChangeDetectionStrategy, Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { Store } from '@ngrx/store'
 import { LetDirective } from '@ngrx/component'
@@ -34,12 +34,10 @@ import { SkillSearchViewModel } from './skill-search.viewmodel'
 
 @Component({
   selector: 'app-skill-search',
-  templateUrl: './skill-search.component.html',
-  styleUrls: ['./skill-search.component.scss'],
   imports: [
+    AsyncPipe,
     AngularAcceleratorModule,
     TranslateModule,
-    CommonModule,
     FormsModule,
     FloatLabelModule,
     ReactiveFormsModule,
@@ -47,7 +45,10 @@ import { SkillSearchViewModel } from './skill-search.viewmodel'
     InputTextModule,
     TooltipModule,
     PortalPageComponent
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './skill-search.component.html',
+  styleUrls: ['./skill-search.component.scss']
 })
 export class SkillSearchComponent implements OnInit {
   private readonly breadcrumbService = inject(BreadcrumbService)

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { MultiSelectModule } from 'primeng/multiselect'
@@ -14,6 +14,7 @@ import { ScaffoldCreateUpdateViewModel } from './scaffold-create-update.viewmode
 @Component({
   selector: 'app-scaffold-create-update',
   imports: [TranslateModule, MultiSelectModule, ReactiveFormsModule, FloatLabelModule, InputTextModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './scaffold-create-update.component.html',
   styleUrls: ['./scaffold-create-update.component.scss']
 })

@@ -50,7 +50,7 @@ console.error = (message, ...optionalParams) => {
   originalConsoleError(message, ...optionalParams)
 }
 
-if (typeof globalThis.ResizeObserver === 'undefined') {
+if (!globalThis.ResizeObserver) {
   globalThis.ResizeObserver = class ResizeObserver {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     observe() {}

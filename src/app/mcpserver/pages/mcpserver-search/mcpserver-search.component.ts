@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common'
-import { Component, Inject, LOCALE_ID, OnInit } from '@angular/core'
+import { AsyncPipe } from '@angular/common'
+import { ChangeDetectionStrategy, Component, Inject, LOCALE_ID, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -33,11 +33,9 @@ import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
 
 @Component({
   selector: 'app-mcpserver-search',
-  templateUrl: './mcpserver-search.component.html',
-  styleUrls: ['./mcpserver-search.component.scss'],
   imports: [
+    AsyncPipe,
     AngularAcceleratorModule,
-    CommonModule,
     TranslateModule,
     FormsModule,
     FloatLabelModule,
@@ -46,7 +44,10 @@ import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
     InputTextModule,
     PortalPageComponent,
     TooltipModule
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './mcpserver-search.component.html',
+  styleUrls: ['./mcpserver-search.component.scss']
 })
 export class MCPServerSearchComponent implements OnInit {
   viewModel$: Observable<MCPServerSearchViewModel> = this.store.select(selectMCPServerSearchViewModel)

@@ -23,35 +23,39 @@ export const selectResults = createSelector(
   }
 )
 
-export const selectScaffoldSearchViewModel = createSelector(
-  scaffoldSearchSelectors.selectColumns,
+export const selectSearchState = createSelector(
   scaffoldSearchSelectors.selectCriteria,
-  selectResults,
+  scaffoldSearchSelectors.selectSearchLoadingIndicator,
+  scaffoldSearchSelectors.selectSearchExecuted,
+  (searchCriteria, searchLoadingIndicator, searchExecuted) => ({
+    searchCriteria,
+    searchLoadingIndicator,
+    searchExecuted
+  })
+)
+
+export const selectComponentState = createSelector(
   scaffoldSearchSelectors.selectResultComponentState,
   scaffoldSearchSelectors.selectSearchHeaderComponentState,
   scaffoldSearchSelectors.selectDiagramComponentState,
   scaffoldSearchSelectors.selectChartVisible,
-  scaffoldSearchSelectors.selectSearchLoadingIndicator,
-  scaffoldSearchSelectors.selectSearchExecuted,
-  (
-    columns,
-    searchCriteria,
-    results,
+  (resultComponentState, searchHeaderComponentState, diagramComponentState, chartVisible) => ({
     resultComponentState,
     searchHeaderComponentState,
     diagramComponentState,
-    chartVisible,
-    searchLoadingIndicator,
-    searchExecuted
-  ): ScaffoldSearchViewModel => ({
+    chartVisible
+  })
+)
+
+export const selectScaffoldSearchViewModel = createSelector(
+  scaffoldSearchSelectors.selectColumns,
+  selectResults,
+  selectSearchState,
+  selectComponentState,
+  (columns, results, searchState, componentState): ScaffoldSearchViewModel => ({
     columns,
-    searchCriteria,
     results,
-    resultComponentState,
-    searchHeaderComponentState,
-    diagramComponentState,
-    chartVisible,
-    searchLoadingIndicator,
-    searchExecuted
+    ...searchState,
+    ...componentState
   })
 )

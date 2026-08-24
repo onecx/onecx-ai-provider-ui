@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -14,7 +13,6 @@ import { TooltipModule } from 'primeng/tooltip'
 import { AngularAcceleratorModule, providePortalDialogService } from '@onecx/angular-accelerator'
 import { PermissionService, PortalPageComponent } from '@onecx/angular-utils'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { DashboardEffects } from './pages/dashboard/dashboard.effects'
 import { dashboardFeature } from './dashboard.reducers'
@@ -24,8 +22,6 @@ import { routes } from './dashboard.routes'
   providers: [providePortalDialogService(), PermissionService],
   imports: [
     DashboardComponent,
-    CommonModule,
-    SharedModule,
     LetDirective,
     AngularAcceleratorModule,
     PortalPageComponent,

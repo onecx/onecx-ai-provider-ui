@@ -221,7 +221,7 @@ export class ScaffoldDetailsEffects {
         if (!dialogResult || dialogResult.button == 'secondary') {
           return of(scaffoldDetailsActions.deleteScaffoldCancelled())
         }
-        if (!itemToDelete || !itemToDelete.id) {
+        if (!itemToDelete?.id) {
           throw new Error('Item to delete not found!')
         }
 

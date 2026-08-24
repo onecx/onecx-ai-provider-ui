@@ -7,6 +7,7 @@ import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
 import { ButtonModule } from 'primeng/button'
 import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { TabsModule } from 'primeng/tabs'
@@ -37,6 +38,7 @@ import { AgentToolRulesComponent } from './tool-rules/tool-rules.component'
   imports: [
     TranslateModule,
     ButtonModule,
+    InputTextModule,
     FloatLabelModule,
     AutoCompleteModule,
     ReactiveFormsModule,
