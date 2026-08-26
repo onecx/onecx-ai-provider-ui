@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { PrimeIcons } from 'primeng/api'
 import { FloatLabelModule } from 'primeng/floatlabel'
+import { InputTextModule } from 'primeng/inputtext'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { TabsModule } from 'primeng/tabs'
 import { Observable, map } from 'rxjs'
@@ -26,6 +27,7 @@ type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
     TranslateModule,
     MultiSelectModule,
     FloatLabelModule,
+    InputTextModule,
     TabsModule,
     ReactiveFormsModule,
     AsyncPipe,

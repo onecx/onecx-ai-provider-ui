@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { FloatLabelModule } from 'primeng/floatlabel'
@@ -13,6 +13,7 @@ import { ProviderCreateUpdateViewModel } from './provider-create-update.viewmode
 @Component({
   selector: 'app-provider-create-update',
   imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './provider-create-update.component.html',
   styleUrls: ['./provider-create-update.component.scss']
 })

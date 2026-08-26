@@ -1,5 +1,5 @@
+import { AsyncPipe } from '@angular/common'
 import { Component, OnInit, inject } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Store } from '@ngrx/store'
 import { LetDirective } from '@ngrx/component'
@@ -22,8 +22,8 @@ import { SkillDetailsViewModel } from './skill-details.viewmodel'
 @Component({
   selector: 'app-skill-details',
   imports: [
+    AsyncPipe,
     AngularAcceleratorModule,
-    CommonModule,
     TranslateModule,
     FormsModule,
     FloatLabelModule,

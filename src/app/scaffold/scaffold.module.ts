@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -24,7 +23,6 @@ import { ScaffoldSearchEffects } from './pages/scaffold-search/scaffold-search.e
 import { ScaffoldCreateUpdateComponent } from './pages/scaffold-search/dialogs/scaffold-create-update/scaffold-create-update.component'
 import { scaffoldFeature } from './scaffold.reducers'
 import { routes } from './scaffold.routes'
-import { SharedModule } from '../shared/shared.module'
 
 @NgModule({
   providers: [providePortalDialogService(), PermissionService],
@@ -39,8 +37,6 @@ import { SharedModule } from '../shared/shared.module'
     InputTextModule,
     FloatLabelModule,
     InputTextModule,
-    CommonModule,
-    SharedModule,
     LetDirective,
     AngularAcceleratorModule,
     PortalPageComponent,

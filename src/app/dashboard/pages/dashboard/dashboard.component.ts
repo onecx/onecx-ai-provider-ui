@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -23,6 +23,7 @@ interface DashboardPanel {
 @Component({
   selector: 'app-dashboard',
   imports: [TranslateModule, CardModule, PortalPageComponent, RouterModule, AngularAcceleratorModule, LetDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

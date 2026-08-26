@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -15,7 +14,6 @@ import { TooltipModule } from 'primeng/tooltip'
 import { AngularAcceleratorModule, providePortalDialogService } from '@onecx/angular-accelerator'
 import { providePermissionService } from '@onecx/angular-utils'
 
-import { SharedModule } from 'src/app/shared/shared.module'
 import { mcpserverFeature } from './mcpserver.reducers'
 import { routes } from './mcpserver.routes'
 import { MCPServerDetailsComponent } from './pages/mcpserver-details/mcpserver-details.component'
@@ -30,8 +28,6 @@ import { MCPServerSearchEffects } from './pages/mcpserver-search/mcpserver-searc
     McpserverCreateUpdateComponent,
     FloatLabelModule,
     InputTextModule,
-    CommonModule,
-    SharedModule,
     LetDirective,
     AngularAcceleratorModule,
     RouterModule.forChild(routes),

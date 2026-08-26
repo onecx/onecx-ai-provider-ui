@@ -37,12 +37,12 @@ const modifyPrimeNgPlugin = new ModifySourcePlugin({
   rules: [
     {
       test: (module) => {
-        return module.resource && module.resource.includes('primeng')
+        return module.resource?.includes('primeng') ?? false
       },
       operations: [
         new ReplaceOperation(
           'all',
-          'document\\.createElement\\(([^)]+)\\)',
+          String.raw`document\.createElement\(([^)]+)\)`,
           'document.createElementFromPrimeNg({"this": this, "arguments": Array.from(arguments), element: $1})'
         ),
         new ReplaceOperation('all', 'Theme.setLoadedStyleName', '(function(_){})')
@@ -62,7 +62,7 @@ const modifyMaterialPlugin = new ModifySourcePlugin({
       operations: [
         new ReplaceOperation(
           'all',
-          'document\\.createElement\\(',
+          String.raw`document\.createElement\(`,
           'document.createElementFromMaterial({"this": this, "arguments": Array.from(arguments)},'
         )
       ]

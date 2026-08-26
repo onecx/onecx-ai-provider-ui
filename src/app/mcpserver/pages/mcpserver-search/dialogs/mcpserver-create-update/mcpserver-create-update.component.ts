@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { InputTextModule } from 'primeng/inputtext'
@@ -13,6 +13,7 @@ import { McpserverCreateUpdateViewModel } from './mcpserver-create-update.viewmo
 @Component({
   selector: 'app-mcpserver-create-update',
   imports: [InputTextModule, TranslateModule, FloatLabelModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './mcpserver-create-update.component.html',
   styleUrls: ['./mcpserver-create-update.component.scss']
 })

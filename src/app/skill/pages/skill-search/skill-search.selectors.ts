@@ -23,35 +23,39 @@ export const selectResults = createSelector(
   }
 )
 
-export const selectSkillSearchViewModel = createSelector(
-  skillSearchSelectors.selectColumns,
+export const selectSearchState = createSelector(
   skillSearchSelectors.selectCriteria,
-  selectResults,
+  skillSearchSelectors.selectSearchLoadingIndicator,
+  skillSearchSelectors.selectSearchExecuted,
+  (searchCriteria, searchLoadingIndicator, searchExecuted) => ({
+    searchCriteria,
+    searchLoadingIndicator,
+    searchExecuted
+  })
+)
+
+export const selectComponentState = createSelector(
   skillSearchSelectors.selectResultComponentState,
   skillSearchSelectors.selectSearchHeaderComponentState,
   skillSearchSelectors.selectDiagramComponentState,
   skillSearchSelectors.selectChartVisible,
-  skillSearchSelectors.selectSearchLoadingIndicator,
-  skillSearchSelectors.selectSearchExecuted,
-  (
-    columns,
-    searchCriteria,
-    results,
+  (resultComponentState, searchHeaderComponentState, diagramComponentState, chartVisible) => ({
     resultComponentState,
     searchHeaderComponentState,
     diagramComponentState,
-    chartVisible,
-    searchLoadingIndicator,
-    searchExecuted
-  ): SkillSearchViewModel => ({
+    chartVisible
+  })
+)
+
+export const selectSkillSearchViewModel = createSelector(
+  skillSearchSelectors.selectColumns,
+  selectResults,
+  selectSearchState,
+  selectComponentState,
+  (columns, results, searchState, componentState): SkillSearchViewModel => ({
     columns,
-    searchCriteria,
     results,
-    resultComponentState,
-    searchHeaderComponentState,
-    diagramComponentState,
-    chartVisible,
-    searchLoadingIndicator,
-    searchExecuted
+    ...searchState,
+    ...componentState
   })
 )

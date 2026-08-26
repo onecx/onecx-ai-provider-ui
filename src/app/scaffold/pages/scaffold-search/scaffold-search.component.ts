@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common'
-import { Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, LOCALE_ID, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -45,6 +45,7 @@ import { ScaffoldSearchViewModel } from './scaffold-search.viewmodel'
     LetDirective,
     InputTextModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './scaffold-search.component.html',
   styleUrls: ['./scaffold-search.component.scss']
 })

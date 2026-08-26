@@ -1,7 +1,5 @@
-import { CommonModule } from '@angular/common'
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { isDevMode, NgModule } from '@angular/core'
-import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { LetDirective } from '@ngrx/component'
 import { EffectsModule } from '@ngrx/effects'
@@ -28,14 +26,10 @@ import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { metaReducers, reducers } from './app.reducers'
 
-export const commonImports = [CommonModule]
-
 @NgModule({
   imports: [
-    ...commonImports,
     AngularAuthModule,
     AppComponent,
-    BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     LetDirective,

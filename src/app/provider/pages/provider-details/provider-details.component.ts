@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
+import { AsyncPipe } from '@angular/common'
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -28,8 +28,8 @@ import { ProviderSearchActions } from '../provider-search/provider-search.action
 @Component({
   selector: 'app-provider-details',
   imports: [
+    AsyncPipe,
     AngularAcceleratorModule,
-    CommonModule,
     TranslateModule,
     FormsModule,
     FloatLabelModule,
@@ -43,6 +43,7 @@ import { ProviderSearchActions } from '../provider-search/provider-search.action
     TabsModule,
     ButtonModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './provider-details.component.html',
   styleUrls: ['./provider-details.component.scss']
 })
