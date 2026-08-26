@@ -134,6 +134,7 @@
     "@onecx/nx-plugin": {
       "@angular/compiler": "^19.2.20",
       "@angular/compiler-cli": "^19.2.20"
-    }
+    },
+    "minimatch@^9.0.0": "^9.0.7"
   }
 }
