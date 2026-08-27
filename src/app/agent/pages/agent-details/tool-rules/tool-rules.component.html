@@ -1,0 +1,97 @@
+<div class="surface-section mt-3 mb-1 mx-3 p-3">
+  <div class="flex align-items-center justify-content-between mb-3">
+    <h3 class="m-0">{{ 'TOOL_RULES.HEADER' | translate }}</h3>
+    <p-button
+      icon="pi pi-refresh"
+      [label]="'TOOL_RULES.REFRESH' | translate"
+      [loading]="loading"
+      (onClick)="refresh()"
+    ></p-button>
+  </div>
+  @if (discoveryError) {
+    <div class="mb-3">{{ 'TOOL_RULES.DISCOVERY_ERROR' | translate }}</div>
+  }
+  <p-table [value]="rows" [loading]="loading" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.NAME' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.DESCRIPTION' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.ANNOTATIONS' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.AUTO_DANGER_LEVEL' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.ALLOWED' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.ACTIONS' | translate }}</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>
+          {{ row.name }}
+          @if (row.orphaned) {
+            <p-tag
+              severity="warn"
+              class="ml-2"
+              [value]="'TOOL_RULES.ORPHANED' | translate"
+              [pTooltip]="'TOOL_RULES.ORPHANED_TOOLTIP' | translate"
+            ></p-tag>
+          }
+        </td>
+        <td>{{ row.description }}</td>
+        <td>
+          @for (badge of annotationBadges(row); track badge) {
+            <p-tag severity="info" class="mr-1" [value]="badge | translate"></p-tag>
+          }
+        </td>
+        <td>
+          <p-tag
+            [severity]="dangerSeverity(row.autoDangerLevel)"
+            [value]="'TOOL_RULES.DANGER_LEVEL.' + row.autoDangerLevel | translate"
+          ></p-tag>
+        </td>
+        <td>
+          <p-select
+            [options]="permissionOptions"
+            [(ngModel)]="row.allowed"
+            (onChange)="onPermissionChange(row)"
+            optionLabel="label"
+            optionValue="value"
+            appendTo="body"
+          >
+            <ng-template pTemplate="selectedItem" let-option>
+              {{ option.label | translate }}
+            </ng-template>
+            <ng-template pTemplate="item" let-option>
+              {{ option.label | translate }}
+            </ng-template>
+          </p-select>
+        </td>
+        <td>
+          <p-button
+            icon="pi pi-save"
+            [rounded]="true"
+            [text]="true"
+            [disabled]="!row.dirty || row.saving"
+            [loading]="row.saving"
+            (onClick)="save(row)"
+            [pTooltip]="'TOOL_RULES.SAVE' | translate"
+          ></p-button>
+          @if (row.existingRule) {
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              [disabled]="row.saving"
+              (onClick)="deleteRule(row)"
+              [pTooltip]="'TOOL_RULES.DELETE' | translate"
+            ></p-button>
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6">{{ 'TOOL_RULES.EMPTY' | translate }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

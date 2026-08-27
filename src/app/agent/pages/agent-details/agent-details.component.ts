@@ -1,6 +1,6 @@
 import { AsyncPipe, DatePipe } from '@angular/common'
 import { Component, OnInit, inject } from '@angular/core'
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
@@ -31,6 +31,7 @@ import {
 import { agentDetailsActions } from './agent-details.actions'
 import { selectAgentDetailsViewModel } from './agent-details.selectors'
 import { AgentDetailsViewModel } from './agent-details.viewmodel'
+import { AgentToolRulesComponent } from './tool-rules/tool-rules.component'
 
 @Component({
   selector: 'app-agent-details',
@@ -41,13 +42,15 @@ import { AgentDetailsViewModel } from './agent-details.viewmodel'
     FloatLabelModule,
     AutoCompleteModule,
     ReactiveFormsModule,
+    FormsModule,
     MultiSelectModule,
     TabsModule,
     SelectModule,
     AsyncPipe,
     AngularAcceleratorModule,
     PortalPageComponent,
-    LetDirective
+    LetDirective,
+    AgentToolRulesComponent
   ],
   templateUrl: './agent-details.component.html',
   styleUrls: ['./agent-details.component.scss']
@@ -160,6 +163,7 @@ export class AgentDetailsComponent implements OnInit {
 
   public formGroup: FormGroup
   private currentDetails: Agent | undefined
+  selectedToolId: string | undefined
 
   constructor() {
     this.formGroup = new FormGroup({
@@ -314,6 +318,10 @@ export class AgentDetailsComponent implements OnInit {
       return []
     }
     return allModels.filter((model) => model.provider?.id === selectedProvider.id)
+  }
+
+  get currentAgentId(): string | undefined {
+    return this.currentDetails?.id
   }
 
   private createFilterFormGroup(filter?: AgentFilter): FormGroup {

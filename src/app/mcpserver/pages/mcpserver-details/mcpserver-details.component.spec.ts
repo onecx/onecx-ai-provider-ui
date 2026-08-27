@@ -1,5 +1,6 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
@@ -101,6 +102,7 @@ describe('MCPServerDetailsComponent', () => {
       ],
       providers: [
         ...providePermissionService(),
+        provideHttpClient(),
         provideHttpClientTesting(),
         provideMockStore({
           initialState: { mcpserver: { details: initialState } }
