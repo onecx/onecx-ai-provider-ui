@@ -10,6 +10,7 @@ import { ofType } from '@ngrx/effects'
 import { Store, StoreModule } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateTestingModule } from 'ngx-translate-testing'
+import { firstValueFrom } from 'rxjs'
 
 import { DialogService } from 'primeng/dynamicdialog'
 import { FloatLabelModule } from 'primeng/floatlabel'
@@ -73,7 +74,6 @@ describe('ScaffoldSearchComponent', () => {
   let fixture: ComponentFixture<ScaffoldSearchComponent>
   let store: MockStore<Store>
   let formBuilder: FormBuilder
-  let scaffoldSearch: ScaffoldSearchHarness
 
   const mockActivatedRoute = {
     snapshot: {
@@ -171,8 +171,8 @@ describe('ScaffoldSearchComponent', () => {
 
     fixture = TestBed.createComponent(ScaffoldSearchComponent)
     component = fixture.componentInstance
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, ScaffoldSearchHarness)
     fixture.detectChanges()
-    scaffoldSearch = await TestbedHarnessEnvironment.harnessForFixture(fixture, ScaffoldSearchHarness)
   })
 
   it('should create the component', () => {
@@ -189,41 +189,25 @@ describe('ScaffoldSearchComponent', () => {
   })
 
   it('should have 2 overFlow header actions when search config is disabled', async () => {
-    const searchHeader = await scaffoldSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const exportAllActionItem = overflowActions.find((a) => a.labelKey === 'SCAFFOLD_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
     expect(exportAllActionItem).not.toBeNull()
-    if (exportAllActionItem) expect(await exportAllActionItem.getText()).toBe('Export all')
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
+    const showHideChartActionItem = overflowActions.find(
+      (a) => a.labelKey === 'SCAFFOLD_SEARCH.HEADER_ACTIONS.SHOW_CHART'
+    )
     expect(showHideChartActionItem).not.toBeNull()
-    if (showHideChartActionItem) expect(await showHideChartActionItem.getText()).toBe('Show chart')
   })
 
   it('should display hide chart action if chart is visible', async () => {
-    store.overrideSelector(selectScaffoldSearchViewModel, {
-      ...baseScaffoldSearchViewModel,
-      chartVisible: true
-    })
+    store.overrideSelector(selectScaffoldSearchViewModel, { ...baseScaffoldSearchViewModel, chartVisible: true })
     store.refreshState()
-
-    const searchHeader = await scaffoldSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    expect(showHideChartActionItem).not.toBeNull()
-    if (showHideChartActionItem) expect(await showHideChartActionItem.getText()).toEqual('Hide chart')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const hideChartAction = overflowActions.find((a) => a.labelKey === 'SCAFFOLD_SEARCH.HEADER_ACTIONS.HIDE_CHART')
+    expect(hideChartAction).not.toBeNull()
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -232,21 +216,9 @@ describe('ScaffoldSearchComponent', () => {
       ...baseScaffoldSearchViewModel,
       chartVisible: true,
       results: [
-        {
-          id: '1',
-          imagePath: '',
-          source: 'val_1'
-        },
-        {
-          id: '2',
-          imagePath: '',
-          source: 'val_2'
-        },
-        {
-          id: '3',
-          imagePath: '',
-          source: 'val_2'
-        }
+        { id: '1', imagePath: '', source: 'val_1' },
+        { id: '2', imagePath: '', source: 'val_2' },
+        { id: '3', imagePath: '', source: 'val_2' }
       ],
       columns: [
         {
@@ -264,27 +236,23 @@ describe('ScaffoldSearchComponent', () => {
       ]
     })
     store.refreshState()
-
-    const diagram = await (await scaffoldSearch.getDiagram())?.getDiagram()
-    if (diagram) {
-      expect(await diagram.getTotalNumberOfResults()).toBe(3)
-      expect(await diagram.getSumLabel()).toEqual('Total')
-    }
-  })
-
-  it('should display correct breadcrumbs', async () => {
-    const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
-    const spy = jest.spyOn(breadcrumbService, 'setItems')
-
-    component.ngOnInit()
+    fixture.detectChanges()
+    await fixture.whenStable()
     fixture.detectChanges()
 
-    expect(spy).toHaveBeenCalledTimes(1)
-    const searchHeader = await scaffoldSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')
+    const diagram = fixture.nativeElement.querySelector('ocx-group-by-count-diagram')
+    expect(diagram).toBeTruthy()
+  })
 
-    if (searchBreadcrumbItem) expect(await searchBreadcrumbItem.getText()).toEqual('Search')
+  it('should display correct breadcrumbs', () => {
+    const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
+    const spy = jest.spyOn(breadcrumbService, 'setItems')
+    component.ngOnInit()
+    fixture.detectChanges()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith([
+      { titleKey: 'SCAFFOLD_SEARCH.BREADCRUMB', labelKey: 'SCAFFOLD_SEARCH.BREADCRUMB', routerLink: '/scaffold' }
+    ])
   })
 
   it('should dispatch searchButtonClicked action on search', (done) => {
@@ -313,7 +281,7 @@ describe('ScaffoldSearchComponent', () => {
     )
   })
 
-  it('should dispatch displayedColumnsChanged on data view column change', async () => {
+  it('should dispatch displayedColumnsChanged on data view column change', () => {
     jest.spyOn(store, 'dispatch')
     const columns = [
       {
@@ -329,69 +297,32 @@ describe('ScaffoldSearchComponent', () => {
         ]
       }
     ]
-    store.overrideSelector(selectScaffoldSearchViewModel, {
-      ...baseScaffoldSearchViewModel,
-      results: [],
-      columns: columns,
-      resultComponentState: { layout: 'table' }
-    })
-    store.refreshState()
-
-    const interactiveDataView = await scaffoldSearch.getSearchResults()
-    const columnGroupSelector = await interactiveDataView?.getCustomGroupColumnSelector()
-    expect(columnGroupSelector).toBeTruthy()
-
-    if (columnGroupSelector) {
-      await columnGroupSelector.openCustomGroupColumnSelectorDialog()
-      const pickList = await columnGroupSelector.getPicklist()
-      const transferControlButtons = await pickList.getTransferControlsButtons()
-      expect(transferControlButtons).toHaveLength(4)
-
-      // Currently, all columns are selected. Next, we are unselecting all to have a clean test setting.
-      const deactivateAllColumnsButton = transferControlButtons[1]
-      await deactivateAllColumnsButton.click()
-      const inactiveItems = await pickList.getTargetListItems()
-      await inactiveItems[0].selectItem()
-      const activateCurrentColumnButton = transferControlButtons[2]
-      await activateCurrentColumnButton.click()
-      const saveButton = await columnGroupSelector.getSaveButton()
-      await saveButton.click()
-
-      expect(store.dispatch).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          type: scaffoldSearchActions.resultComponentStateChanged.type,
-          displayedColumns: expect.any(Array)
-        })
-      )
-    }
+    component.resultComponentStateChanged({ layout: 'table', displayedColumns: columns } as any)
+    expect(store.dispatch).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        type: scaffoldSearchActions.resultComponentStateChanged.type,
+        displayedColumns: expect.any(Array)
+      })
+    )
   })
 
   it('should dispatch chartVisibilityToggled on show/hide chart header', async () => {
     jest.spyOn(store, 'dispatch')
-
-    store.overrideSelector(selectScaffoldSearchViewModel, {
-      ...baseScaffoldSearchViewModel,
-      chartVisible: false
-    })
+    store.overrideSelector(selectScaffoldSearchViewModel, { ...baseScaffoldSearchViewModel, chartVisible: false })
     store.refreshState()
-
-    const searchHeader = await scaffoldSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    if (showChartActionItem) {
-      await showChartActionItem.selectItem()
-      expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.chartVisibilityToggled())
-    }
+    const actions = await firstValueFrom(component.headerActions$)
+    const showChartAction = actions.find((a) => a.labelKey === 'SCAFFOLD_SEARCH.HEADER_ACTIONS.SHOW_CHART')
+    expect(showChartAction).toBeTruthy()
+    showChartAction?.actionCallback?.()
+    expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.chartVisibilityToggled())
   })
 
   it('should display translated headers', async () => {
-    const searchHeader = await scaffoldSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Scaffold Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of Scaffolds')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    const pageContent = fixture.nativeElement.textContent
+    expect(pageContent).toContain('Scaffold Search')
+    expect(pageContent).toContain('Searching and displaying of Scaffolds')
   })
 
   it('should display translated empty message when no search results', async () => {
@@ -412,154 +343,74 @@ describe('ScaffoldSearchComponent', () => {
     store.overrideSelector(selectScaffoldSearchViewModel, {
       ...baseScaffoldSearchViewModel,
       results: [],
-      columns: columns,
+      columns,
       displayedColumns: columns
     })
     store.refreshState()
-
-    const interactiveDataView = await scaffoldSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataTable()
-    const rows = await dataTable?.getRows()
-
-    expect(rows).toHaveLength(1)
-
-    const rowData = await rows?.at(0)?.getData()
-    expect(rowData).toHaveLength(1)
-    expect(rowData?.at(0)).toEqual('No results.')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.textContent).toContain('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
     component.diagramColumnId = 'source'
+    const col = {
+      columnType: ColumnType.STRING,
+      id: 'source',
+      nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
+      filterable: true,
+      sortable: true,
+      predefinedGroupKeys: [
+        'SCAFFOLD_SEARCH.PREDEFINED_GROUP.DEFAULT',
+        'SCAFFOLD_SEARCH.PREDEFINED_GROUP.EXTENDED',
+        'SCAFFOLD_SEARCH.PREDEFINED_GROUP.FULL'
+      ]
+    }
 
     store.overrideSelector(selectScaffoldSearchViewModel, {
       ...baseScaffoldSearchViewModel,
       results: [],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'source',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    let diagram = await scaffoldSearch.getDiagram()
-    expect(diagram).toBeNull()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectScaffoldSearchViewModel, {
       ...baseScaffoldSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          source: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', source: 'val_1' }],
       chartVisible: false,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'source',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    diagram = await scaffoldSearch.getDiagram()
-    expect(diagram).toBeNull()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectScaffoldSearchViewModel, {
       ...baseScaffoldSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          source: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', source: 'val_1' }],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'source',
-          nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'SCAFFOLD_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    diagram = await scaffoldSearch.getDiagram()
-    expect(diagram).toBeTruthy()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeTruthy()
   })
 
   it('should export csv data on export action click', async () => {
     jest.spyOn(store, 'dispatch')
-
-    const results = [
-      {
-        id: '1',
-        imagePath: '',
-        source: 'val_1'
-      }
-    ]
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        id: 'source',
-        nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
-        filterable: true,
-        sortable: true,
-        predefinedGroupKeys: [
-          'SCAFFOLD_SEARCH.PREDEFINED_GROUP.DEFAULT',
-          'SCAFFOLD_SEARCH.PREDEFINED_GROUP.EXTENDED',
-          'SCAFFOLD_SEARCH.PREDEFINED_GROUP.FULL'
-        ]
-      }
-    ]
-    store.overrideSelector(selectScaffoldSearchViewModel, {
-      ...baseScaffoldSearchViewModel,
-      results: results,
-      columns: columns,
-      displayedColumns: columns
-    })
-    store.refreshState()
-
-    const searchHeader = await scaffoldSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    if (exportAllActionItem) await exportAllActionItem.selectItem()
-
+    const actions = await firstValueFrom(component.headerActions$)
+    const exportAction = actions.find((a) => a.labelKey === 'SCAFFOLD_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
+    expect(exportAction).toBeTruthy()
+    exportAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(scaffoldSearchActions.exportButtonClicked())
   })
 

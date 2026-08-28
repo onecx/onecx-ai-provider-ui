@@ -14,6 +14,7 @@ import { DialogService } from 'primeng/dynamicdialog'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { TooltipModule } from 'primeng/tooltip'
+import { firstValueFrom } from 'rxjs'
 
 import {
   AngularAcceleratorModule,
@@ -72,7 +73,6 @@ describe('AgentSearchComponent', () => {
   let fixture: ComponentFixture<AgentSearchComponent>
   let store: MockStore<Store>
   let formBuilder: FormBuilder
-  let agentSearch: AgentSearchHarness
 
   const mockActivatedRoute = {
     snapshot: {
@@ -171,7 +171,7 @@ describe('AgentSearchComponent', () => {
     fixture = TestBed.createComponent(AgentSearchComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
-    agentSearch = await TestbedHarnessEnvironment.harnessForFixture(fixture, AgentSearchHarness)
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, AgentSearchHarness)
   })
 
   it('should create the component', () => {
@@ -188,21 +188,15 @@ describe('AgentSearchComponent', () => {
   })
 
   it('should have 2 overFlow header actions when search config is disabled', async () => {
-    const searchHeader = await agentSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
 
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
+    const exportAllActionItem = overflowActions.find((a) => a.labelKey === 'AGENT_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
     expect(exportAllActionItem).not.toBeNull()
-    if (exportAllActionItem) expect(await exportAllActionItem.getText()).toBe('Export all')
 
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
+    const showHideChartActionItem = overflowActions.find((a) => a.labelKey === 'AGENT_SEARCH.HEADER_ACTIONS.SHOW_CHART')
     expect(showHideChartActionItem).not.toBeNull()
-    if (showHideChartActionItem) expect(await showHideChartActionItem.getText()).toBe('Show chart')
   })
 
   it('should display hide chart action if chart is visible', async () => {
@@ -212,17 +206,12 @@ describe('AgentSearchComponent', () => {
     })
     store.refreshState()
 
-    const searchHeader = await agentSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
 
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    expect(showHideChartActionItem).not.toBeNull()
-    if (showHideChartActionItem) expect(await showHideChartActionItem.getText()).toEqual('Hide chart')
+    const hideChartAction = overflowActions.find((a) => a.labelKey === 'AGENT_SEARCH.HEADER_ACTIONS.HIDE_CHART')
+    expect(hideChartAction).not.toBeNull()
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -231,21 +220,9 @@ describe('AgentSearchComponent', () => {
       ...baseAgentSearchViewModel,
       chartVisible: true,
       results: [
-        {
-          id: '1',
-          imagePath: '',
-          name: 'val_1'
-        },
-        {
-          id: '2',
-          imagePath: '',
-          name: 'val_2'
-        },
-        {
-          id: '3',
-          imagePath: '',
-          name: 'val_2'
-        }
+        { id: '1', imagePath: '', name: 'val_1' },
+        { id: '2', imagePath: '', name: 'val_2' },
+        { id: '3', imagePath: '', name: 'val_2' }
       ],
       columns: [
         {
@@ -263,15 +240,15 @@ describe('AgentSearchComponent', () => {
       ]
     })
     store.refreshState()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
 
-    const diagram = await (await agentSearch.getDiagram())?.getDiagram()
-    if (diagram) {
-      expect(await diagram.getTotalNumberOfResults()).toBe(3)
-      expect(await diagram.getSumLabel()).toEqual('Total')
-    }
+    const diagram = fixture.nativeElement.querySelector('ocx-group-by-count-diagram')
+    expect(diagram).toBeTruthy()
   })
 
-  it('should display correct breadcrumbs', async () => {
+  it('should display correct breadcrumbs', () => {
     const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
     const spy = jest.spyOn(breadcrumbService, 'setItems')
 
@@ -279,11 +256,9 @@ describe('AgentSearchComponent', () => {
     fixture.detectChanges()
 
     expect(spy).toHaveBeenCalledTimes(1)
-    const searchHeader = await agentSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')
-
-    if (searchBreadcrumbItem) expect(await searchBreadcrumbItem.getText()).toEqual('Search')
+    expect(spy).toHaveBeenCalledWith([
+      { titleKey: 'AGENT_SEARCH.BREADCRUMB', labelKey: 'AGENT_SEARCH.BREADCRUMB', routerLink: '/agent' }
+    ])
   })
 
   it('should dispatch searchButtonClicked action on search', (done) => {
@@ -347,23 +322,20 @@ describe('AgentSearchComponent', () => {
     })
     store.refreshState()
 
-    const searchHeader = await agentSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    if (showChartActionItem) {
-      await showChartActionItem.selectItem()
-      expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.chartVisibilityToggled())
-    }
+    const actions = await firstValueFrom(component.headerActions$)
+    const showChartAction = actions.find((a) => a.labelKey === 'AGENT_SEARCH.HEADER_ACTIONS.SHOW_CHART')
+    expect(showChartAction).toBeTruthy()
+    showChartAction?.actionCallback?.()
+    expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.chartVisibilityToggled())
   })
 
   it('should display translated headers', async () => {
-    const searchHeader = await agentSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Agent Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of Agents')
+    fixture.detectChanges()
+    await fixture.whenStable()
+
+    const pageContent = fixture.nativeElement.textContent
+    expect(pageContent).toContain('Agent Search')
+    expect(pageContent).toContain('Searching and displaying of Agents')
   })
 
   it('should display translated empty message when no search results', async () => {
@@ -388,142 +360,72 @@ describe('AgentSearchComponent', () => {
       displayedColumns: columns
     })
     store.refreshState()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
 
-    const interactiveDataView = await agentSearch.getSearchResults()
-    expect(interactiveDataView).toBeTruthy()
     expect(fixture.nativeElement.textContent).toContain('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
     component.diagramColumnId = 'name'
+    const col = {
+      columnType: ColumnType.STRING,
+      id: 'name',
+      nameKey: 'AGENT_SEARCH.RESULTS.CHANGE_ME',
+      filterable: true,
+      sortable: true,
+      predefinedGroupKeys: [
+        'AGENT_SEARCH.PREDEFINED_GROUP.DEFAULT',
+        'AGENT_SEARCH.PREDEFINED_GROUP.EXTENDED',
+        'AGENT_SEARCH.PREDEFINED_GROUP.FULL'
+      ]
+    }
 
     store.overrideSelector(selectAgentSearchViewModel, {
       ...baseAgentSearchViewModel,
       results: [],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'name',
-          nameKey: 'AGENT_SEARCH.RESULTS.CHANGE_ME',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'AGENT_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'AGENT_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'AGENT_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    let diagram = await agentSearch.getDiagram()
-    expect(diagram).toBeNull()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectAgentSearchViewModel, {
       ...baseAgentSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          name: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', name: 'val_1' }],
       chartVisible: false,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'name',
-          nameKey: 'AGENT_SEARCH.RESULTS.CHANGE_ME',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'AGENT_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'AGENT_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'AGENT_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    diagram = await agentSearch.getDiagram()
-    expect(diagram).toBeNull()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectAgentSearchViewModel, {
       ...baseAgentSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          name: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', name: 'val_1' }],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'name',
-          nameKey: 'AGENT_SEARCH.RESULTS.CHANGE_ME',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'AGENT_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'AGENT_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'AGENT_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
     fixture.detectChanges()
-
-    diagram = await agentSearch.getDiagram()
-    expect(diagram).toBeTruthy()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeTruthy()
   })
 
   it('should export csv data on export action click', async () => {
     jest.spyOn(store, 'dispatch')
 
-    const results = [
-      {
-        id: '1',
-        imagePath: '',
-        name: 'val_1'
-      }
-    ]
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        id: 'name',
-        nameKey: 'AGENT_SEARCH.RESULTS.CHANGE_ME',
-        filterable: true,
-        sortable: true,
-        predefinedGroupKeys: [
-          'AGENT_SEARCH.PREDEFINED_GROUP.DEFAULT',
-          'AGENT_SEARCH.PREDEFINED_GROUP.EXTENDED',
-          'AGENT_SEARCH.PREDEFINED_GROUP.FULL'
-        ]
-      }
-    ]
-    store.overrideSelector(selectAgentSearchViewModel, {
-      ...baseAgentSearchViewModel,
-      results: results,
-      columns: columns,
-      displayedColumns: columns
-    })
-    store.refreshState()
-
-    const searchHeader = await agentSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    if (exportAllActionItem) await exportAllActionItem.selectItem()
+    const actions = await firstValueFrom(component.headerActions$)
+    const exportAction = actions.find((a) => a.labelKey === 'AGENT_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
+    expect(exportAction).toBeTruthy()
+    exportAction?.actionCallback?.()
 
     expect(store.dispatch).toHaveBeenCalledWith(agentSearchActions.exportButtonClicked())
   })

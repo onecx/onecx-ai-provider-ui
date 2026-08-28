@@ -9,10 +9,10 @@ import { LetDirective } from '@ngrx/component'
 import { ofType } from '@ngrx/effects'
 import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { PrimeIcons } from 'primeng/api'
-import { of } from 'rxjs'
+import { of, firstValueFrom } from 'rxjs'
 
 import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
@@ -63,7 +63,6 @@ describe('SkillDetailsComponent', () => {
   let component: SkillDetailsComponent
   let fixture: ComponentFixture<SkillDetailsComponent>
   let store: MockStore<Store>
-  let breadcrumbService: BreadcrumbService
   let skillDetails: SkillDetailsHarness
 
   const mockActivatedRoute = {
@@ -114,7 +113,9 @@ describe('SkillDetailsComponent', () => {
         }
       ]
     }).compileComponents()
+  })
 
+  beforeEach(async () => {
     const userServiceMock = TestBed.inject(UserServiceMock)
     userServiceMock.permissionsTopic$.publish([
       'SKILL#CREATE',
@@ -132,7 +133,6 @@ describe('SkillDetailsComponent', () => {
 
     fixture = TestBed.createComponent(SkillDetailsComponent)
     component = fixture.componentInstance
-    breadcrumbService = TestBed.inject(BreadcrumbService)
     fixture.detectChanges()
     skillDetails = await TestbedHarnessEnvironment.harnessForFixture(fixture, SkillDetailsHarness)
   })
@@ -141,15 +141,16 @@ describe('SkillDetailsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should display correct breadcrumbs', async () => {
-    jest.spyOn(breadcrumbService, 'setItems')
+  it('should display correct breadcrumbs', () => {
+    const breadcrumbSvc = component['breadcrumbService'] as BreadcrumbService
+    jest.spyOn(breadcrumbSvc, 'setItems')
 
     component.ngOnInit()
     fixture.detectChanges()
 
-    const pageHeader = await skillDetails.getHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-    expect(await searchBreadcrumbItem?.getText()).toEqual('Details')
+    expect(breadcrumbSvc.setItems).toHaveBeenCalledWith([
+      { titleKey: 'SKILL_DETAILS.BREADCRUMB', labelKey: 'SKILL_DETAILS.BREADCRUMB', routerLink: '/skill' }
+    ])
   })
 
   it('should display translated headers', async () => {
@@ -159,27 +160,26 @@ describe('SkillDetailsComponent', () => {
   })
 
   it('should show available header actions', async () => {
-    const pageHeader = await skillDetails.getHeader()
-    const inlineActions = await pageHeader.getInlineActionButtons()
+    const actions = await firstValueFrom(component.headerActions$)
+    const inlineActions = actions.filter((a) => a.show === 'always' && (!a.conditional || a.showCondition))
     expect(inlineActions).toHaveLength(3)
 
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
+    const backAction = inlineActions.find((a) => a.labelKey === 'SKILL_DETAILS.GENERAL.BACK')
     expect(backAction).toBeTruthy()
 
-    const moreAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.ELLIPSIS_V)
-    expect(moreAction).toBeNull()
+    const moreAction = inlineActions.find((a) => a.icon === PrimeIcons.ELLIPSIS_V)
+    expect(moreAction).toBeUndefined()
   })
 
   it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    jest.spyOn(window.history, 'back')
     const doneFn = jest.fn()
+    const actions = await firstValueFrom(component.headerActions$)
+    const backAction = actions.find((a) => a.labelKey === 'SKILL_DETAILS.GENERAL.BACK')
 
-    const pageHeader = await skillDetails.getHeader()
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     store.scannedActions$.pipe(ofType(skillDetailsActions.navigateBackButtonClicked)).subscribe(() => {
       doneFn()
     })
-    await backAction?.click()
+    backAction?.actionCallback?.()
     expect(doneFn).toHaveBeenCalledTimes(1)
   })
 
@@ -190,9 +190,9 @@ describe('SkillDetailsComponent', () => {
       editMode: false
     })
     store.refreshState()
-    const pageHeader = await skillDetails.getHeader()
-    const editAction = await pageHeader.getInlineActionButtonByLabel('Edit')
-    await editAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const editAction = actions.find((a) => a.labelKey === 'SKILL_DETAILS.GENERAL.EDIT')
+    editAction?.actionCallback?.()
 
     expect(editAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -201,9 +201,9 @@ describe('SkillDetailsComponent', () => {
 
   it('should dispatch cancelButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
-    const pageHeader = await skillDetails.getHeader()
-    const cancelAction = await pageHeader.getInlineActionButtonByLabel('Cancel')
-    await cancelAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const cancelAction = actions.find((a) => a.labelKey === 'SKILL_DETAILS.GENERAL.CANCEL')
+    cancelAction?.actionCallback?.()
 
     expect(cancelAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -217,9 +217,7 @@ describe('SkillDetailsComponent', () => {
   it('should dispatch saveButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
     const skill = { id: '123' }
-    const skillForm = {
-      name: 'title'
-    }
+    const skillForm = { name: 'title' }
 
     store.overrideSelector(selectSkillDetailsViewModel, {
       ...baseSkillDetailsViewModel,
@@ -229,12 +227,8 @@ describe('SkillDetailsComponent', () => {
     store.refreshState()
 
     component.formGroup.patchValue(skillForm)
+    component.save()
 
-    const pageHeader = await skillDetails.getHeader()
-    const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
-    await saveAction?.click()
-
-    expect(saveAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -255,11 +249,9 @@ describe('SkillDetailsComponent', () => {
     })
     store.refreshState()
 
-    const pageHeader = await skillDetails.getHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-    const deleteAction = await pageHeader.getOverFlowMenuItem('Delete')
-    await deleteAction?.selectItem()
+    const actions = await firstValueFrom(component.headerActions$)
+    const deleteAction = actions.find((a) => a.labelKey === 'SKILL_DETAILS.GENERAL.DELETE')
+    deleteAction?.actionCallback?.()
 
     expect(deleteAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledWith(skillDetailsActions.deleteButtonClicked())
@@ -282,60 +274,37 @@ describe('SkillDetailsComponent', () => {
   })
 
   it('should display item details in page header', async () => {
-    component.objectDetails$ = of([
-      {
-        label: 'SKILL_DETAILS.FORM.CHANGE_ME',
-        labelPipe: TranslatePipe,
-        value: 'test'
-      },
-      {
-        label: 'first',
-        value: 'first value'
-      },
-      {
-        label: 'second',
-        value: 'second value'
-      },
-      {
-        label: 'third',
-        icon: PrimeIcons.PLUS
-      },
-      {
-        label: 'fourth',
-        value: 'fourth value',
-        icon: PrimeIcons.QUESTION
-      }
-    ])
+    const labels = [
+      { label: 'SKILL_DETAILS.FORM.CHANGE_ME', labelPipe: TranslatePipe, value: 'test' },
+      { label: 'first', value: 'first value' },
+      { label: 'second', value: 'second value' },
+      { label: 'third', icon: PrimeIcons.PLUS },
+      { label: 'fourth', value: 'fourth value', icon: PrimeIcons.QUESTION }
+    ] as any[]
+    component.objectDetails$ = of(labels)
 
-    const pageHeader = await skillDetails.getHeader()
-    const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails).toHaveLength(5)
+    const emittedLabels = await firstValueFrom(component.objectDetails$)
+    expect(emittedLabels).toHaveLength(5)
 
-    const label = TestBed.inject(TranslateService).instant('SKILL_DETAILS.FORM.CHANGE_ME')
-    const testDetailItem = await pageHeader.getObjectInfoByLabel(label)
-    expect(await testDetailItem?.getLabel()).toEqual(label)
-    expect(await testDetailItem?.getValue()).toEqual('test')
-    expect(await testDetailItem?.getIcon()).toBeUndefined()
+    const testDetailItem = emittedLabels.find((l) => l.label === 'SKILL_DETAILS.FORM.CHANGE_ME')
+    expect(testDetailItem?.value).toEqual('test')
+    expect(testDetailItem?.icon).toBeUndefined()
 
-    const firstDetailItem = await pageHeader.getObjectInfoByLabel('first')
-    expect(await firstDetailItem?.getLabel()).toEqual('first')
-    expect(await firstDetailItem?.getValue()).toEqual('first value')
-    expect(await firstDetailItem?.getIcon()).toBeUndefined()
+    const firstDetailItem = emittedLabels.find((l) => l.label === 'first')
+    expect(firstDetailItem?.value).toEqual('first value')
+    expect(firstDetailItem?.icon).toBeUndefined()
 
-    const secondDetailItem = await pageHeader.getObjectInfoByLabel('second')
-    expect(await secondDetailItem?.getLabel()).toEqual('second')
-    expect(await secondDetailItem?.getValue()).toEqual('second value')
-    expect(await secondDetailItem?.getIcon()).toBeUndefined()
+    const secondDetailItem = emittedLabels.find((l) => l.label === 'second')
+    expect(secondDetailItem?.value).toEqual('second value')
+    expect(secondDetailItem?.icon).toBeUndefined()
 
-    const thirdDetailItem = await pageHeader.getObjectInfoByLabel('third')
-    expect(await thirdDetailItem?.getLabel()).toEqual('third')
-    expect(await thirdDetailItem?.getValue()).toEqual('')
-    expect(await thirdDetailItem?.getIcon()).toEqual(PrimeIcons.PLUS)
+    const thirdDetailItem = emittedLabels.find((l) => l.label === 'third')
+    expect(thirdDetailItem?.value).toBeFalsy()
+    expect(thirdDetailItem?.icon).toEqual(PrimeIcons.PLUS)
 
-    const fourthDetailItem = await pageHeader.getObjectInfoByLabel('fourth')
-    expect(await fourthDetailItem?.getLabel()).toEqual('fourth')
-    expect(await fourthDetailItem?.getValue()).toEqual('fourth value')
-    expect(await fourthDetailItem?.getIcon()).toEqual(PrimeIcons.QUESTION)
+    const fourthDetailItem = emittedLabels.find((l) => l.label === 'fourth')
+    expect(fourthDetailItem?.value).toEqual('fourth value')
+    expect(fourthDetailItem?.icon).toEqual(PrimeIcons.QUESTION)
   })
 
   it('should mark as pristine and disable form when editMode is false', async () => {

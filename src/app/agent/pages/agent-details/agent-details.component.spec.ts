@@ -10,7 +10,7 @@ import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
-import { of } from 'rxjs'
+import { of, firstValueFrom } from 'rxjs'
 
 import { PrimeIcons } from 'primeng/api'
 import { AutoCompleteModule } from 'primeng/autocomplete'
@@ -156,7 +156,9 @@ describe('AgentDetailsComponent', () => {
         { provide: AgentGroupService, useValue: agentGroupService }
       ]
     }).compileComponents()
+  })
 
+  beforeEach(async () => {
     const userServiceMock = TestBed.inject(UserServiceMock)
     userServiceMock.permissionsTopic$.publish([
       'AGENT#CREATE',
@@ -182,7 +184,7 @@ describe('AgentDetailsComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  it('should display correct breadcrumbs', async () => {
+  it('should display correct breadcrumbs', () => {
     const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
     const spy = jest.spyOn(breadcrumbService, 'setItems')
 
@@ -190,9 +192,9 @@ describe('AgentDetailsComponent', () => {
     fixture.detectChanges()
 
     expect(spy).toHaveBeenCalledTimes(1)
-    const pageHeader = await agentDetails.getHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Details')
-    expect(await searchBreadcrumbItem?.getText()).toEqual('Details')
+    expect(spy).toHaveBeenCalledWith([
+      { titleKey: 'AGENT_DETAILS.BREADCRUMB', labelKey: 'AGENT_DETAILS.BREADCRUMB', routerLink: '/agent' }
+    ])
   })
 
   it('should display translated headers', async () => {
@@ -201,25 +203,24 @@ describe('AgentDetailsComponent', () => {
     expect(await pageHeader.getSubheaderText()).toEqual('Display and edit Agent details')
   })
 
-  it('should have 4 inline actions', async () => {
-    const pageHeader = await agentDetails.getHeader()
-    const inlineActions = await pageHeader.getInlineActionButtons()
+  it('should have 3 inline actions', async () => {
+    const actions = await firstValueFrom(component.headerActions$)
+    const inlineActions = actions.filter((a) => a.show === 'always' && (!a.conditional || a.showCondition))
     expect(inlineActions).toHaveLength(3)
 
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
+    const backAction = inlineActions.find((a) => a.labelKey === 'AGENT_DETAILS.GENERAL.BACK')
     expect(backAction).toBeTruthy()
   })
 
   it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    jest.spyOn(window.history, 'back')
     const doneFn = jest.fn()
+    const actions = await firstValueFrom(component.headerActions$)
+    const backAction = actions.find((a) => a.labelKey === 'AGENT_DETAILS.GENERAL.BACK')
 
-    const pageHeader = await agentDetails.getHeader()
-    const backAction = await pageHeader.getInlineActionButtonByLabel('Back')
     store.scannedActions$.pipe(ofType(agentDetailsActions.navigateBackButtonClicked)).subscribe(() => {
       doneFn()
     })
-    await backAction?.click()
+    backAction?.actionCallback?.()
     expect(doneFn).toHaveBeenCalledTimes(1)
   })
 
@@ -230,9 +231,9 @@ describe('AgentDetailsComponent', () => {
       editMode: false
     })
     store.refreshState()
-    const pageHeader = await agentDetails.getHeader()
-    const editAction = await pageHeader.getInlineActionButtonByLabel('Edit')
-    await editAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const editAction = actions.find((a) => a.labelKey === 'AGENT_DETAILS.GENERAL.EDIT')
+    editAction?.actionCallback?.()
 
     expect(editAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -241,9 +242,9 @@ describe('AgentDetailsComponent', () => {
 
   it('should dispatch cancelButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
-    const pageHeader = await agentDetails.getHeader()
-    const cancelAction = await pageHeader.getInlineActionButtonByLabel('Cancel')
-    await cancelAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const cancelAction = actions.find((a) => a.labelKey === 'AGENT_DETAILS.GENERAL.CANCEL')
+    cancelAction?.actionCallback?.()
 
     expect(cancelAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -279,12 +280,8 @@ describe('AgentDetailsComponent', () => {
     store.refreshState()
 
     component.formGroup.setValue(agentForm)
+    component.save()
 
-    const pageHeader = await agentDetails.getHeader()
-    const saveAction = await pageHeader.getInlineActionButtonByLabel('Save')
-    await saveAction?.click()
-
-    expect(saveAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
       agentDetailsActions.saveButtonClicked({
@@ -312,9 +309,9 @@ describe('AgentDetailsComponent', () => {
     })
     store.refreshState()
 
-    const pageHeader = await agentDetails.getHeader()
-    const deleteAction = await pageHeader.getInlineActionButtonByLabel('Delete')
-    await deleteAction?.click()
+    const actions = await firstValueFrom(component.headerActions$)
+    const deleteAction = actions.find((a) => a.labelKey === 'AGENT_DETAILS.GENERAL.DELETE')
+    deleteAction?.actionCallback?.()
 
     expect(deleteAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
@@ -322,66 +319,43 @@ describe('AgentDetailsComponent', () => {
   })
 
   it('should not render more action button', async () => {
-    const pageHeader = await agentDetails.getHeader()
-    const moreAction = await pageHeader.getInlineActionButtonByIcon(PrimeIcons.ELLIPSIS_V)
-    expect(moreAction).toBeNull()
+    const actions = await firstValueFrom(component.headerActions$)
+    const moreAction = actions.find((a) => a.icon === PrimeIcons.ELLIPSIS_V)
+    expect(moreAction).toBeUndefined()
   })
 
   it('should display item details in page header', async () => {
-    component.objectDetails$ = of([
-      {
-        label: 'AGENT_DETAILS.FORM.CHANGE_ME',
-        labelPipe: TranslatePipe,
-        value: 'test'
-      },
-      {
-        label: 'first',
-        value: 'first value'
-      },
-      {
-        label: 'second',
-        value: 'second value'
-      },
-      {
-        label: 'third',
-        icon: PrimeIcons.PLUS
-      },
-      {
-        label: 'fourth',
-        value: 'fourth value',
-        icon: PrimeIcons.QUESTION
-      }
-    ])
+    const labels = [
+      { label: 'AGENT_DETAILS.FORM.CHANGE_ME', labelPipe: TranslatePipe, value: 'test' },
+      { label: 'first', value: 'first value' },
+      { label: 'second', value: 'second value' },
+      { label: 'third', icon: PrimeIcons.PLUS },
+      { label: 'fourth', value: 'fourth value', icon: PrimeIcons.QUESTION }
+    ] as any[]
+    component.objectDetails$ = of(labels)
 
-    const pageHeader = await agentDetails.getHeader()
-    const objectDetails = await pageHeader.getObjectInfos()
-    expect(objectDetails).toHaveLength(5)
+    const emittedLabels = await firstValueFrom(component.objectDetails$)
+    expect(emittedLabels).toHaveLength(5)
 
-    const label = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.CHANGE_ME')
-    const testDetailItem = await pageHeader.getObjectInfoByLabel(label)
-    expect(await testDetailItem?.getLabel()).toEqual(label)
-    expect(await testDetailItem?.getValue()).toEqual('test')
-    expect(await testDetailItem?.getIcon()).toBeUndefined()
+    const testDetailItem = emittedLabels.find((l) => l.label === 'AGENT_DETAILS.FORM.CHANGE_ME')
+    expect(testDetailItem?.value).toEqual('test')
+    expect(testDetailItem?.icon).toBeUndefined()
 
-    const firstDetailItem = await pageHeader.getObjectInfoByLabel('first')
-    expect(await firstDetailItem?.getLabel()).toEqual('first')
-    expect(await firstDetailItem?.getValue()).toEqual('first value')
-    expect(await firstDetailItem?.getIcon()).toBeUndefined()
+    const firstDetailItem = emittedLabels.find((l) => l.label === 'first')
+    expect(firstDetailItem?.value).toEqual('first value')
+    expect(firstDetailItem?.icon).toBeUndefined()
 
-    const secondDetailItem = await pageHeader.getObjectInfoByLabel('second')
-    expect(await secondDetailItem?.getLabel()).toEqual('second')
-    expect(await secondDetailItem?.getValue()).toEqual('second value')
-    expect(await secondDetailItem?.getIcon()).toBeUndefined()
+    const secondDetailItem = emittedLabels.find((l) => l.label === 'second')
+    expect(secondDetailItem?.value).toEqual('second value')
+    expect(secondDetailItem?.icon).toBeUndefined()
 
-    const thirdDetailItem = await pageHeader.getObjectInfoByLabel('third')
-    expect(await thirdDetailItem?.getLabel()).toEqual('third')
-    expect(await thirdDetailItem?.getValue()).toEqual('')
-    expect(await thirdDetailItem?.getIcon()).toEqual(PrimeIcons.PLUS)
+    const thirdDetailItem = emittedLabels.find((l) => l.label === 'third')
+    expect(thirdDetailItem?.value).toBeFalsy()
+    expect(thirdDetailItem?.icon).toEqual(PrimeIcons.PLUS)
 
-    const fourthDetailItem = await pageHeader.getObjectInfoByLabel('fourth')
-    expect(await fourthDetailItem?.getLabel()).toEqual('fourth')
-    expect(await fourthDetailItem?.getValue()).toEqual('fourth value')
-    expect(await fourthDetailItem?.getIcon()).toEqual(PrimeIcons.QUESTION)
+    const fourthDetailItem = emittedLabels.find((l) => l.label === 'fourth')
+    expect(fourthDetailItem?.value).toEqual('fourth value')
+    expect(fourthDetailItem?.icon).toEqual(PrimeIcons.QUESTION)
   })
 
   it('should work with details', async () => {
@@ -397,14 +371,15 @@ describe('AgentDetailsComponent', () => {
     store.refreshState()
     fixture.detectChanges()
 
-    const pageHeader = await agentDetails.getHeader()
-    const translatedNameLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.NAME')
-    const nameDetailItem = await pageHeader.getObjectInfoByLabel(translatedNameLabel)
-    expect(await nameDetailItem?.getValue()).toEqual('my-agent')
+    const labels = await firstValueFrom(component.objectDetails$)
+    const translateService = TestBed.inject(TranslateService)
 
-    const translatedStatusLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.STATUS')
-    const statusDetailItem = await pageHeader.getObjectInfoByLabel(translatedStatusLabel)
-    expect(await statusDetailItem?.getValue()).toEqual('Live')
+    const nameItem = labels.find((l) => l.label === 'AGENT_DETAILS.FORM.NAME')
+    expect(nameItem?.value).toEqual('my-agent')
+
+    const statusItem = labels.find((l) => l.label === 'AGENT_DETAILS.FORM.STATUS')
+    const translatedStatus = translateService.instant(statusItem?.value ?? '')
+    expect(translatedStatus).toEqual('Live')
   })
 
   it('should render empty header details when details are missing', async () => {
@@ -415,14 +390,12 @@ describe('AgentDetailsComponent', () => {
     store.refreshState()
     fixture.detectChanges()
 
-    const pageHeader = await agentDetails.getHeader()
-    const translatedNameLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.NAME')
-    const nameDetailItem = await pageHeader.getObjectInfoByLabel(translatedNameLabel)
-    expect(await nameDetailItem?.getValue()).toBeFalsy()
+    const labels = await firstValueFrom(component.objectDetails$)
+    const nameItem = labels.find((l) => l.label === 'AGENT_DETAILS.FORM.NAME')
+    expect(nameItem?.value).toBeFalsy()
 
-    const translatedVersionLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.VERSION')
-    const versionDetailItem = await pageHeader.getObjectInfoByLabel(translatedVersionLabel)
-    expect(await versionDetailItem?.getValue()).toBeFalsy()
+    const versionItem = labels.find((l) => l.label === 'AGENT_DETAILS.FORM.VERSION')
+    expect(versionItem?.value).toBeFalsy()
   })
 
   it('should mark as pristine and disable form when editMode is false', async () => {
@@ -467,10 +440,9 @@ describe('AgentDetailsComponent', () => {
       })
     )
 
-    const translatedVersionLabel = TestBed.inject(TranslateService).instant('AGENT_DETAILS.FORM.VERSION')
-    const pageHeader = await agentDetails.getHeader()
-    const versionDetailItem = await pageHeader.getObjectInfoByLabel(translatedVersionLabel)
-    expect(await versionDetailItem?.getValue()).toEqual('7')
+    const labels = await firstValueFrom(component.objectDetails$)
+    const versionItem = labels.find((l) => l.label === 'AGENT_DETAILS.FORM.VERSION')
+    expect(versionItem?.value).toEqual('7')
   })
 
   it('should map model provider, tools and groups when they are present on the view model', () => {

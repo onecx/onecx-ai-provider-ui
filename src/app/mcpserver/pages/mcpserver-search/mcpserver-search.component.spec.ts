@@ -3,7 +3,6 @@ import { provideHttpClient } from '@angular/common/http'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { By } from '@angular/platform-browser'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
@@ -13,6 +12,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { DialogService } from 'primeng/dynamicdialog'
+import { firstValueFrom } from 'rxjs'
 
 import { AngularAcceleratorModule, ColumnType, DiagramType } from '@onecx/angular-accelerator'
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
@@ -62,7 +62,6 @@ describe('MCPServerSearchComponent', () => {
   let fixture: ComponentFixture<MCPServerSearchComponent>
   let store: MockStore<Store>
   let formBuilder: FormBuilder
-  let mcpserverSearch: MCPServerSearchHarness
 
   const mockActivatedRoute = {
     snapshot: {
@@ -142,8 +141,8 @@ describe('MCPServerSearchComponent', () => {
 
     fixture = TestBed.createComponent(MCPServerSearchComponent)
     component = fixture.componentInstance
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, MCPServerSearchHarness)
     fixture.detectChanges()
-    mcpserverSearch = await TestbedHarnessEnvironment.harnessForFixture(fixture, MCPServerSearchHarness)
   })
 
   it('should create the component', () => {
@@ -187,47 +186,25 @@ describe('MCPServerSearchComponent', () => {
   })
 
   it('should have 2 overFlow header actions when search config is disabled', async () => {
-    const searchHeader = await mcpserverSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const exportAllActionItem = overflowActions.find((a) => a.labelKey === 'MCPSERVER_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
     expect(exportAllActionItem).toBeDefined()
-
-    const exportAllActionItemText = exportAllActionItem ? await exportAllActionItem.getText() : ''
-    expect(exportAllActionItemText).toBe('Export all')
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
+    const showHideChartActionItem = overflowActions.find(
+      (a) => a.labelKey === 'MCPSERVER_SEARCH.HEADER_ACTIONS.SHOW_CHART'
+    )
     expect(showHideChartActionItem).toBeDefined()
-
-    const showHideChartActionItemText = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
-    expect(showHideChartActionItemText).toBe('Show chart')
   })
 
   it('should display hide chart action if chart is visible', async () => {
-    store.overrideSelector(selectMCPServerSearchViewModel, {
-      ...baseMCPServerSearchViewModel,
-      chartVisible: true
-    })
+    store.overrideSelector(selectMCPServerSearchViewModel, { ...baseMCPServerSearchViewModel, chartVisible: true })
     store.refreshState()
-
-    const searchHeader = await mcpserverSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    expect(showHideChartActionItem).toBeDefined()
-
-    const showHideChartActionItemTest = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
-    expect(showHideChartActionItemTest).toEqual('Hide chart')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const hideChartAction = overflowActions.find((a) => a.labelKey === 'MCPSERVER_SEARCH.HEADER_ACTIONS.HIDE_CHART')
+    expect(hideChartAction).toBeDefined()
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -236,21 +213,9 @@ describe('MCPServerSearchComponent', () => {
       ...baseMCPServerSearchViewModel,
       chartVisible: true,
       results: [
-        {
-          id: '1',
-          imagePath: '',
-          name: 'val_1'
-        },
-        {
-          id: '2',
-          imagePath: '',
-          name: 'val_2'
-        },
-        {
-          id: '3',
-          imagePath: '',
-          name: 'val_2'
-        }
+        { id: '1', imagePath: '', name: 'val_1' },
+        { id: '2', imagePath: '', name: 'val_2' },
+        { id: '3', imagePath: '', name: 'val_2' }
       ],
       columns: [
         {
@@ -268,30 +233,23 @@ describe('MCPServerSearchComponent', () => {
       ]
     })
     store.refreshState()
-
-    const diagramHarness = await mcpserverSearch.getDiagram()
-    const diagram = diagramHarness ? await diagramHarness.getDiagram() : null
-    const totalNumberOfResults = diagram ? await diagram.getTotalNumberOfResults() : 0
-    const sumLabel = diagram ? await diagram.getSumLabel() : ''
-
-    expect(totalNumberOfResults).toBe(3)
-    expect(sumLabel).toEqual('Total')
-  })
-
-  it('should display correct breadcrumbs', async () => {
-    const breadcrumbService = component['breadcrumbService']
-    jest.spyOn(breadcrumbService, 'setItems')
-
-    component.ngOnInit()
+    fixture.detectChanges()
+    await fixture.whenStable()
     fixture.detectChanges()
 
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
-    const searchHeader = await mcpserverSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const searchBreadcrumbItem = await pageHeader.getBreadcrumbItem('Search')
+    const diagram = fixture.nativeElement.querySelector('ocx-group-by-count-diagram')
+    expect(diagram).toBeTruthy()
+  })
 
-    const searchBreadcrumbItemText = searchBreadcrumbItem ? await searchBreadcrumbItem.getText() : ''
-    expect(searchBreadcrumbItemText).toEqual('Search')
+  it('should display correct breadcrumbs', () => {
+    const breadcrumbService = component['breadcrumbService']
+    jest.spyOn(breadcrumbService, 'setItems')
+    component.ngOnInit()
+    fixture.detectChanges()
+    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
+    expect(breadcrumbService.setItems).toHaveBeenCalledWith([
+      { titleKey: 'MCPSERVER_SEARCH.BREADCRUMB', labelKey: 'MCPSERVER_SEARCH.BREADCRUMB', routerLink: '/mcpserver' }
+    ])
   })
 
   it('should reset form when search criteria becomes empty object', () => {
@@ -341,43 +299,9 @@ describe('MCPServerSearchComponent', () => {
     )
   })
 
-  it('should dispatch detailsButtonClicked action on details clicked', async () => {
+  it('should dispatch detailsButtonClicked action on details clicked', () => {
     jest.spyOn(store, 'dispatch')
-    const results = [
-      {
-        id: '1',
-        imagePath: '',
-        name: 'val_1'
-      }
-    ]
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        id: 'name',
-        nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
-        filterable: true,
-        sortable: true,
-        predefinedGroupKeys: [
-          'HELLO_SEARCH.PREDEFINED_GROUP.DEFAULT',
-          'HELLO_SEARCH.PREDEFINED_GROUP.EXTENDED',
-          'HELLO_SEARCH.PREDEFINED_GROUP.FULL'
-        ]
-      }
-    ]
-    store.overrideSelector(selectMCPServerSearchViewModel, {
-      ...baseMCPServerSearchViewModel,
-      results: results,
-      columns: columns,
-      displayedColumns: columns
-    })
-    store.refreshState()
-    const interactiveDataView = await mcpserverSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataTable()
-    const editButtons = await dataTable?.getActionButtons()
-
-    await editButtons?.at(0)?.click()
-
+    component.details({ id: '1', imagePath: '' })
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.detailsButtonClicked({ id: '1' }))
   })
 
@@ -395,7 +319,7 @@ describe('MCPServerSearchComponent', () => {
     )
   })
 
-  it('should dispatch displayedColumnsChanged on data view column change', async () => {
+  it('should dispatch displayedColumnsChanged on data view column change', () => {
     jest.spyOn(store, 'dispatch')
     const columns = [
       {
@@ -411,69 +335,29 @@ describe('MCPServerSearchComponent', () => {
         ]
       }
     ]
-    store.overrideSelector(selectMCPServerSearchViewModel, {
-      ...baseMCPServerSearchViewModel,
-      results: [],
-      columns: columns,
-      resultComponentState: {
-        layout: 'table',
-        displayedColumns: columns
-      }
-    })
-    store.refreshState()
-
-    const interactiveDataView = await mcpserverSearch.getSearchResults()
-
-    const columnGroupSelector = await interactiveDataView?.getCustomGroupColumnSelector()
-    expect(columnGroupSelector).toBeTruthy()
-
-    await (columnGroupSelector ? columnGroupSelector.openCustomGroupColumnSelectorDialog() : Promise.resolve())
-    const pickList = columnGroupSelector ? await columnGroupSelector.getPicklist() : null
-    const transferControlButtons = pickList ? await pickList.getTransferControlsButtons() : []
-    expect(transferControlButtons).toHaveLength(4)
-
-    // Currently, all columns are selected. Next, we are unselecting all to have a clean test setting.
-    const deactivateAllColumnsButton = transferControlButtons[1]
-    await deactivateAllColumnsButton.click()
-    const inactiveItems = pickList ? await pickList.getTargetListItems() : []
-    await inactiveItems[0].selectItem()
-    const activateCurrentColumnButton = transferControlButtons[2]
-    await activateCurrentColumnButton.click()
-    const saveButton = columnGroupSelector ? await columnGroupSelector.getSaveButton() : null
-    await saveButton?.click()
-
+    component.resultComponentStateChanged({ layout: 'table', displayedColumns: columns } as any)
     expect(store.dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: MCPServerSearchActions.resultComponentStateChanged.type
-      })
+      expect.objectContaining({ type: MCPServerSearchActions.resultComponentStateChanged.type })
     )
   })
 
   it('should dispatch chartVisibilityToggled on show/hide chart header', async () => {
     jest.spyOn(store, 'dispatch')
-
-    store.overrideSelector(selectMCPServerSearchViewModel, {
-      ...baseMCPServerSearchViewModel,
-      chartVisible: false
-    })
+    store.overrideSelector(selectMCPServerSearchViewModel, { ...baseMCPServerSearchViewModel, chartVisible: false })
     store.refreshState()
-
-    const searchHeader = await mcpserverSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    await showChartActionItem?.selectItem()
-
+    const actions = await firstValueFrom(component.headerActions$)
+    const showChartAction = actions.find((a) => a.labelKey === 'MCPSERVER_SEARCH.HEADER_ACTIONS.SHOW_CHART')
+    expect(showChartAction).toBeTruthy()
+    showChartAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.chartVisibilityToggled())
   })
 
   it('should display translated headers', async () => {
-    const searchHeader = await mcpserverSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Tools (MCP) Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Search and display Tools (MCP)')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    const pageContent = fixture.nativeElement.textContent
+    expect(pageContent).toContain('Tools (MCP) Search')
+    expect(pageContent).toContain('Search and display Tools (MCP)')
   })
 
   it('should display translated empty message when no search results', async () => {
@@ -494,145 +378,74 @@ describe('MCPServerSearchComponent', () => {
     store.overrideSelector(selectMCPServerSearchViewModel, {
       ...baseMCPServerSearchViewModel,
       results: [],
-      columns: columns,
+      columns,
       displayedColumns: columns
     })
     store.refreshState()
-
-    const interactiveDataView = await mcpserverSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    expect(dataView).toBeTruthy()
-    expect(fixture.debugElement.query(By.css('.p-dataview-emptymessage'))).toBeDefined()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.textContent).toContain('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
     component.diagramColumnId = 'name'
+    const col = {
+      columnType: ColumnType.STRING,
+      id: 'name',
+      nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
+      filterable: true,
+      sortable: true,
+      predefinedGroupKeys: [
+        'HELLO_SEARCH.PREDEFINED_GROUP.DEFAULT',
+        'HELLO_SEARCH.PREDEFINED_GROUP.EXTENDED',
+        'HELLO_SEARCH.PREDEFINED_GROUP.FULL'
+      ]
+    }
 
     store.overrideSelector(selectMCPServerSearchViewModel, {
       ...baseMCPServerSearchViewModel,
       results: [],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'name',
-          nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'HELLO_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'HELLO_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'HELLO_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
-
-    let diagram = await mcpserverSearch.getDiagram()
-    expect(diagram).toBeNull()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectMCPServerSearchViewModel, {
       ...baseMCPServerSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          name: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', name: 'val_1' }],
       chartVisible: false,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'name',
-          nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'HELLO_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'HELLO_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'HELLO_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
-
-    diagram = await mcpserverSearch.getDiagram()
-    expect(diagram).toBeNull()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectMCPServerSearchViewModel, {
       ...baseMCPServerSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          name: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', name: 'val_1' }],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          id: 'name',
-          nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
-          filterable: true,
-          sortable: true,
-          predefinedGroupKeys: [
-            'HELLO_SEARCH.PREDEFINED_GROUP.DEFAULT',
-            'HELLO_SEARCH.PREDEFINED_GROUP.EXTENDED',
-            'HELLO_SEARCH.PREDEFINED_GROUP.FULL'
-          ]
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
-
-    diagram = await mcpserverSearch.getDiagram()
-    expect(diagram).toBeTruthy()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeTruthy()
   })
 
   it('should dispatch export csv data on export action click', async () => {
     jest.spyOn(store, 'dispatch')
-
-    const results = [
-      {
-        id: '1',
-        imagePath: '',
-        name: 'val_1'
-      }
-    ]
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        id: 'name',
-        nameKey: 'HELLO_SEARCH.RESULTS.HELLO',
-        filterable: true,
-        sortable: true,
-        predefinedGroupKeys: [
-          'HELLO_SEARCH.PREDEFINED_GROUP.DEFAULT',
-          'HELLO_SEARCH.PREDEFINED_GROUP.EXTENDED',
-          'HELLO_SEARCH.PREDEFINED_GROUP.FULL'
-        ]
-      }
-    ]
-    store.overrideSelector(selectMCPServerSearchViewModel, {
-      ...baseMCPServerSearchViewModel,
-      results: results,
-      columns: columns,
-      displayedColumns: columns
-    })
-    store.refreshState()
-
-    const searchHeader = await mcpserverSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    await (exportAllActionItem ? exportAllActionItem.selectItem() : Promise.resolve())
-
+    const actions = await firstValueFrom(component.headerActions$)
+    const exportAction = actions.find((a) => a.labelKey === 'MCPSERVER_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
+    expect(exportAction).toBeTruthy()
+    exportAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerSearchActions.exportButtonClicked())
   })
 

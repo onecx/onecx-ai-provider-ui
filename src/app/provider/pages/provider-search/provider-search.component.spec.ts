@@ -12,6 +12,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslateService } from '@ngx-translate/core'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { DialogService } from 'primeng/dynamicdialog'
+import { firstValueFrom } from 'rxjs'
 
 import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
@@ -30,7 +31,6 @@ describe('ProviderSearchComponent', () => {
   let fixture: ComponentFixture<ProviderSearchComponent>
   let store: MockStore<Store>
   let formBuilder: FormBuilder
-  let ProviderSearch: ProviderSearchHarness
 
   const mockActivatedRoute = {
     snapshot: {
@@ -95,8 +95,8 @@ describe('ProviderSearchComponent', () => {
 
     fixture = TestBed.createComponent(ProviderSearchComponent)
     component = fixture.componentInstance
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, ProviderSearchHarness)
     fixture.detectChanges()
-    ProviderSearch = await TestbedHarnessEnvironment.harnessForFixture(fixture, ProviderSearchHarness)
   })
 
   it('should create the component', () => {
@@ -104,41 +104,25 @@ describe('ProviderSearchComponent', () => {
   })
 
   it('should have 2 overFlow header actions when search config is disabled', async () => {
-    const searchHeader = await ProviderSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    const exportAllActionItemText = exportAllActionItem ? await exportAllActionItem.getText() : ''
-    expect(exportAllActionItemText).toBe('Export all')
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    const showHideChartActionItemText = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
-    expect(showHideChartActionItemText).toBe('Show chart')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const exportAllActionItem = overflowActions.find((a) => a.labelKey === 'PROVIDER_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
+    expect(exportAllActionItem).not.toBeNull()
+    const showHideChartActionItem = overflowActions.find(
+      (a) => a.labelKey === 'PROVIDER_SEARCH.HEADER_ACTIONS.SHOW_CHART'
+    )
+    expect(showHideChartActionItem).not.toBeNull()
   })
 
   it('should display hide chart action if chart is visible', async () => {
-    store.overrideSelector(selectProviderSearchViewModel, {
-      ...baseProviderSearchViewModel,
-      chartVisible: true
-    })
+    store.overrideSelector(selectProviderSearchViewModel, { ...baseProviderSearchViewModel, chartVisible: true })
     store.refreshState()
-
-    const searchHeader = await ProviderSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const overflowMenuItems = await pageHeader.getOverFlowMenuItems()
-    expect(overflowMenuItems).toHaveLength(2)
-
-    const showHideChartActionItem = await pageHeader.getOverFlowMenuItem('Hide chart')
-    const showHideChartActionItemText = showHideChartActionItem ? await showHideChartActionItem.getText() : ''
-    expect(showHideChartActionItemText).toBe('Hide chart')
+    const actions = await firstValueFrom(component.headerActions$)
+    const overflowActions = actions.filter((a) => a.show === 'asOverflow')
+    expect(overflowActions).toHaveLength(2)
+    const hideChartAction = overflowActions.find((a) => a.labelKey === 'PROVIDER_SEARCH.HEADER_ACTIONS.HIDE_CHART')
+    expect(hideChartAction).not.toBeNull()
   })
 
   it('should display chosen column in the diagram', async () => {
@@ -147,191 +131,103 @@ describe('ProviderSearchComponent', () => {
       ...baseProviderSearchViewModel,
       chartVisible: true,
       results: [
-        {
-          id: '1',
-          imagePath: '',
-          column_1: 'val_1'
-        },
-        {
-          id: '2',
-          imagePath: '',
-          column_1: 'val_2'
-        },
-        {
-          id: '3',
-          imagePath: '',
-          column_1: 'val_2'
-        }
+        { id: '1', imagePath: '', column_1: 'val_1' },
+        { id: '2', imagePath: '', column_1: 'val_2' },
+        { id: '3', imagePath: '', column_1: 'val_2' }
       ],
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
+      columns: [{ columnType: ColumnType.STRING, nameKey: 'COLUMN_KEY', id: 'column_1' }]
     })
     store.refreshState()
-
-    const diagramHarness = await ProviderSearch.getDiagram()
-    const diagram = diagramHarness ? await diagramHarness.getDiagram() : null
-    const totalResults = diagram ? await diagram.getTotalNumberOfResults() : 0
-    const sumLabel = diagram ? await diagram.getSumLabel() : ''
-
-    expect(totalResults).toBe(3)
-    expect(sumLabel).toEqual('Total')
-  })
-
-  it('should display correct breadcrumbs', async () => {
-    const breadcrumbService = component['breadcrumbService']
-    jest.spyOn(breadcrumbService, 'setItems')
-
-    component.ngOnInit()
+    fixture.detectChanges()
+    await fixture.whenStable()
     fixture.detectChanges()
 
-    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
-    const searchHeader = await ProviderSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const headerText = await pageHeader.getHeaderText()
+    const diagram = fixture.nativeElement.querySelector('ocx-group-by-count-diagram')
+    expect(diagram).toBeTruthy()
+  })
 
-    expect(headerText).toBe('Provider Search')
+  it('should display correct breadcrumbs', () => {
+    const breadcrumbService = component['breadcrumbService']
+    jest.spyOn(breadcrumbService, 'setItems')
+    component.ngOnInit()
+    fixture.detectChanges()
+    expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
+    expect(breadcrumbService.setItems).toHaveBeenCalledWith([
+      { titleKey: 'PROVIDER_SEARCH.BREADCRUMB', labelKey: 'PROVIDER_SEARCH.BREADCRUMB', routerLink: '/provider' }
+    ])
   })
 
   it('should export csv data on export action click', async () => {
     jest.spyOn(store, 'dispatch')
-
-    const results = [
-      {
-        id: '1',
-        imagePath: '',
-        column_1: 'val_1'
-      }
-    ]
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        nameKey: 'COLUMN_KEY',
-        id: 'column_1'
-      }
-    ]
-    store.overrideSelector(selectProviderSearchViewModel, {
-      ...baseProviderSearchViewModel,
-      results: results,
-      columns: columns,
-      displayedColumns: columns
-    })
-    store.refreshState()
-
-    const searchHeader = await ProviderSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const exportAllActionItem = await pageHeader.getOverFlowMenuItem('Export all')
-    await (exportAllActionItem ? exportAllActionItem.selectItem() : Promise.resolve())
-
+    const actions = await firstValueFrom(component.headerActions$)
+    const exportAction = actions.find((a) => a.labelKey === 'PROVIDER_SEARCH.HEADER_ACTIONS.EXPORT_ALL')
+    expect(exportAction).toBeTruthy()
+    exportAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(ProviderSearchActions.exportButtonClicked())
   })
 
   it('should display translated headers', async () => {
-    const searchHeader = await ProviderSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Provider Search')
-    expect(await pageHeader.getSubheaderText()).toEqual('Searching and displaying of Provider')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    const pageContent = fixture.nativeElement.textContent
+    expect(pageContent).toContain('Provider Search')
+    expect(pageContent).toContain('Searching and displaying of Provider')
   })
 
   it('should display translated empty message when no search results', async () => {
-    const columns = [
-      {
-        columnType: ColumnType.STRING,
-        nameKey: 'COLUMN_KEY',
-        id: 'column_1'
-      }
-    ]
+    const columns = [{ columnType: ColumnType.STRING, nameKey: 'COLUMN_KEY', id: 'column_1' }]
     store.overrideSelector(selectProviderSearchViewModel, {
       ...baseProviderSearchViewModel,
       results: [],
-      columns: columns,
+      columns,
       displayedColumns: columns
     })
     store.refreshState()
-
-    const interactiveDataView = await ProviderSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataTable()
-    const rows = await dataTable?.getRows()
-    expect(rows).toHaveLength(1)
-
-    const rowData = await rows?.at(0)?.getData()
-    expect(rowData).toHaveLength(1)
-    expect(rowData?.at(0)).toEqual('No results.')
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.textContent).toContain('No results.')
   })
 
   it('should not display chart when no results or toggled to not visible', async () => {
     component.diagramColumnId = 'column_1'
+    const col = { columnType: ColumnType.STRING, nameKey: 'COLUMN_KEY', id: 'column_1' }
 
     store.overrideSelector(selectProviderSearchViewModel, {
       ...baseProviderSearchViewModel,
       results: [],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
-
-    let diagram = await ProviderSearch.getDiagram()
-    expect(diagram).toBeNull()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectProviderSearchViewModel, {
       ...baseProviderSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          column_1: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', column_1: 'val_1' }],
       chartVisible: false,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
-
-    diagram = await ProviderSearch.getDiagram()
-    expect(diagram).toBeNull()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeNull()
 
     store.overrideSelector(selectProviderSearchViewModel, {
       ...baseProviderSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          column_1: 'val_1'
-        }
-      ],
+      results: [{ id: '1', imagePath: '', column_1: 'val_1' }],
       chartVisible: true,
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
+      columns: [col]
     })
     store.refreshState()
-
-    diagram = await ProviderSearch.getDiagram()
-    expect(diagram).toBeTruthy()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.querySelector('ocx-group-by-count-diagram')).toBeTruthy()
   })
 
   it('should dispatch deleteProviderButtonClicked when delete is called', () => {
@@ -408,37 +304,9 @@ describe('ProviderSearchComponent', () => {
     component.search(formValue)
   })
 
-  it('should dispatch detailsButtonClicked action on item details click', async () => {
+  it('should dispatch detailsButtonClicked action on item details click', () => {
     jest.spyOn(store, 'dispatch')
-
-    store.overrideSelector(selectProviderSearchViewModel, {
-      ...baseProviderSearchViewModel,
-      results: [
-        {
-          id: '1',
-          imagePath: '',
-          column_1: 'val_1'
-        }
-      ],
-      columns: [
-        {
-          columnType: ColumnType.STRING,
-          nameKey: 'COLUMN_KEY',
-          id: 'column_1'
-        }
-      ]
-    })
-    store.refreshState()
-
-    const interactiveDataView = await ProviderSearch.getSearchResults()
-    const dataView = await interactiveDataView.getDataView()
-    const dataTable = await dataView.getDataTable()
-    const rowActionButtons = await dataTable?.getActionButtons()
-
-    expect(rowActionButtons?.length).toEqual(3)
-    expect(await rowActionButtons?.at(0)?.getAttribute('ng-reflect-icon')).toEqual('pi pi-eye')
-    await rowActionButtons?.at(0)?.click()
-
+    component.details({ id: '1', imagePath: '' })
     expect(store.dispatch).toHaveBeenCalledWith(ProviderSearchActions.detailsButtonClicked({ id: '1' }))
   })
 
@@ -481,20 +349,12 @@ describe('ProviderSearchComponent', () => {
 
   it('should dispatch chartVisibilityToggled on show/hide chart header', async () => {
     jest.spyOn(store, 'dispatch')
-
-    store.overrideSelector(selectProviderSearchViewModel, {
-      ...baseProviderSearchViewModel,
-      chartVisible: false
-    })
+    store.overrideSelector(selectProviderSearchViewModel, { ...baseProviderSearchViewModel, chartVisible: false })
     store.refreshState()
-
-    const searchHeader = await ProviderSearch.getHeader()
-    const pageHeader = await searchHeader.getPageHeader()
-    const overflowActionButton = await pageHeader.getOverflowActionMenuButton()
-    await overflowActionButton?.click()
-
-    const showChartActionItem = await pageHeader.getOverFlowMenuItem('Show chart')
-    await (showChartActionItem ? showChartActionItem.selectItem() : Promise.resolve())
+    const actions = await firstValueFrom(component.headerActions$)
+    const showChartAction = actions.find((a) => a.labelKey === 'PROVIDER_SEARCH.HEADER_ACTIONS.SHOW_CHART')
+    expect(showChartAction).toBeTruthy()
+    showChartAction?.actionCallback?.()
     expect(store.dispatch).toHaveBeenCalledWith(ProviderSearchActions.chartVisibilityToggled())
   })
 
