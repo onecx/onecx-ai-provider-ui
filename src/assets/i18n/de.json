@@ -322,7 +322,12 @@
     },
     "TABS": {
       "GENERAL": "Allgemein",
-      "ASSIGNMENTS": "Zuweisungen"
+      "ASSIGNMENTS": "Zuweisungen",
+      "TOOL_RULES": "Werkzeugregeln"
+    },
+    "TOOL_RULES": {
+      "SELECT_TOOL": "MCP-Werkzeug auswählen",
+      "SELECT_TOOL_HINT": "Wählen Sie ein MCP-Werkzeug, um pro-Agent-Regeln zu konfigurieren"
     },
     "ASSIGNMENTS": {
       "ADD_FILTER": "Filter hinzufügen",
@@ -506,6 +511,39 @@
   },
   "DASHBOARD_VIEW": {
     "HEADER": "DASHBOARD Seitenkopf"
+  },
+  "TOOL_RULES": {
+    "HEADER": "MCP-Tool-Regeln",
+    "REFRESH": "Aktualisieren",
+    "SAVE": "Speichern",
+    "DELETE": "Löschen",
+    "ALLOW": "Erlauben",
+    "DENY": "Blockieren",
+    "ALWAYS_ASK": "Immer nachfragen",
+    "ORPHANED": "Verwaist",
+    "ORPHANED_TOOLTIP": "Dieses Tool wird vom MCP-Server nicht mehr bereitgestellt",
+    "EMPTY": "Keine Tools gefunden",
+    "DISCOVERY_ERROR": "Tool-Erkennung fehlgeschlagen. Bitte MCP-Server-Verbindung prüfen.",
+    "COLUMNS": {
+      "NAME": "Name",
+      "DESCRIPTION": "Beschreibung",
+      "ANNOTATIONS": "Annotationen",
+      "AUTO_DANGER_LEVEL": "Autom. Gefahrenstufe",
+      "ALLOWED": "Berechtigung",
+      "DANGER_LEVEL": "Gefahrenstufe",
+      "ACTIONS": "Aktionen"
+    },
+    "DANGER_LEVEL": {
+      "SAFE": "Sicher",
+      "WARNING": "Warnung",
+      "DANGEROUS": "Gefährlich"
+    },
+    "ANNOTATIONS": {
+      "READ_ONLY": "schreibgeschützt",
+      "DESTRUCTIVE": "destruktiv",
+      "IDEMPOTENT": "idempotent",
+      "OPEN_WORLD": "offene Welt"
+    }
   },
   "MCPSERVER_DETAILS": {
     "HELP_ARTICLE_ID": "Hilfeartikel",

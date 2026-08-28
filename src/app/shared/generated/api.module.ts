@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 @NgModule({
   imports:      [],
+  declarations: [],
   exports:      [],
   providers: []
 })

@@ -752,4 +752,28 @@ describe('AgentDetailsComponent', () => {
       )
     })
   })
+
+  describe('currentAgentId', () => {
+    it('should return the agent id when details are loaded', () => {
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        details: { id: 'agent-42', name: 'agent', modificationCount: 0 } as any
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      expect(component.currentAgentId).toEqual('agent-42')
+    })
+
+    it('should return undefined when details are not loaded', () => {
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        details: undefined
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      expect(component.currentAgentId).toBeUndefined()
+    })
+  })
 })

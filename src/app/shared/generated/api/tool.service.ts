@@ -17,13 +17,23 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { AgentMcpToolRule } from '../model/agentMcpToolRule';
+// @ts-ignore
+import { AgentMcpToolRuleList } from '../model/agentMcpToolRuleList';
+// @ts-ignore
+import { CreateAgentMcpToolRuleRequest } from '../model/createAgentMcpToolRuleRequest';
+// @ts-ignore
 import { CreateToolRequest } from '../model/createToolRequest';
+// @ts-ignore
+import { DiscoveredToolInfoList } from '../model/discoveredToolInfoList';
 // @ts-ignore
 import { Tool } from '../model/tool';
 // @ts-ignore
 import { ToolPageResult } from '../model/toolPageResult';
 // @ts-ignore
 import { ToolSearchCriteria } from '../model/toolSearchCriteria';
+// @ts-ignore
+import { UpdateAgentMcpToolRuleRequest } from '../model/updateAgentMcpToolRuleRequest';
 // @ts-ignore
 import { UpdateToolRequest } from '../model/updateToolRequest';
 
@@ -99,6 +109,82 @@ export class ToolService {
     }
 
     /**
+     * Create an MCP tool rule for an Agent and Tool
+     * @param agentId 
+     * @param toolId 
+     * @param createAgentMcpToolRuleRequest 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRule>;
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRule>>;
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRule>>;
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (agentId === null || agentId === undefined) {
+            throw new Error('Required parameter agentId was null or undefined when calling createAgentMcpToolRule.');
+        }
+        if (toolId === null || toolId === undefined) {
+            throw new Error('Required parameter toolId was null or undefined when calling createAgentMcpToolRule.');
+        }
+        if (createAgentMcpToolRuleRequest === null || createAgentMcpToolRuleRequest === undefined) {
+            throw new Error('Required parameter createAgentMcpToolRuleRequest was null or undefined when calling createAgentMcpToolRule.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules`;
+        return this.httpClient.request<AgentMcpToolRule>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: createAgentMcpToolRuleRequest,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Create a Tool
      * @param createToolRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -157,6 +243,71 @@ export class ToolService {
             {
                 context: localVarHttpContext,
                 body: createToolRequest,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Delete an MCP tool rule for an Agent and Tool
+     * @param agentId 
+     * @param toolId 
+     * @param ruleId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public deleteAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<any>;
+    public deleteAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<HttpResponse<any>>;
+    public deleteAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<HttpEvent<any>>;
+    public deleteAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<any> {
+        if (agentId === null || agentId === undefined) {
+            throw new Error('Required parameter agentId was null or undefined when calling deleteAgentMcpToolRule.');
+        }
+        if (toolId === null || toolId === undefined) {
+            throw new Error('Required parameter toolId was null or undefined when calling deleteAgentMcpToolRule.');
+        }
+        if (ruleId === null || ruleId === undefined) {
+            throw new Error('Required parameter ruleId was null or undefined when calling deleteAgentMcpToolRule.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules/${this.configuration.encodeParam({name: "ruleId", value: ruleId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -292,6 +443,134 @@ export class ToolService {
     }
 
     /**
+     * Get MCP tool rules for an Agent and Tool
+     * @param agentId 
+     * @param toolId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getAgentMcpToolRules(agentId: string, toolId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRuleList>;
+    public getAgentMcpToolRules(agentId: string, toolId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRuleList>>;
+    public getAgentMcpToolRules(agentId: string, toolId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRuleList>>;
+    public getAgentMcpToolRules(agentId: string, toolId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (agentId === null || agentId === undefined) {
+            throw new Error('Required parameter agentId was null or undefined when calling getAgentMcpToolRules.');
+        }
+        if (toolId === null || toolId === undefined) {
+            throw new Error('Required parameter toolId was null or undefined when calling getAgentMcpToolRules.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules`;
+        return this.httpClient.request<AgentMcpToolRuleList>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Discover tools exposed by the MCP server of a Tool, joined with existing rules and danger classification
+     * @param toolId 
+     * @param agentId When provided, existingRule in the response references AgentMcpToolRule for this agent
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getDiscoveredTools(toolId: string, agentId?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<DiscoveredToolInfoList>;
+    public getDiscoveredTools(toolId: string, agentId?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<DiscoveredToolInfoList>>;
+    public getDiscoveredTools(toolId: string, agentId?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<DiscoveredToolInfoList>>;
+    public getDiscoveredTools(toolId: string, agentId?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (toolId === null || toolId === undefined) {
+            throw new Error('Required parameter toolId was null or undefined when calling getDiscoveredTools.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (agentId !== undefined && agentId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>agentId, 'agentId');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/discovered-tools`;
+        return this.httpClient.request<DiscoveredToolInfoList>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Get Tool by id
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -340,6 +619,86 @@ export class ToolService {
         return this.httpClient.request<Tool>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Update an MCP tool rule for an Agent and Tool
+     * @param agentId 
+     * @param toolId 
+     * @param ruleId 
+     * @param updateAgentMcpToolRuleRequest 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRule>;
+    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRule>>;
+    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRule>>;
+    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (agentId === null || agentId === undefined) {
+            throw new Error('Required parameter agentId was null or undefined when calling updateAgentMcpToolRule.');
+        }
+        if (toolId === null || toolId === undefined) {
+            throw new Error('Required parameter toolId was null or undefined when calling updateAgentMcpToolRule.');
+        }
+        if (ruleId === null || ruleId === undefined) {
+            throw new Error('Required parameter ruleId was null or undefined when calling updateAgentMcpToolRule.');
+        }
+        if (updateAgentMcpToolRuleRequest === null || updateAgentMcpToolRuleRequest === undefined) {
+            throw new Error('Required parameter updateAgentMcpToolRuleRequest was null or undefined when calling updateAgentMcpToolRule.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules/${this.configuration.encodeParam({name: "ruleId", value: ruleId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<AgentMcpToolRule>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: updateAgentMcpToolRuleRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
