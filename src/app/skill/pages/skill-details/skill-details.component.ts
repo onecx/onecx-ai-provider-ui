@@ -67,10 +67,9 @@ export class SkillDetailsComponent implements OnInit {
           titleKey: 'SKILL_DETAILS.GENERAL.BACK',
           labelKey: 'SKILL_DETAILS.GENERAL.BACK',
           show: 'always',
-          disabled: !vm.backNavigationPossible,
           showCondition: !vm.editMode,
           actionCallback: () => {
-            this.store.dispatch(skillDetailsActions.navigateBackButtonClicked())
+            globalThis.history.back()
           }
         },
         {

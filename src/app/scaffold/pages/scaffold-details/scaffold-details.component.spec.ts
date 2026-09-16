@@ -5,7 +5,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ReactiveFormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
-import { ofType } from '@ngrx/effects'
 import { Store } from '@ngrx/store'
 import { of, firstValueFrom } from 'rxjs'
 
@@ -193,16 +192,13 @@ describe('ScaffoldDetailsComponent', () => {
     expect(moreAction).toBeTruthy()
   })
 
-  it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    const doneFn = jest.fn()
+  it('should call history.back on back button click', async () => {
     const actions = await firstValueFrom(component.headerActions$)
     const backAction = actions.find((a) => a.labelKey === 'SCAFFOLD_DETAILS.GENERAL.BACK')
 
-    store.scannedActions$.pipe(ofType(scaffoldDetailsActions.navigateBackButtonClicked)).subscribe(() => {
-      doneFn()
-    })
+    jest.spyOn(globalThis.history, 'back')
     backAction?.actionCallback?.()
-    expect(doneFn).toHaveBeenCalledTimes(1)
+    expect(globalThis.history.back).toHaveBeenCalledTimes(1)
   })
 
   it('should dispatch editButtonClicked action on edit button click', async () => {

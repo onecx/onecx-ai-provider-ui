@@ -101,10 +101,9 @@ export class AgentDetailsComponent implements OnInit {
           titleKey: 'AGENT_DETAILS.GENERAL.BACK',
           labelKey: 'AGENT_DETAILS.GENERAL.BACK',
           show: 'always',
-          disabled: !vm.backNavigationPossible,
           showCondition: !vm.editMode,
           actionCallback: () => {
-            this.store.dispatch(agentDetailsActions.navigateBackButtonClicked())
+            globalThis.history.back()
           }
         },
         {

@@ -74,10 +74,9 @@ export class ScaffoldDetailsComponent implements OnInit {
           titleKey: 'SCAFFOLD_DETAILS.GENERAL.BACK',
           labelKey: 'SCAFFOLD_DETAILS.GENERAL.BACK',
           show: 'always',
-          disabled: !vm.backNavigationPossible,
           showCondition: !vm.editMode,
           actionCallback: () => {
-            this.store.dispatch(scaffoldDetailsActions.navigateBackButtonClicked())
+            globalThis.history.back()
           }
         },
         {

@@ -6,7 +6,6 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
-import { ofType } from '@ngrx/effects'
 import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -171,16 +170,13 @@ describe('SkillDetailsComponent', () => {
     expect(moreAction).toBeUndefined()
   })
 
-  it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    const doneFn = jest.fn()
+  it('should call history.back on back button click', async () => {
     const actions = await firstValueFrom(component.headerActions$)
     const backAction = actions.find((a) => a.labelKey === 'SKILL_DETAILS.GENERAL.BACK')
 
-    store.scannedActions$.pipe(ofType(skillDetailsActions.navigateBackButtonClicked)).subscribe(() => {
-      doneFn()
-    })
+    jest.spyOn(globalThis.history, 'back')
     backAction?.actionCallback?.()
-    expect(doneFn).toHaveBeenCalledTimes(1)
+    expect(globalThis.history.back).toHaveBeenCalledTimes(1)
   })
 
   it('should dispatch editButtonClicked action on edit button click', async () => {

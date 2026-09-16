@@ -63,11 +63,10 @@ export class MCPServerDetailsComponent implements OnInit {
           titleKey: 'MCPSERVER_DETAILS.GENERAL.BACK',
           labelKey: 'MCPSERVER_DETAILS.GENERAL.BACK',
           show: 'always',
-          disabled: !vm.backNavigationPossible,
           permission: 'MCPSERVER#BACK',
           showCondition: !vm.editMode,
           actionCallback: () => {
-            this.store.dispatch(MCPServerDetailsActions.navigateBackButtonClicked())
+            globalThis.history.back()
           }
         },
         {

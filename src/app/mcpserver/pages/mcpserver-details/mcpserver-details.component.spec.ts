@@ -177,16 +177,13 @@ describe('MCPServerDetailsComponent', () => {
     expect(overflowAction).toBeTruthy()
   })
 
-  it('should dispatch navigateBackButtonClicked action on back button click', async () => {
-    const doneFn = jest.fn()
+  it('should call history.back on back button click', async () => {
     const actions = await firstValueFrom(component.headerActions$)
     const backAction = actions.find((a) => a.labelKey === 'MCPSERVER_DETAILS.GENERAL.BACK')
 
-    store.scannedActions$.pipe(ofType(MCPServerDetailsActions.navigateBackButtonClicked)).subscribe(() => {
-      doneFn()
-    })
+    jest.spyOn(globalThis.history, 'back')
     backAction?.actionCallback?.()
-    expect(doneFn).toHaveBeenCalledTimes(1)
+    expect(globalThis.history.back).toHaveBeenCalledTimes(1)
   })
 
   it('should display item details in page header', async () => {
