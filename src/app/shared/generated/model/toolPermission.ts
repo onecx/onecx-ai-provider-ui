@@ -12,6 +12,8 @@
 export enum ToolPermission {
     Allow = 'ALLOW',
     Deny = 'DENY',
-    AlwaysAsk = 'ALWAYS_ASK'
+    AlwaysAsk = 'ALWAYS_ASK',
+    AlwaysAllow = 'ALWAYS_ALLOW',
+    NeverAsk = 'NEVER_ASK'
 }
 

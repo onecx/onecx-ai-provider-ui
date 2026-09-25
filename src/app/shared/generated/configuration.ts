@@ -86,15 +86,6 @@ export class APIConfiguration {
         else {
             this.credentials = {};
         }
-
-        // init default oauth2 credential
-        if (!this.credentials['oauth2']) {
-            this.credentials['oauth2'] = () => {
-                return typeof this.accessToken === 'function'
-                    ? this.accessToken()
-                    : this.accessToken;
-            };
-        }
     }
 
     /**

@@ -10,6 +10,7 @@ import { TagModule } from 'primeng/tag'
 import { TooltipModule } from 'primeng/tooltip'
 
 import {
+  AgentService,
   AgentMcpToolRule,
   DangerLevel,
   DiscoveredToolAnnotations,
@@ -58,7 +59,10 @@ export class AgentToolRulesComponent implements OnChanges {
     { label: 'TOOL_RULES.ALWAYS_ASK', value: ToolPermission.AlwaysAsk }
   ]
 
-  constructor(private readonly toolService: ToolService) {}
+  constructor(
+    private readonly toolService: ToolService,
+    private readonly agentService: AgentService
+  ) {}
 
   ngOnChanges(): void {
     if (this.agentId && this.toolId) {
@@ -106,11 +110,11 @@ export class AgentToolRulesComponent implements OnChanges {
     }
     row.saving = true
     const request = row.existingRule
-      ? this.toolService.updateAgentMcpToolRule(this.agentId, this.toolId, row.existingRule.id ?? '', {
+      ? this.agentService.updateAgentMcpToolRule(this.agentId, this.toolId, row.existingRule.id ?? '', {
           modificationCount: row.existingRule.modificationCount ?? 0,
           allowed: row.allowed
         })
-      : this.toolService.createAgentMcpToolRule(this.agentId, this.toolId, {
+      : this.agentService.createAgentMcpToolRule(this.agentId, this.toolId, {
           toolName: row.name,
           toolDescription: row.description,
           allowed: row.allowed
@@ -131,7 +135,7 @@ export class AgentToolRulesComponent implements OnChanges {
       return
     }
     row.saving = true
-    this.toolService
+    this.agentService
       .deleteAgentMcpToolRule(this.agentId, this.toolId, row.existingRule.id)
       .pipe(finalize(() => (row.saving = false)))
       .subscribe({

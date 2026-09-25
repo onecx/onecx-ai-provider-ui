@@ -6,6 +6,7 @@ api/agent.service.ts
 api/agentGroup.service.ts
 api/api.ts
 api/dangerPattern.service.ts
+api/dispatch.service.ts
 api/externalAgent.service.ts
 api/model.service.ts
 api/provider.service.ts
@@ -30,7 +31,10 @@ model/agentPageResult.ts
 model/agentSearchCriteria.ts
 model/agentStatus.ts
 model/authMode.ts
+model/chatMessage.ts
+model/chatRequest.ts
 model/communicationMode.ts
+model/conversation.ts
 model/createAgentGroupRequest.ts
 model/createAgentMcpToolRuleRequest.ts
 model/createAgentRequest.ts
@@ -66,6 +70,7 @@ model/providerHealthStatusResponse.ts
 model/providerPageResult.ts
 model/providerSearchCriteria.ts
 model/providerType.ts
+model/requestContext.ts
 model/scaffold.ts
 model/scaffoldPageResult.ts
 model/scaffoldSearchCriteria.ts

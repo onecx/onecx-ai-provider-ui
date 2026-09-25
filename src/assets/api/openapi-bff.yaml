@@ -15,7 +15,38 @@ tags:
   - name: agentGroup
   - name: externalAgent
   - name: dangerPattern
+  - name: dispatch
 paths:
+  /dispatch/chat:
+    post:
+      x-onecx:
+        permissions:
+          agents:
+            - dispatch
+      tags:
+        - dispatch
+      summary: Chat with AI
+      operationId: chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailResponse'
+
   /agents:
     post:
       x-onecx:
@@ -315,7 +346,7 @@ paths:
           tools:
             - read
       tags:
-        - tool
+        - agent
       description: Get MCP tool rules for an Agent and Tool
       operationId: getAgentMcpToolRules
       parameters:
@@ -344,7 +375,7 @@ paths:
           tools:
             - write
       tags:
-        - tool
+        - agent
       description: Create an MCP tool rule for an Agent and Tool
       operationId: createAgentMcpToolRule
       parameters:
@@ -381,7 +412,7 @@ paths:
           tools:
             - write
       tags:
-        - tool
+        - agent
       description: Update an MCP tool rule for an Agent and Tool
       operationId: updateAgentMcpToolRule
       parameters:
@@ -421,7 +452,7 @@ paths:
           tools:
             - delete
       tags:
-        - tool
+        - agent
       description: Delete an MCP tool rule for an Agent and Tool
       operationId: deleteAgentMcpToolRule
       parameters:
@@ -1309,17 +1340,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetailResponse'
 components:
-  securitySchemes:
-    oauth2:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: https://oauth.simple.api/token
-          scopes:
-            ocx-ai:all: Grants access to all operations
-            ocx-ai:read: Grants read access
-            ocx-ai:write: Grants write access
-            ocx-ai:delete: Grants access to delete operations
   schemas:
     AgentFilter:
       type: object
@@ -1330,6 +1350,54 @@ components:
             - APP_ID
         value:
           type: string
+    ChatRequest:
+      type: object
+      required:
+        - chatMessage
+      properties:
+        requestContext:
+          $ref: '#/components/schemas/RequestContext'
+        chatMessage:
+          $ref: '#/components/schemas/ChatMessage'
+        conversation:
+          $ref: '#/components/schemas/Conversation'
+    RequestContext:
+      type: object
+      properties:
+        filter:
+          $ref: '#/components/schemas/AgentFilter'
+        agentId:
+          type: string
+        aiContext:
+          type: array
+          items:
+            type: string
+    ChatMessage:
+      type: object
+      properties:
+        conversationId:
+          type: string
+        message:
+          type: string
+          maxLength: 10000
+        type:
+          type: string
+          enum: [ ASSISTANT, SYSTEM, USER, ACTION ]
+        creationDate:
+          type: integer
+          format: int64
+    Conversation:
+      type: object
+      properties:
+        conversationId:
+          type: string
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        conversationType:
+          type: string
+          enum: [ Q_AND_A ]
     AgentAbstract:
       type: object
       properties:
@@ -1343,6 +1411,10 @@ components:
           type: string
         a2aEnabled:
           type: boolean
+        voiceEnabled:
+          type: boolean
+        languageCode:
+          type: string
         status:
           $ref: '#/components/schemas/AgentStatus'
         filter:
@@ -1371,6 +1443,10 @@ components:
           type: string
         a2aEnabled:
           type: boolean
+        voiceEnabled:
+          type: boolean
+        languageCode:
+          type: string
         status:
           $ref: '#/components/schemas/AgentStatus'
         filter:
@@ -1400,6 +1476,10 @@ components:
           type: string
         a2aEnabled:
           type: boolean
+        voiceEnabled:
+          type: boolean
+        languageCode:
+          type: string
         status:
           $ref: '#/components/schemas/AgentStatus'
         filter:
@@ -1432,6 +1512,10 @@ components:
           type: string
         a2aEnabled:
           type: boolean
+        voiceEnabled:
+          type: boolean
+        languageCode:
+          type: string
         status:
           $ref: '#/components/schemas/AgentStatus'
         filter:
@@ -2235,13 +2319,17 @@ components:
       type: string
       enum:
         - ALWAYS_ASK
+        - ALWAYS_ALLOW
         - NEVER_ASK
+        - ALLOW
     ToolPermission:
       type: string
       enum:
         - ALLOW
         - DENY
         - ALWAYS_ASK
+        - ALWAYS_ALLOW
+        - NEVER_ASK
     DangerLevel:
       type: string
       enum:

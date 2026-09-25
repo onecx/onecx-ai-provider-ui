@@ -7,12 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AgentFilter } from './agentFilter';
 
 
-export enum ExecutionPolicy {
-    AlwaysAsk = 'ALWAYS_ASK',
-    AlwaysAllow = 'ALWAYS_ALLOW',
-    NeverAsk = 'NEVER_ASK',
-    Allow = 'ALLOW'
+export interface RequestContext { 
+    filter?: AgentFilter;
+    agentId?: string;
+    aiContext?: Array<string>;
 }
 

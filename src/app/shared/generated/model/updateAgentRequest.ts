@@ -21,6 +21,8 @@ export interface UpdateAgentRequest {
     description?: string;
     additionalPrompt?: string;
     a2aEnabled?: boolean;
+    voiceEnabled?: boolean;
+    languageCode?: string;
     status?: AgentStatus;
     filter?: AgentFilter;
     model?: Model;

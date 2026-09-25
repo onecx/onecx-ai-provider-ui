@@ -1,6 +1,7 @@
 import { of, throwError } from 'rxjs'
 
 import {
+  AgentService,
   AgentMcpToolRule,
   DangerLevel,
   DiscoveredToolInfo,
@@ -13,15 +14,18 @@ import { AgentToolRulesComponent } from './tool-rules.component'
 describe('AgentToolRulesComponent', () => {
   let component: AgentToolRulesComponent
   let toolService: jest.Mocked<ToolService>
+  let agentService: jest.Mocked<AgentService>
 
   beforeEach(() => {
     toolService = {
-      getDiscoveredTools: jest.fn(),
+      getDiscoveredTools: jest.fn()
+    } as unknown as jest.Mocked<ToolService>
+    agentService = {
       createAgentMcpToolRule: jest.fn(),
       updateAgentMcpToolRule: jest.fn(),
       deleteAgentMcpToolRule: jest.fn()
-    } as unknown as jest.Mocked<ToolService>
-    component = new AgentToolRulesComponent(toolService)
+    } as unknown as jest.Mocked<AgentService>
+    component = new AgentToolRulesComponent(toolService, agentService)
   })
 
   describe('ngOnChanges', () => {
@@ -218,20 +222,20 @@ describe('AgentToolRulesComponent', () => {
       component.toolId = 'tool-1'
       const row = { name: 'test', allowed: ToolPermission.Allow, orphaned: false, dirty: true, saving: false }
       component.save(row)
-      expect(toolService.createAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.createAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('does nothing when toolId is missing', () => {
       component.agentId = 'agent-1'
       const row = { name: 'test', allowed: ToolPermission.Allow, orphaned: false, dirty: true, saving: false }
       component.save(row)
-      expect(toolService.createAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.createAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('creates rule when no existingRule', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.createAgentMcpToolRule.mockReturnValue(of({}) as any)
+      agentService.createAgentMcpToolRule.mockReturnValue(of({}) as any)
       toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
       const row = {
         name: 'search_docs',
@@ -244,7 +248,7 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(toolService.createAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', {
+      expect(agentService.createAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', {
         toolName: 'search_docs',
         toolDescription: 'Search',
         allowed: ToolPermission.Allow
@@ -256,7 +260,7 @@ describe('AgentToolRulesComponent', () => {
     it('updates rule when existingRule is present', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
+      agentService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
       toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
       const existingRule: AgentMcpToolRule = { id: 'rule-1', modificationCount: 2, allowed: ToolPermission.Deny }
       const row = {
@@ -271,7 +275,7 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(toolService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
         modificationCount: 2,
         allowed: ToolPermission.Allow
       })
@@ -282,7 +286,7 @@ describe('AgentToolRulesComponent', () => {
     it('updates rule with empty string when existingRule id is undefined', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
+      agentService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
       toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
       const existingRule: AgentMcpToolRule = { id: undefined, modificationCount: 1, allowed: ToolPermission.Deny }
       const row = {
@@ -297,7 +301,7 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(toolService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', '', {
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', '', {
         modificationCount: 1,
         allowed: ToolPermission.Allow
       })
@@ -306,7 +310,7 @@ describe('AgentToolRulesComponent', () => {
     it('updates rule with 0 when modificationCount is undefined', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
+      agentService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
       toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
       const existingRule: AgentMcpToolRule = {
         id: 'rule-1',
@@ -325,7 +329,7 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(toolService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
         modificationCount: 0,
         allowed: ToolPermission.Allow
       })
@@ -334,7 +338,7 @@ describe('AgentToolRulesComponent', () => {
     it('sets saving to false on error', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.createAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      agentService.createAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
       const row = {
         name: 'search_docs',
         allowed: ToolPermission.Allow,
@@ -361,7 +365,7 @@ describe('AgentToolRulesComponent', () => {
         saving: false
       }
       component.deleteRule(row)
-      expect(toolService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('does nothing when existingRule has no id', () => {
@@ -376,7 +380,7 @@ describe('AgentToolRulesComponent', () => {
         saving: false
       }
       component.deleteRule(row)
-      expect(toolService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('does nothing when toolId is missing', () => {
@@ -390,7 +394,7 @@ describe('AgentToolRulesComponent', () => {
         saving: false
       }
       component.deleteRule(row)
-      expect(toolService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('does nothing when existingRule is undefined', () => {
@@ -404,13 +408,13 @@ describe('AgentToolRulesComponent', () => {
         saving: false
       }
       component.deleteRule(row)
-      expect(toolService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('calls deleteAgentMcpToolRule and refreshes on success', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.deleteAgentMcpToolRule.mockReturnValue(of(undefined) as any)
+      agentService.deleteAgentMcpToolRule.mockReturnValue(of(undefined) as any)
       toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
       const row = {
         name: 'test',
@@ -423,14 +427,14 @@ describe('AgentToolRulesComponent', () => {
 
       component.deleteRule(row)
 
-      expect(toolService.deleteAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1')
+      expect(agentService.deleteAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1')
       expect(row.saving).toBe(false)
     })
 
     it('sets saving to false on error', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
-      toolService.deleteAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      agentService.deleteAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
       const row = {
         name: 'test',
         allowed: ToolPermission.Deny,
