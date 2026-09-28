@@ -56,7 +56,8 @@ export class AgentToolRulesComponent implements OnChanges {
   readonly permissionOptions = [
     { label: 'TOOL_RULES.ALLOW', value: ToolPermission.Allow },
     { label: 'TOOL_RULES.DENY', value: ToolPermission.Deny },
-    { label: 'TOOL_RULES.ALWAYS_ASK', value: ToolPermission.AlwaysAsk }
+    { label: 'TOOL_RULES.ALWAYS_ASK', value: ToolPermission.AlwaysAsk },
+    { label: 'TOOL_RULES.ALWAYS_ALLOW', value: ToolPermission.AlwaysAllow }
   ]
 
   constructor(
