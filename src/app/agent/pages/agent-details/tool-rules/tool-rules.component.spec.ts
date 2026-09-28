@@ -566,13 +566,12 @@ describe('AgentToolRulesComponent', () => {
   })
 
   describe('permissionOptions', () => {
-    it('has four options', () => {
-      expect(component.permissionOptions).toHaveLength(4)
+    it('has three options', () => {
+      expect(component.permissionOptions).toHaveLength(3)
     })
 
-    it('includes Allow, Deny, AlwaysAsk, and AlwaysAllow', () => {
+    it('includes Deny, AlwaysAsk, and AlwaysAllow', () => {
       const values = component.permissionOptions.map((o) => o.value)
-      expect(values).toContain(ToolPermission.Allow)
       expect(values).toContain(ToolPermission.Deny)
       expect(values).toContain(ToolPermission.AlwaysAsk)
       expect(values).toContain(ToolPermission.AlwaysAllow)

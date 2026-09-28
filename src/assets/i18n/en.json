@@ -518,7 +518,6 @@
     "REFRESH": "Refresh",
     "SAVE": "Save",
     "DELETE": "Delete",
-    "ALLOW": "Allow",
     "ALWAYS_ALLOW": "Always Allow",
     "DENY": "Deny",
     "ALWAYS_ASK": "Always Ask",
