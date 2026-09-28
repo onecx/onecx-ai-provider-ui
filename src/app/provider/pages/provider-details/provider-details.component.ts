@@ -154,7 +154,7 @@ export class ProviderDetailsComponent implements OnInit {
       {
         titleKey: 'PROVIDER_DETAILS.BREADCRUMB',
         labelKey: 'PROVIDER_DETAILS.BREADCRUMB',
-        routerLink: '/provider'
+        routerLink: '../'
       }
     ])
   }

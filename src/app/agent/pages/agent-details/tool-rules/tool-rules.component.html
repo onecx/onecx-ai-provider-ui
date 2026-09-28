@@ -11,9 +11,52 @@
   @if (discoveryError) {
     <div class="mb-3">{{ 'TOOL_RULES.DISCOVERY_ERROR' | translate }}</div>
   }
+  @if (selectedRows.length > 0) {
+    <div class="flex align-items-center gap-2 mb-3">
+      <span>{{ 'TOOL_RULES.BULK.SELECTED' | translate: { count: selectedRows.length } }}</span>
+      <p-select
+        [options]="permissionOptions"
+        [(ngModel)]="bulkPermission"
+        [placeholder]="'TOOL_RULES.BULK.PERMISSION' | translate"
+        optionLabel="label"
+        optionValue="value"
+        [disabled]="bulkSaving"
+        appendTo="body"
+      >
+        <ng-template pTemplate="selectedItem" let-option>
+          {{ option.label | translate }}
+        </ng-template>
+        <ng-template pTemplate="item" let-option>
+          {{ option.label | translate }}
+        </ng-template>
+      </p-select>
+      <p-button
+        icon="pi pi-check"
+        [label]="'TOOL_RULES.BULK.APPLY' | translate"
+        [loading]="bulkSaving"
+        [disabled]="!bulkPermission || bulkSaving"
+        (onClick)="applyBulkPermission()"
+      ></p-button>
+      <p-button
+        icon="pi pi-times"
+        [text]="true"
+        [disabled]="bulkSaving"
+        (onClick)="toggleSelectAll(false)"
+        [pTooltip]="'TOOL_RULES.BULK.CLEAR' | translate"
+      ></p-button>
+    </div>
+  }
   <p-table [value]="rows" [loading]="loading" styleClass="p-datatable-sm">
     <ng-template pTemplate="header">
       <tr>
+        <th scope="col" class="w-1rem">
+          <p-checkbox
+            [binary]="true"
+            [ngModel]="allRowsSelected"
+            [disabled]="loading || rows.length === 0 || bulkSaving"
+            (ngModelChange)="toggleSelectAll($event)"
+          ></p-checkbox>
+        </th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.NAME' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.DESCRIPTION' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.ANNOTATIONS' | translate }}</th>
@@ -24,6 +67,14 @@
     </ng-template>
     <ng-template pTemplate="body" let-row>
       <tr>
+        <td>
+          <p-checkbox
+            [binary]="true"
+            [ngModel]="isRowSelected(row)"
+            [disabled]="bulkSaving"
+            (ngModelChange)="toggleRowSelection(row, $event)"
+          ></p-checkbox>
+        </td>
         <td>
           {{ row.name }}
           @if (row.orphaned) {
@@ -90,7 +141,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6">{{ 'TOOL_RULES.EMPTY' | translate }}</td>
+        <td colspan="7">{{ 'TOOL_RULES.EMPTY' | translate }}</td>
       </tr>
     </ng-template>
   </p-table>

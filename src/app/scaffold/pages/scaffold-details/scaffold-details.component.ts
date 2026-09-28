@@ -180,7 +180,7 @@ export class ScaffoldDetailsComponent implements OnInit {
       {
         titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB',
         labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB',
-        routerLink: '/scaffold'
+        routerLink: '../'
       }
     ])
   }

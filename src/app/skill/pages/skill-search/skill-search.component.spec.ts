@@ -247,7 +247,7 @@ describe('SkillSearchComponent', () => {
     component.ngOnInit()
     fixture.detectChanges()
     expect(breadcrumbSvc.setItems).toHaveBeenCalledWith([
-      { titleKey: 'SKILL_SEARCH.BREADCRUMB', labelKey: 'SKILL_SEARCH.BREADCRUMB', routerLink: '/skill' }
+      { titleKey: 'SKILL_SEARCH.BREADCRUMB', labelKey: 'SKILL_SEARCH.BREADCRUMB', routerLink: './' }
     ])
   })
 

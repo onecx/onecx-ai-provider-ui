@@ -148,7 +148,7 @@ describe('SkillDetailsComponent', () => {
     fixture.detectChanges()
 
     expect(breadcrumbSvc.setItems).toHaveBeenCalledWith([
-      { titleKey: 'SKILL_DETAILS.BREADCRUMB', labelKey: 'SKILL_DETAILS.BREADCRUMB', routerLink: '/skill' }
+      { titleKey: 'SKILL_DETAILS.BREADCRUMB', labelKey: 'SKILL_DETAILS.BREADCRUMB', routerLink: '../' }
     ])
   })
 

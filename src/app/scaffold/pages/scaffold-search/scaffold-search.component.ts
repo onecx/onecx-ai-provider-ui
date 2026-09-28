@@ -113,7 +113,7 @@ export class ScaffoldSearchComponent implements OnInit {
       {
         titleKey: 'SCAFFOLD_SEARCH.BREADCRUMB',
         labelKey: 'SCAFFOLD_SEARCH.BREADCRUMB',
-        routerLink: '/scaffold'
+        routerLink: './'
       }
     ])
     this.viewModel$.subscribe((vm) => this.scaffoldSearchFormGroup.patchValue(vm.searchCriteria))

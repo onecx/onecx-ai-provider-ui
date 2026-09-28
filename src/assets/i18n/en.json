@@ -525,6 +525,12 @@
     "ORPHANED_TOOLTIP": "This tool is no longer exposed by the MCP server",
     "EMPTY": "No tools discovered",
     "DISCOVERY_ERROR": "Tool discovery failed. Check the MCP server connection.",
+    "BULK": {
+      "SELECTED": "{{count}} tools selected",
+      "PERMISSION": "Set permission",
+      "APPLY": "Apply",
+      "CLEAR": "Clear selection"
+    },
     "COLUMNS": {
       "NAME": "Name",
       "DESCRIPTION": "Description",
@@ -568,7 +574,9 @@
       "URL": "URL",
       "NAME": "Name",
       "DESCRIPTION": "Description",
-      "APIKEY": "API Key"
+      "APIKEY": "API Key",
+      "AUTH_MODE": "Authentication mode",
+      "EXECUTION_POLICY": "Execution policy"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",

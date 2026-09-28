@@ -217,7 +217,115 @@ describe('AgentToolRulesComponent', () => {
     })
   })
 
+  describe('selection', () => {
+    it('selects and deselects rows and supports select all', () => {
+      const firstRow = { name: 'first', allowed: ToolPermission.Deny, orphaned: false, dirty: false, saving: false }
+      const secondRow = { name: 'second', allowed: ToolPermission.Deny, orphaned: false, dirty: false, saving: false }
+      component.rows = [firstRow, secondRow]
+
+      component.toggleRowSelection(firstRow, true)
+      expect(component.selectedRows).toEqual([firstRow])
+      expect(component.allRowsSelected).toBe(false)
+
+      component.toggleRowSelection(firstRow, true)
+      expect(component.selectedRows).toEqual([firstRow])
+
+      component.toggleSelectAll(true)
+      expect(component.selectedRows).toEqual([firstRow, secondRow])
+      expect(component.allRowsSelected).toBe(true)
+
+      component.toggleRowSelection(firstRow, false)
+      expect(component.selectedRows).toEqual([secondRow])
+      expect(component.allRowsSelected).toBe(false)
+
+      component.toggleSelectAll(false)
+      expect(component.selectedRows).toEqual([])
+    })
+  })
+
+  describe('applyBulkPermission', () => {
+    it('updates existing rules and creates missing rules', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      agentService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
+      agentService.createAgentMcpToolRule.mockReturnValue(of({}) as any)
+      toolService.getDiscoveredTools.mockReturnValue(of({ tools: [] }) as any)
+      const existingRow = {
+        name: 'existing',
+        allowed: ToolPermission.Deny,
+        existingRule: { id: 'rule-1', modificationCount: 2 },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      const newRow = {
+        name: 'new-tool',
+        description: 'New tool',
+        allowed: ToolPermission.Deny,
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      component.rows = [existingRow, newRow]
+      component.selectedRows = [existingRow, newRow]
+      component.bulkPermission = ToolPermission.AlwaysAsk
+
+      component.applyBulkPermission()
+
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
+        { id: 'rule-1', modificationCount: 2, allowed: ToolPermission.AlwaysAsk }
+      ])
+      expect(agentService.createAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
+        { toolName: 'new-tool', toolDescription: 'New tool', allowed: ToolPermission.AlwaysAsk }
+      ])
+      expect(component.selectedRows).toEqual([])
+      expect(component.bulkPermission).toBeNull()
+      expect(component.bulkSaving).toBe(false)
+    })
+
+    it('does nothing without a permission or selected rows', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+
+      component.applyBulkPermission()
+
+      expect(agentService.createAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.updateAgentMcpToolRule).not.toHaveBeenCalled()
+    })
+
+    it('clears row saving state when a bulk save fails', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      agentService.updateAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      const row = {
+        name: 'existing',
+        allowed: ToolPermission.Deny,
+        existingRule: { id: 'rule-1', modificationCount: 0 },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      component.selectedRows = [row]
+      component.bulkPermission = ToolPermission.AlwaysAllow
+
+      component.applyBulkPermission()
+
+      expect(row.saving).toBe(false)
+      expect(component.bulkSaving).toBe(false)
+    })
+  })
+
   describe('save', () => {
+    it('returns an empty result when saveRows has no identifiers', () => {
+      let result: unknown[] | undefined
+
+      ;(component as any).saveRows([]).subscribe((value: unknown[]) => (result = value))
+
+      expect(result).toEqual([])
+      expect(agentService.createAgentMcpToolRule).not.toHaveBeenCalled()
+      expect(agentService.updateAgentMcpToolRule).not.toHaveBeenCalled()
+    })
+
     it('does nothing when agentId is missing', () => {
       component.toolId = 'tool-1'
       const row = { name: 'test', allowed: ToolPermission.Allow, orphaned: false, dirty: true, saving: false }
@@ -248,11 +356,9 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(agentService.createAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', {
-        toolName: 'search_docs',
-        toolDescription: 'Search',
-        allowed: ToolPermission.Allow
-      })
+      expect(agentService.createAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
+        { toolName: 'search_docs', toolDescription: 'Search', allowed: ToolPermission.Allow }
+      ])
       expect(row.dirty).toBe(false)
       expect(row.saving).toBe(false)
     })
@@ -275,10 +381,9 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
-        modificationCount: 2,
-        allowed: ToolPermission.Allow
-      })
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
+        { id: 'rule-1', modificationCount: 2, allowed: ToolPermission.Allow }
+      ])
       expect(row.dirty).toBe(false)
       expect(row.saving).toBe(false)
     })
@@ -301,10 +406,9 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', '', {
-        modificationCount: 1,
-        allowed: ToolPermission.Allow
-      })
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
+        { id: '', modificationCount: 1, allowed: ToolPermission.Allow }
+      ])
     })
 
     it('updates rule with 0 when modificationCount is undefined', () => {
@@ -329,10 +433,9 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1', {
-        modificationCount: 0,
-        allowed: ToolPermission.Allow
-      })
+      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
+        { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow }
+      ])
     })
 
     it('sets saving to false on error', () => {

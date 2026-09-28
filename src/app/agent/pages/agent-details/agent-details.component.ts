@@ -215,7 +215,7 @@ export class AgentDetailsComponent implements OnInit {
       {
         titleKey: 'AGENT_DETAILS.BREADCRUMB',
         labelKey: 'AGENT_DETAILS.BREADCRUMB',
-        routerLink: '/agent'
+        routerLink: '../'
       }
     ])
   }

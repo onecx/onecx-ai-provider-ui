@@ -4,6 +4,16 @@ import { MCPServerDetailsComponent } from './pages/mcpserver-details/mcpserver-d
 import { MCPServerSearchComponent } from './pages/mcpserver-search/mcpserver-search.component'
 
 export const routes: Routes = [
-  { path: 'details/:id', component: MCPServerDetailsComponent, pathMatch: 'full' },
-  { path: '', component: MCPServerSearchComponent, pathMatch: 'full' }
+  {
+    path: 'details/:id',
+    component: MCPServerDetailsComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'MCPSERVER_DETAILS.BREADCRUMB' }
+  },
+  {
+    path: '',
+    component: MCPServerSearchComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'MCPSERVER_SEARCH.BREADCRUMB' }
+  }
 ]

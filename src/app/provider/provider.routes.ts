@@ -4,6 +4,16 @@ import { ProviderDetailsComponent } from './pages/provider-details/provider-deta
 import { ProviderSearchComponent } from './pages/provider-search/provider-search.component'
 
 export const routes: Routes = [
-  { path: 'details/:id', component: ProviderDetailsComponent, pathMatch: 'full' },
-  { path: '', component: ProviderSearchComponent, pathMatch: 'full' }
+  {
+    path: 'details/:id',
+    component: ProviderDetailsComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'PROVIDER_DETAILS.BREADCRUMB' }
+  },
+  {
+    path: '',
+    component: ProviderSearchComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'PROVIDER_SEARCH.BREADCRUMB' }
+  }
 ]

@@ -19,8 +19,6 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { Agent } from '../model/agent';
 // @ts-ignore
-import { AgentMcpToolRule } from '../model/agentMcpToolRule';
-// @ts-ignore
 import { AgentMcpToolRuleList } from '../model/agentMcpToolRuleList';
 // @ts-ignore
 import { AgentPageResult } from '../model/agentPageResult';
@@ -184,10 +182,10 @@ export class AgentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRule>;
-    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRule>>;
-    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRule>>;
-    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: CreateAgentMcpToolRuleRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: Array<CreateAgentMcpToolRuleRequest>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRuleList>;
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: Array<CreateAgentMcpToolRuleRequest>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRuleList>>;
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: Array<CreateAgentMcpToolRuleRequest>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRuleList>>;
+    public createAgentMcpToolRule(agentId: string, toolId: string, createAgentMcpToolRuleRequest: Array<CreateAgentMcpToolRuleRequest>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (agentId === null || agentId === undefined) {
             throw new Error('Required parameter agentId was null or undefined when calling createAgentMcpToolRule.');
         }
@@ -239,7 +237,7 @@ export class AgentService {
         }
 
         let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules`;
-        return this.httpClient.request<AgentMcpToolRule>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<AgentMcpToolRuleList>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: createAgentMcpToolRuleRequest,
@@ -635,26 +633,22 @@ export class AgentService {
     }
 
     /**
-     * Update an MCP tool rule for an Agent and Tool
+     * Update MCP tool rules for an Agent and Tool
      * @param agentId 
      * @param toolId 
-     * @param ruleId 
      * @param updateAgentMcpToolRuleRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRule>;
-    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRule>>;
-    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRule>>;
-    public updateAgentMcpToolRule(agentId: string, toolId: string, ruleId: string, updateAgentMcpToolRuleRequest: UpdateAgentMcpToolRuleRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public updateAgentMcpToolRule(agentId: string, toolId: string, updateAgentMcpToolRuleRequest: Array<UpdateAgentMcpToolRuleRequest>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentMcpToolRuleList>;
+    public updateAgentMcpToolRule(agentId: string, toolId: string, updateAgentMcpToolRuleRequest: Array<UpdateAgentMcpToolRuleRequest>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentMcpToolRuleList>>;
+    public updateAgentMcpToolRule(agentId: string, toolId: string, updateAgentMcpToolRuleRequest: Array<UpdateAgentMcpToolRuleRequest>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentMcpToolRuleList>>;
+    public updateAgentMcpToolRule(agentId: string, toolId: string, updateAgentMcpToolRuleRequest: Array<UpdateAgentMcpToolRuleRequest>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (agentId === null || agentId === undefined) {
             throw new Error('Required parameter agentId was null or undefined when calling updateAgentMcpToolRule.');
         }
         if (toolId === null || toolId === undefined) {
             throw new Error('Required parameter toolId was null or undefined when calling updateAgentMcpToolRule.');
-        }
-        if (ruleId === null || ruleId === undefined) {
-            throw new Error('Required parameter ruleId was null or undefined when calling updateAgentMcpToolRule.');
         }
         if (updateAgentMcpToolRuleRequest === null || updateAgentMcpToolRuleRequest === undefined) {
             throw new Error('Required parameter updateAgentMcpToolRuleRequest was null or undefined when calling updateAgentMcpToolRule.');
@@ -700,8 +694,8 @@ export class AgentService {
             }
         }
 
-        let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules/${this.configuration.encodeParam({name: "ruleId", value: ruleId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<AgentMcpToolRule>('put', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/agents/${this.configuration.encodeParam({name: "agentId", value: agentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/tools/${this.configuration.encodeParam({name: "toolId", value: toolId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/mcp-tool-rules`;
+        return this.httpClient.request<AgentMcpToolRuleList>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: updateAgentMcpToolRuleRequest,

@@ -170,7 +170,7 @@ describe('ScaffoldDetailsComponent', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith([
-      { titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB', labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB', routerLink: '/scaffold' }
+      { titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB', labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB', routerLink: '../' }
     ])
   })
 

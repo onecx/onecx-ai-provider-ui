@@ -248,7 +248,7 @@ describe('MCPServerSearchComponent', () => {
     fixture.detectChanges()
     expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
     expect(breadcrumbService.setItems).toHaveBeenCalledWith([
-      { titleKey: 'MCPSERVER_SEARCH.BREADCRUMB', labelKey: 'MCPSERVER_SEARCH.BREADCRUMB', routerLink: '/mcpserver' }
+      { titleKey: 'MCPSERVER_SEARCH.BREADCRUMB', labelKey: 'MCPSERVER_SEARCH.BREADCRUMB', routerLink: './' }
     ])
   })
 

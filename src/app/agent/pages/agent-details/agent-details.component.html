@@ -272,6 +272,7 @@
                         optionValue="id"
                         [filter]="true"
                         [showClear]="true"
+                        [disabled]="!vm.editMode"
                         class="w-full"
                         [(ngModel)]="selectedToolId"
                         [ngModelOptions]="{ standalone: true }"

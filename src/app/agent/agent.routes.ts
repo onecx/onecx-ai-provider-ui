@@ -4,6 +4,16 @@ import { AgentDetailsComponent } from './pages/agent-details/agent-details.compo
 import { AgentSearchComponent } from './pages/agent-search/agent-search.component'
 
 export const routes: Routes = [
-  { path: 'details/:id', component: AgentDetailsComponent, pathMatch: 'full' },
-  { path: '', component: AgentSearchComponent, pathMatch: 'full' }
+  {
+    path: 'details/:id',
+    component: AgentDetailsComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'AGENT_DETAILS.BREADCRUMB' }
+  },
+  {
+    path: '',
+    component: AgentSearchComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'AGENT_SEARCH.BREADCRUMB' }
+  }
 ]

@@ -11,6 +11,7 @@ import { ToolPermission } from './toolPermission';
 
 
 export interface UpdateAgentMcpToolRuleRequest { 
+    id: string;
     modificationCount: number;
     allowed?: ToolPermission;
 }

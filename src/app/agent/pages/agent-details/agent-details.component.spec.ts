@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { By } from '@angular/platform-browser'
 import { ActivatedRoute } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -192,7 +193,7 @@ describe('AgentDetailsComponent', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith([
-      { titleKey: 'AGENT_DETAILS.BREADCRUMB', labelKey: 'AGENT_DETAILS.BREADCRUMB', routerLink: '/agent' }
+      { titleKey: 'AGENT_DETAILS.BREADCRUMB', labelKey: 'AGENT_DETAILS.BREADCRUMB', routerLink: '../' }
     ])
   })
 
@@ -439,6 +440,22 @@ describe('AgentDetailsComponent', () => {
     const labels = await firstValueFrom(component.objectDetails$)
     const versionItem = labels.find((l) => l.label === 'AGENT_DETAILS.FORM.VERSION')
     expect(versionItem?.value).toEqual('7')
+  })
+
+  it('should disable the standalone tool rules selector when editMode is false', () => {
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const toolRulesTab = fixture.nativeElement.querySelector('p-tab[value="2"]') as HTMLElement
+    toolRulesTab.click()
+    fixture.detectChanges()
+
+    const toolRulesSelector = fixture.debugElement.query(By.css('#agent_detail_tool_rules_tool'))
+    expect(toolRulesSelector.componentInstance.disabled).toBe(true)
   })
 
   it('should map model provider, tools and groups when they are present on the view model', () => {

@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common'
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
-import { finalize } from 'rxjs'
+import { finalize, forkJoin, Observable, of, tap } from 'rxjs'
 import { ButtonModule } from 'primeng/button'
+import { CheckboxModule } from 'primeng/checkbox'
 import { SelectModule } from 'primeng/select'
 import { TableModule } from 'primeng/table'
 import { TagModule } from 'primeng/tag'
@@ -38,6 +39,7 @@ interface AgentToolRuleRow {
     FormsModule,
     TranslateModule,
     ButtonModule,
+    CheckboxModule,
     SelectModule,
     TableModule,
     TagModule,
@@ -50,6 +52,9 @@ export class AgentToolRulesComponent implements OnChanges {
   @Input() toolId?: string
 
   rows: AgentToolRuleRow[] = []
+  selectedRows: AgentToolRuleRow[] = []
+  bulkPermission: ToolPermission | null = null
+  bulkSaving = false
   loading = false
   discoveryError = false
 
@@ -76,6 +81,8 @@ export class AgentToolRulesComponent implements OnChanges {
     }
     this.loading = true
     this.discoveryError = false
+    this.selectedRows = []
+    this.bulkPermission = null
     this.toolService
       .getDiscoveredTools(this.toolId, this.agentId)
       .pipe(finalize(() => (this.loading = false)))
@@ -104,30 +111,117 @@ export class AgentToolRulesComponent implements OnChanges {
     row.dirty = true
   }
 
+  isRowSelected(row: AgentToolRuleRow): boolean {
+    return this.selectedRows.includes(row)
+  }
+
+  toggleRowSelection(row: AgentToolRuleRow, selected: boolean): void {
+    if (selected) {
+      if (!this.isRowSelected(row)) {
+        this.selectedRows = [...this.selectedRows, row]
+      }
+      return
+    }
+    this.selectedRows = this.selectedRows.filter((selectedRow) => selectedRow !== row)
+  }
+
+  get allRowsSelected(): boolean {
+    return this.rows.length > 0 && this.selectedRows.length === this.rows.length
+  }
+
+  toggleSelectAll(selected: boolean): void {
+    this.selectedRows = selected ? [...this.rows] : []
+  }
+
   save(row: AgentToolRuleRow): void {
     if (!this.agentId || !this.toolId) {
       return
     }
     row.saving = true
-    const request = row.existingRule
-      ? this.agentService.updateAgentMcpToolRule(this.agentId, this.toolId, row.existingRule.id ?? '', {
-          modificationCount: row.existingRule.modificationCount ?? 0,
-          allowed: row.allowed
-        })
-      : this.agentService.createAgentMcpToolRule(this.agentId, this.toolId, {
-          toolName: row.name,
-          toolDescription: row.description,
-          allowed: row.allowed
-        })
-    request.pipe(finalize(() => (row.saving = false))).subscribe({
-      next: () => {
-        row.dirty = false
-        this.refresh()
-      },
-      error: () => {
-        row.saving = false
-      }
+    this.saveRows([row])
+      .pipe(
+        tap(() => (row.dirty = false)),
+        finalize(() => (row.saving = false))
+      )
+      .subscribe({
+        next: () => {
+          this.refresh()
+        },
+        error: () => {
+          row.saving = false
+        }
+      })
+  }
+
+  applyBulkPermission(): void {
+    if (!this.agentId || !this.toolId || !this.bulkPermission || this.selectedRows.length === 0) {
+      return
+    }
+
+    const selectedPermission = this.bulkPermission
+    const rows = [...this.selectedRows]
+    this.bulkSaving = true
+    rows.forEach((row) => {
+      row.allowed = selectedPermission
+      row.dirty = true
+      row.saving = true
     })
+
+    this.saveRows(rows)
+      .pipe(finalize(() => (this.bulkSaving = false)))
+      .subscribe({
+        next: () => {
+          rows.forEach((row) => {
+            row.dirty = false
+            row.saving = false
+          })
+          this.selectedRows = []
+          this.bulkPermission = null
+          this.refresh()
+        },
+        error: () => {
+          rows.forEach((row) => (row.saving = false))
+        }
+      })
+  }
+
+  private saveRows(rows: AgentToolRuleRow[]): Observable<unknown[]> {
+    if (!this.agentId || !this.toolId) {
+      return of([])
+    }
+
+    const requests: Observable<unknown>[] = []
+    const newRows = rows.filter((row) => !row.existingRule)
+    const existingRows = rows.filter((row) => row.existingRule)
+
+    if (newRows.length > 0) {
+      requests.push(
+        this.agentService.createAgentMcpToolRule(
+          this.agentId,
+          this.toolId,
+          newRows.map((row) => ({
+            toolName: row.name,
+            toolDescription: row.description,
+            allowed: row.allowed
+          }))
+        )
+      )
+    }
+    if (existingRows.length > 0) {
+      requests.push(
+        this.agentService.updateAgentMcpToolRule(
+          this.agentId,
+          this.toolId,
+          existingRows.map((row) => ({
+            id: row.existingRule?.id ?? '',
+            modificationCount: row.existingRule?.modificationCount ?? 0,
+            allowed: row.allowed
+          }))
+        )
+      )
+    }
+
+    return forkJoin(requests)
   }
 
   deleteRule(row: AgentToolRuleRow): void {

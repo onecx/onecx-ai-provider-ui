@@ -4,6 +4,16 @@ import { SkillDetailsComponent } from './pages/skill-details/skill-details.compo
 import { SkillSearchComponent } from './pages/skill-search/skill-search.component'
 
 export const routes: Routes = [
-  { path: 'details/:id', component: SkillDetailsComponent, pathMatch: 'full' },
-  { path: '', component: SkillSearchComponent, pathMatch: 'full' }
+  {
+    path: 'details/:id',
+    component: SkillDetailsComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'SKILL_DETAILS.BREADCRUMB' }
+  },
+  {
+    path: '',
+    component: SkillSearchComponent,
+    pathMatch: 'full',
+    data: { breadcrumb: 'SKILL_SEARCH.BREADCRUMB' }
+  }
 ]

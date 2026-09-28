@@ -114,7 +114,7 @@ export class MCPServerSearchComponent implements OnInit {
       {
         titleKey: 'MCPSERVER_SEARCH.BREADCRUMB',
         labelKey: 'MCPSERVER_SEARCH.BREADCRUMB',
-        routerLink: '/mcpserver'
+        routerLink: './'
       }
     ])
     this.viewModel$.subscribe((vm) => {

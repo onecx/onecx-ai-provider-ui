@@ -524,6 +524,12 @@
     "ORPHANED_TOOLTIP": "Dieses Tool wird vom MCP-Server nicht mehr bereitgestellt",
     "EMPTY": "Keine Tools gefunden",
     "DISCOVERY_ERROR": "Tool-Erkennung fehlgeschlagen. Bitte MCP-Server-Verbindung prüfen.",
+    "BULK": {
+      "SELECTED": "{{count}} Tools ausgewählt",
+      "PERMISSION": "Berechtigung festlegen",
+      "APPLY": "Anwenden",
+      "CLEAR": "Auswahl aufheben"
+    },
     "COLUMNS": {
       "NAME": "Name",
       "DESCRIPTION": "Beschreibung",
@@ -567,7 +573,9 @@
       "URL": "URL",
       "NAME": "Name",
       "DESCRIPTION": "Beschreibung",
-      "APIKEY": "API-Schlüssel"
+      "APIKEY": "API-Schlüssel",
+      "AUTH_MODE": "Authentifizierungsmodus",
+      "EXECUTION_POLICY": "Ausführungsrichtlinie"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",

@@ -146,7 +146,7 @@ describe('ProviderDetailsComponent', () => {
 
       expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
       expect(breadcrumbService.setItems).toHaveBeenCalledWith([
-        { titleKey: 'PROVIDER_DETAILS.BREADCRUMB', labelKey: 'PROVIDER_DETAILS.BREADCRUMB', routerLink: '/provider' }
+        { titleKey: 'PROVIDER_DETAILS.BREADCRUMB', labelKey: 'PROVIDER_DETAILS.BREADCRUMB', routerLink: '../' }
       ])
     })
 
