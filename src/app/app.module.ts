@@ -25,6 +25,7 @@ import { apiConfigProvider } from 'src/app/shared/utils/apiConfigProvider.utils'
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { metaReducers, reducers } from './app.reducers'
+import { LabelResolver } from './shared/label.resolver'
 
 @NgModule({
   imports: [
@@ -55,6 +56,7 @@ import { metaReducers, reducers } from './app.reducers'
     })
   ],
   providers: [
+    LabelResolver,
     providePortalDialogService(),
     provideHttpClient(withInterceptorsFromDi()),
     { provide: APP_CONFIG, useValue: environment },

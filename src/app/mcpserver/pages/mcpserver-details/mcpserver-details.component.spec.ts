@@ -122,7 +122,7 @@ describe('MCPServerDetailsComponent', () => {
 
   beforeEach(async () => {
     const userServiceMock = TestBed.inject(UserService)
-    jest.spyOn(userServiceMock, 'getPermissions').mockReturnValue(of(['MCPSERVER#BACK']))
+    jest.spyOn(userServiceMock, 'getPermissions').mockReturnValue(of(['MCPSERVER#BACK', 'MCPSERVER#CHANGE_API_KEY']))
 
     translateService = TestBed.inject(TranslateService)
     translateService.use('en')
@@ -165,6 +165,17 @@ describe('MCPServerDetailsComponent', () => {
     Object.values(component.formGroup.controls).forEach((control) => {
       expect(control.disabled).toBe(true)
     })
+  })
+
+  it('should render the API key label with its input', async () => {
+    await fixture.whenStable()
+    fixture.detectChanges()
+
+    const apiKeyInput = fixture.nativeElement.querySelector('input#mcpServer_detail_apiKey')
+    const apiKeyLabel = fixture.nativeElement.querySelector('label[for="mcpServer_detail_apiKey"]')
+
+    expect(apiKeyInput).toBeTruthy()
+    expect(apiKeyLabel).toBeTruthy()
   })
 
   it('should have 2 inline actions', async () => {
@@ -275,6 +286,15 @@ describe('MCPServerDetailsComponent', () => {
 
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+  })
+
+  it('should not offer the deprecated allow execution policy', () => {
+    expect(component.executionPolicyOptions).toEqual([
+      ExecutionPolicy.AlwaysAsk,
+      ExecutionPolicy.AlwaysAllow,
+      ExecutionPolicy.NeverAsk
+    ])
+    expect(component.executionPolicyOptions).not.toContain(ExecutionPolicy.Allow)
   })
 
   it('cancel clicked should dispatch cancel action', () => {

@@ -16,6 +16,7 @@ import { createAppEntrypoint, initializeRouter } from '@onecx/angular-webcompone
 
 import { APIConfiguration } from 'src/app/shared/generated'
 import { apiConfigProvider } from 'src/app/shared/utils/apiConfigProvider.utils'
+import { LabelResolver } from 'src/app/shared/label.resolver'
 import { AppEntrypointComponent } from './app-entrypoint.component'
 import { routes } from './app-routing.module'
 import { metaReducers, reducers } from './app.reducers'
@@ -53,6 +54,7 @@ effectProvidersForWorkaround.forEach((p) => (p.ɵprov.providedIn = null))
   ],
   exports: [],
   providers: [
+    LabelResolver,
     {
       provide: APIConfiguration,
       useFactory: apiConfigProvider,

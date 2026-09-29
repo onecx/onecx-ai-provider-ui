@@ -8,7 +8,7 @@
     [subheader]="'PROVIDER_SEARCH.SUB_HEADER' | translate"
     (searched)="search(ProviderSearchFormGroup)"
     (resetted)="resetSearch()"
-    [manualBreadcrumbs]="true"
+    [manualBreadcrumbs]="false"
     [actions]="(headerActions$ | async) ?? []"
     (viewModeChanged)="viewModeChanged($any($event))"
     [viewMode]="vm.viewMode"

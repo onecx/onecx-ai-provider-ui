@@ -126,7 +126,7 @@ export class MCPServerDetailsComponent implements OnInit {
 
   public formGroup: FormGroup
   readonly authModeOptions = Object.values(AuthMode)
-  readonly executionPolicyOptions = Object.values(ExecutionPolicy)
+  readonly executionPolicyOptions = Object.values(ExecutionPolicy).filter((policy) => policy !== ExecutionPolicy.Allow)
   hasAPIKeyPermission = false
 
   constructor(
