@@ -272,7 +272,8 @@ describe('MCPServerDetailsEffects', () => {
       store.overrideSelector(mcpserverDetailsSelectors.selectDetails, details)
       store.refreshState()
 
-      mcpService.updateToolById.mockReturnValue(of({}) as any)
+      const updatedDetails = { id: '1', apiKey: 'new', modificationCount: 9 } as MCPServer
+      mcpService.updateToolById.mockReturnValue(of(updatedDetails) as any)
 
       const newDetails = { apiKey: 'new' }
       actions$.next(MCPServerDetailsActions.saveButtonClicked({ details: newDetails as any }))
@@ -280,7 +281,7 @@ describe('MCPServerDetailsEffects', () => {
       effects.saveButtonClicked$.subscribe((action) => {
         expect(mcpService.updateToolById).toHaveBeenCalledWith('1', { ...details, ...newDetails })
         expect(successSpy).toHaveBeenCalledWith({ summaryKey: 'MCPSERVER_DETAILS.UPDATE.SUCCESS' })
-        expect(action).toEqual(MCPServerDetailsActions.updateMCPServerSucceeded())
+        expect(action).toEqual(MCPServerDetailsActions.updateMCPServerSucceeded({ details: updatedDetails }))
         done()
       })
     })

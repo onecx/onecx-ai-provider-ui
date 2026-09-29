@@ -65,17 +65,21 @@ describe('MCPServerDetailsReducer', () => {
   })
 
   it('should set editMode to false on updateMCPServerCancelled', () => {
-    const prevState: MCPServerDetailsState = { ...initialState, editMode: true }
+    const prevState: MCPServerDetailsState = { ...initialState, editMode: true, isSubmitting: true }
     const action = MCPServerDetailsActions.updateMCPServerCancelled()
     const state = mcpserverDetailsReducer(prevState, action)
     expect(state.editMode).toBe(false)
+    expect(state.isSubmitting).toBe(false)
   })
 
-  it('should set editMode to false on updateMCPServerSucceeded', () => {
+  it('should update details and reset edit state on updateMCPServerSucceeded', () => {
     const prevState: MCPServerDetailsState = { ...initialState, editMode: true, isSubmitting: true }
-    const action = MCPServerDetailsActions.updateMCPServerSucceeded()
+    const details = { id: '1', name: 'Updated MCP server', modificationCount: 9 } as any
+    const action = MCPServerDetailsActions.updateMCPServerSucceeded({ details })
     const state = mcpserverDetailsReducer(prevState, action)
+    expect(state.details).toEqual(details)
     expect(state.editMode).toBe(false)
+    expect(state.isSubmitting).toBe(false)
   })
 
   it('should set isSubmitting to false on updateMCPServerFailed', () => {

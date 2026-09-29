@@ -62,35 +62,38 @@ describe('skillDetailsReducer', () => {
   })
 
   it('should set editMode false on cancelEditConfirmClicked', () => {
-    const newState = { ...initialState, editMode: true }
+    const newState = { ...initialState, editMode: true, isSubmitting: true }
     const action = skillDetailsActions.cancelEditConfirmClicked()
     const nextState = skillDetailsReducer(newState, action)
 
     expect(nextState).toEqual({
       ...initialState,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   })
 
   it('should set editMode false on cancelEditNotDirty', () => {
-    const newState = { ...initialState, editMode: true }
+    const newState = { ...initialState, editMode: true, isSubmitting: true }
     const action = skillDetailsActions.cancelEditNotDirty()
     const nextState = skillDetailsReducer(newState, action)
 
     expect(nextState).toEqual({
       ...initialState,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   })
 
   it('should set editMode false on updateSkillCancelled', () => {
-    const newState = { ...initialState, editMode: true }
+    const newState = { ...initialState, editMode: true, isSubmitting: true }
     const action = skillDetailsActions.updateSkillCancelled()
     const nextState = skillDetailsReducer(newState, action)
 
     expect(nextState).toEqual({
       ...initialState,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   })
 

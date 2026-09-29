@@ -300,27 +300,27 @@ describe('agentDetailsReducer', () => {
   })
 
   describe('cancel actions (cancelEditConfirmClicked, cancelEditNotDirty, updateAgentCancelled)', () => {
-    const intermediateState: AgentDetailsState = { ...initialState, editMode: true }
+    const intermediateState: AgentDetailsState = { ...initialState, editMode: true, isSubmitting: true }
 
     it('should set editMode to false on cancelEditConfirmClicked', () => {
       const action = agentDetailsActions.cancelEditConfirmClicked()
       const nextState = agentDetailsReducer(intermediateState, action)
 
-      expect(nextState).toEqual({ ...initialState, editMode: false })
+      expect(nextState).toEqual({ ...initialState, editMode: false, isSubmitting: false })
     })
 
     it('should set editMode to false on cancelEditNotDirty', () => {
       const action = agentDetailsActions.cancelEditNotDirty()
       const nextState = agentDetailsReducer(intermediateState, action)
 
-      expect(nextState).toEqual({ ...initialState, editMode: false })
+      expect(nextState).toEqual({ ...initialState, editMode: false, isSubmitting: false })
     })
 
     it('should set editMode to false on updateAgentCancelled', () => {
       const action = agentDetailsActions.updateAgentCancelled()
       const nextState = agentDetailsReducer(intermediateState, action)
 
-      expect(nextState).toEqual({ ...initialState, editMode: false })
+      expect(nextState).toEqual({ ...initialState, editMode: false, isSubmitting: false })
     })
   })
 

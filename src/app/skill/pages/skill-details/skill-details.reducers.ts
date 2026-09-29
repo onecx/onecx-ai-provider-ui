@@ -43,7 +43,8 @@ export const skillDetailsReducer = createReducer(
     skillDetailsActions.updateSkillCancelled,
     (state: SkillDetailsState): SkillDetailsState => ({
       ...state,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   ),
   on(skillDetailsActions.updateSkillSucceeded, (state: SkillDetailsState, { details }): SkillDetailsState => ({

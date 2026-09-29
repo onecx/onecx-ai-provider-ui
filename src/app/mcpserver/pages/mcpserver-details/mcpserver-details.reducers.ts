@@ -47,10 +47,19 @@ export const mcpserverDetailsReducer = createReducer(
   on(
     MCPServerDetailsActions.cancelEditConfirmClicked,
     MCPServerDetailsActions.updateMCPServerCancelled,
-    MCPServerDetailsActions.updateMCPServerSucceeded,
     (state: MCPServerDetailsState): MCPServerDetailsState => ({
       ...state,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
+    })
+  ),
+  on(
+    MCPServerDetailsActions.updateMCPServerSucceeded,
+    (state: MCPServerDetailsState, { details }): MCPServerDetailsState => ({
+      ...state,
+      details,
+      editMode: false,
+      isSubmitting: false
     })
   ),
   on(MCPServerDetailsActions.updateMCPServerFailed, (state: MCPServerDetailsState): MCPServerDetailsState => ({

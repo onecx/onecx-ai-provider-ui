@@ -458,6 +458,28 @@ describe('AgentDetailsComponent', () => {
     expect(toolRulesSelector.componentInstance.disabled).toBe(false)
   })
 
+  it('should disable detail textareas when editMode is false', () => {
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    component.formGroup.get('description')?.setValue('Existing description')
+    component.formGroup.get('additionalPrompt')?.setValue('Existing prompt')
+    fixture.detectChanges()
+
+    const description = fixture.nativeElement.querySelector('#agent_detail_description')
+    const additionalPrompt = fixture.nativeElement.querySelector('#agent_detail_additional_prompt')
+    expect(description.disabled).toBe(true)
+    expect(additionalPrompt.disabled).toBe(true)
+    expect(description.classList).toContain('p-textarea')
+    expect(additionalPrompt.classList).toContain('p-textarea')
+    expect(description.classList).toContain('p-filled')
+    expect(additionalPrompt.classList).toContain('p-filled')
+  })
+
   it('should map model provider, tools and groups when they are present on the view model', () => {
     const agent = {
       id: '123',

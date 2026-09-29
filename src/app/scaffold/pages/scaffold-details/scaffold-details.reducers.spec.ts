@@ -120,35 +120,38 @@ describe('scaffoldDetailsReducer', () => {
   })
 
   it('should set editMode false on cancelEditConfirmClicked', () => {
-    const newState = { ...initialState, editMode: true }
+    const newState = { ...initialState, editMode: true, isSubmitting: true }
     const action = scaffoldDetailsActions.cancelEditConfirmClicked()
     const nextState = scaffoldDetailsReducer(newState, action)
 
     expect(nextState).toEqual({
       ...initialState,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   })
 
   it('should set editMode false on cancelEditNotDirty', () => {
-    const newState = { ...initialState, editMode: true }
+    const newState = { ...initialState, editMode: true, isSubmitting: true }
     const action = scaffoldDetailsActions.cancelEditNotDirty()
     const nextState = scaffoldDetailsReducer(newState, action)
 
     expect(nextState).toEqual({
       ...initialState,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   })
 
   it('should set editMode false on updateScaffoldCancelled', () => {
-    const newState = { ...initialState, editMode: true }
+    const newState = { ...initialState, editMode: true, isSubmitting: true }
     const action = scaffoldDetailsActions.updateScaffoldCancelled()
     const nextState = scaffoldDetailsReducer(newState, action)
 
     expect(nextState).toEqual({
       ...initialState,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   })
 

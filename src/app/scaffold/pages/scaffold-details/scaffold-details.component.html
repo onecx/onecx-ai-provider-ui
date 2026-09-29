@@ -53,11 +53,12 @@
 
                     <p-floatlabel variant="on" controlErrorAnchor>
                       <textarea
-                        pInputText
+                        pTextarea
                         id="scaffold_detail_system_prompt"
                         class="w-full pt-3 pb-2 text-responsive"
                         rows="4"
                         formControlName="systemPrompt"
+                        [disabled]="!vm.editMode"
                       ></textarea>
                       <label for="scaffold_detail_system_prompt">
                         {{ 'SCAFFOLD_DETAILS.FORM.SYSTEM_PROMPT' | translate }}

@@ -147,6 +147,9 @@ export class ProviderDetailsComponent implements OnInit {
         authMode: Provider.details?.authMode,
         apiKey: Provider.details?.apiKey
       })
+      if (!Provider.editMode) {
+        this.formGroup.disable()
+      }
     })
     this.formGroup.disable()
 

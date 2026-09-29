@@ -17,7 +17,7 @@ export const MCPServerDetailsActions = createActionGroup({
     'MCPServer details loading failed': props<{ error: string | null }>(),
     'edit mode set': props<{ editMode: boolean }>(),
     'Update MCPServer cancelled': emptyProps(),
-    'Update MCPServer succeeded': emptyProps(),
+    'Update MCPServer succeeded': props<{ details: MCPServer }>(),
     'Update MCPServer failed': props<{
       error: string | null
     }>(),

@@ -79,7 +79,8 @@ export const scaffoldDetailsReducer = createReducer(
     scaffoldDetailsActions.updateScaffoldCancelled,
     (state: ScaffoldDetailsState): ScaffoldDetailsState => ({
       ...state,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   ),
   on(
