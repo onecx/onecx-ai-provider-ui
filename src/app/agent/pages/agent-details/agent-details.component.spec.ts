@@ -442,7 +442,7 @@ describe('AgentDetailsComponent', () => {
     expect(versionItem?.value).toEqual('7')
   })
 
-  it('should disable the standalone tool rules selector when editMode is false', () => {
+  it('should keep the standalone tool rules selector enabled when editMode is false', () => {
     store.overrideSelector(selectAgentDetailsViewModel, {
       ...baseAgentDetailsViewModel,
       editMode: false
@@ -455,7 +455,7 @@ describe('AgentDetailsComponent', () => {
     fixture.detectChanges()
 
     const toolRulesSelector = fixture.debugElement.query(By.css('#agent_detail_tool_rules_tool'))
-    expect(toolRulesSelector.componentInstance.disabled).toBe(true)
+    expect(toolRulesSelector.componentInstance.disabled).toBe(false)
   })
 
   it('should map model provider, tools and groups when they are present on the view model', () => {
