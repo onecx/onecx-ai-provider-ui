@@ -329,6 +329,11 @@
       "SELECT_TOOL": "MCP-Werkzeug auswählen",
       "SELECT_TOOL_HINT": "Wählen Sie ein MCP-Werkzeug, um pro-Agent-Regeln zu konfigurieren"
     },
+    "VOICE": {
+      "ENABLED": "Sprache aktiviert",
+      "LANGUAGE": "Sprachauswahl",
+      "LANGUAGE_REQUIRED": "Bitte wählen Sie eine Sprache aus, bevor Sie Sprache aktivieren."
+    },
     "ASSIGNMENTS": {
       "ADD_FILTER": "Filter hinzufügen",
       "REMOVE_FILTER": "Filter entfernen",

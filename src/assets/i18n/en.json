@@ -330,6 +330,11 @@
       "SELECT_TOOL": "Select MCP Tool",
       "SELECT_TOOL_HINT": "Select an MCP tool to configure per-agent tool rules"
     },
+    "VOICE": {
+      "ENABLED": "Voice Enabled",
+      "LANGUAGE": "Voice Language",
+      "LANGUAGE_REQUIRED": "Please select a language before enabling voice."
+    },
     "ASSIGNMENTS": {
       "ADD_FILTER": "Add Filter",
       "REMOVE_FILTER": "Remove Filter",

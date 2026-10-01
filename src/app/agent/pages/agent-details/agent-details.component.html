@@ -155,6 +155,28 @@
                       </p-multiSelect>
                       <label for="agent_detail_tools"> {{ 'AGENT_DETAILS.FORM.ADDITIONAL_TOOLS' | translate }} </label>
                     </p-floatlabel>
+
+                    <div class="flex align-items-center gap-3">
+                      <p-checkbox inputId="agent_detail_voice_enabled" formControlName="voiceEnabled" [binary]="true" />
+                      <label class="text-sm" for="agent_detail_voice_enabled">
+                        {{ 'AGENT_DETAILS.VOICE.ENABLED' | translate }}
+                      </label>
+                    </div>
+
+                    <p-floatlabel variant="on" controlErrorAnchor class="w-12rem">
+                      <p-select
+                        inputId="agent_detail_language_code"
+                        formControlName="languageCode"
+                        [options]="languageOptions"
+                        [showClear]="true"
+                        class="w-full"
+                        [attr.aria-label]="'AGENT_DETAILS.VOICE.LANGUAGE' | translate"
+                      >
+                      </p-select>
+                      <label for="agent_detail_language_code">
+                        {{ 'AGENT_DETAILS.VOICE.LANGUAGE' | translate }}
+                      </label>
+                    </p-floatlabel>
                   </div>
                 </p-tabpanel>
 
