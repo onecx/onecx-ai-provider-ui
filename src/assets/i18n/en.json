@@ -333,7 +333,11 @@
     "VOICE": {
       "ENABLED": "Voice Enabled",
       "LANGUAGE": "Voice Language",
-      "LANGUAGE_REQUIRED": "Please select a language before enabling voice."
+      "LANGUAGE_REQUIRED": "Please select a language before enabling voice.",
+      "LANGUAGES": {
+        "EN": "English",
+        "DE": "German"
+      }
     },
     "ASSIGNMENTS": {
       "ADD_FILTER": "Add Filter",

@@ -1,0 +1,29 @@
+= Tool Policy
+
+An agent can carry per-tool policy for the MCP tools it uses. Open the agent's details
+page and select the *Tool Rules* tab, then choose an MCP tool to configure its policy.
+
+== Permissions
+
+Each tool rule is assigned one of the canonical permissions:
+
+[cols="1,2",options="header"]
+|===
+| Permission | Effect
+
+| `DENY`
+| The tool is not available to the agent. This is the default when no rule exists.
+
+| `ALWAYS_ASK`
+| The agent must confirm with the user before the tool is executed.
+
+| `ALWAYS_ALLOW`
+| The tool may run without additional confirmation.
+|===
+
+== Managing rules
+
+For a selected tool you can create, update, or delete its rule. Existing rules display
+their current permission so you can change it; tools that are no longer exposed by the
+MCP server are flagged as orphaned. Auto-detected danger levels and annotations are
+shown alongside each tool to help you choose an appropriate permission.

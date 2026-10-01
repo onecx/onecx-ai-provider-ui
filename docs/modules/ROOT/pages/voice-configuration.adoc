@@ -1,0 +1,38 @@
+= Voice Configuration
+
+To enable the voice pilot for an agent, open the agent's details page and select the
+*General* tab.
+
+== Enabling voice
+
+Tick the *Voice Enabled* checkbox to turn the voice pilot on for the agent.
+
+A valid pilot language must be selected before the agent can be saved with voice
+enabled. The *Voice Language* dropdown is restricted to the pilot languages
+supported by the platform. If voice is enabled but no language is selected, saving is
+blocked and an error message asks you to select a language.
+
+== Pilot languages
+
+The language dropdown offers the following pilot languages:
+
+[cols="1,1",options="header"]
+|===
+| Language | Language code
+
+| English
+| `en`
+
+| German
+| `de`
+|===
+
+Adding a pilot language requires a platform update; the supported set is controlled
+centrally and is not free text.
+
+== Saving and reloading
+
+When you save the agent, the voice flag and the selected language are persisted
+together. Reload the agent and both settings are restored: voice is shown as enabled
+or disabled and the selected language is pre-filled. Clearing the language while voice
+remains enabled will again block the save until a language is chosen.

@@ -554,8 +554,18 @@ describe('AgentDetailsComponent', () => {
       expect(languageSelect).toBeTruthy()
     })
 
-    it('should expose a fixed set of pilot language options', () => {
-      expect(component.languageOptions).toEqual(['en', 'de'])
+    it('should expose a fixed set of pilot language options with i18n labels', () => {
+      expect(component.languageOptions).toEqual([
+        { code: 'en', labelKey: 'AGENT_DETAILS.VOICE.LANGUAGES.EN' },
+        { code: 'de', labelKey: 'AGENT_DETAILS.VOICE.LANGUAGES.DE' }
+      ])
+    })
+
+    it('should translate the pilot language option labels', () => {
+      const translateService = TestBed.inject(TranslateService)
+      const [english, german] = component.languageOptions
+      expect(translateService.instant(english?.labelKey ?? '')).toEqual('English')
+      expect(translateService.instant(german?.labelKey ?? '')).toEqual('German')
     })
 
     it('should patch voice settings from the view model details on load', () => {

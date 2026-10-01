@@ -64,7 +64,10 @@ export class AgentDetailsComponent implements OnInit {
   private readonly messageService = inject(PortalMessageService)
   readonly filterKeys = Object.values(AgentFilterKeyEnum)
   readonly statusOptions = Object.values(AgentStatus)
-  readonly languageOptions = ['en', 'de']
+  readonly languageOptions = [
+    { code: 'en', labelKey: 'AGENT_DETAILS.VOICE.LANGUAGES.EN' },
+    { code: 'de', labelKey: 'AGENT_DETAILS.VOICE.LANGUAGES.DE' }
+  ]
   filterKeySuggestions: string[] = [...this.filterKeys]
 
   viewModel$: Observable<AgentDetailsViewModel> = this.store.select(selectAgentDetailsViewModel)

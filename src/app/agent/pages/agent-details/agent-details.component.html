@@ -168,10 +168,17 @@
                         inputId="agent_detail_language_code"
                         formControlName="languageCode"
                         [options]="languageOptions"
+                        optionValue="code"
                         [showClear]="true"
                         class="w-full"
                         [attr.aria-label]="'AGENT_DETAILS.VOICE.LANGUAGE' | translate"
                       >
+                        <ng-template let-option pTemplate="selectedItem">
+                          {{ option.labelKey | translate }}
+                        </ng-template>
+                        <ng-template let-option pTemplate="item">
+                          {{ option.labelKey | translate }}
+                        </ng-template>
                       </p-select>
                       <label for="agent_detail_language_code">
                         {{ 'AGENT_DETAILS.VOICE.LANGUAGE' | translate }}

@@ -332,7 +332,11 @@
     "VOICE": {
       "ENABLED": "Sprache aktiviert",
       "LANGUAGE": "Sprachauswahl",
-      "LANGUAGE_REQUIRED": "Bitte wählen Sie eine Sprache aus, bevor Sie Sprache aktivieren."
+      "LANGUAGE_REQUIRED": "Bitte wählen Sie eine Sprache aus, bevor Sie Sprache aktivieren.",
+      "LANGUAGES": {
+        "EN": "Englisch",
+        "DE": "Deutsch"
+      }
     },
     "ASSIGNMENTS": {
       "ADD_FILTER": "Filter hinzufügen",
