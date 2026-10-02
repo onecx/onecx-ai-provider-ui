@@ -7,7 +7,8 @@ describe('dashboard routes', () => {
     expect(routes[0]).toEqual({
       path: '',
       component: DashboardComponent,
-      pathMatch: 'full'
+      pathMatch: 'full',
+      data: { breadcrumb: 'DASHBOARD.HEADER' }
     })
   })
 })

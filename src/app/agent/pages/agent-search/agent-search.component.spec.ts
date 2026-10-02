@@ -257,7 +257,7 @@ describe('AgentSearchComponent', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith([
-      { titleKey: 'AGENT_SEARCH.BREADCRUMB', labelKey: 'AGENT_SEARCH.BREADCRUMB', routerLink: '/agent' }
+      { titleKey: 'AGENT_SEARCH.BREADCRUMB', labelKey: 'AGENT_SEARCH.BREADCRUMB', routerLink: './' }
     ])
   })
 

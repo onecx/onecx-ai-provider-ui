@@ -18,6 +18,7 @@ import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 import { AlwaysGrantPermissionChecker, HAS_PERMISSION_CHECKER, providePermissionService } from '@onecx/angular-utils'
 import { BreadcrumbService } from '@onecx/angular-accelerator'
 import { UserService } from '@onecx/angular-integration-interface'
+import { AuthMode, ExecutionPolicy } from 'src/app/shared/generated'
 
 import { MCPServerDetailsActions } from './mcpserver-details.actions'
 import { MCPServerDetailsComponent } from './mcpserver-details.component'
@@ -72,7 +73,9 @@ describe('MCPServerDetailsComponent', () => {
     apiKey: '',
     description: '',
     name: '',
-    url: ''
+    url: '',
+    authMode: AuthMode.ApiKey,
+    executionPolicy: ExecutionPolicy.AlwaysAsk
   })
 
   const baseMCPServerDetailsViewModel: MCPServerDetailsViewModel = {
@@ -119,7 +122,7 @@ describe('MCPServerDetailsComponent', () => {
 
   beforeEach(async () => {
     const userServiceMock = TestBed.inject(UserService)
-    jest.spyOn(userServiceMock, 'getPermissions').mockReturnValue(of(['MCPSERVER#BACK']))
+    jest.spyOn(userServiceMock, 'getPermissions').mockReturnValue(of(['MCPSERVER#BACK', 'MCPSERVER#CHANGE_API_KEY']))
 
     translateService = TestBed.inject(TranslateService)
     translateService.use('en')
@@ -147,7 +150,7 @@ describe('MCPServerDetailsComponent', () => {
 
     expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
     expect(breadcrumbService.setItems).toHaveBeenCalledWith([
-      { titleKey: 'MCPSERVER_DETAILS.BREADCRUMB', labelKey: 'MCPSERVER_DETAILS.BREADCRUMB', routerLink: '/mcpserver' }
+      { titleKey: 'MCPSERVER_DETAILS.BREADCRUMB', labelKey: 'MCPSERVER_DETAILS.BREADCRUMB', routerLink: '../' }
     ])
   })
 
@@ -155,6 +158,24 @@ describe('MCPServerDetailsComponent', () => {
     const pageHeader = await mcpserverDetails.getHeader()
     expect(await pageHeader.getHeaderText()).toEqual('Tools (MCP) Details')
     expect(await pageHeader.getSubheaderText()).toEqual('Display Tools (MCP) details')
+  })
+
+  it('should disable all form controls outside edit mode', () => {
+    expect(component.formGroup.disabled).toBe(true)
+    Object.values(component.formGroup.controls).forEach((control) => {
+      expect(control.disabled).toBe(true)
+    })
+  })
+
+  it('should render the API key label with its input', async () => {
+    await fixture.whenStable()
+    fixture.detectChanges()
+
+    const apiKeyInput = fixture.nativeElement.querySelector('input#mcpServer_detail_apiKey')
+    const apiKeyLabel = fixture.nativeElement.querySelector('label[for="mcpServer_detail_apiKey"]')
+
+    expect(apiKeyInput).toBeTruthy()
+    expect(apiKeyLabel).toBeTruthy()
   })
 
   it('should have 2 inline actions', async () => {
@@ -236,6 +257,44 @@ describe('MCPServerDetailsComponent', () => {
     const details = baseMCPServerDetailsViewModel.details ?? createBaseDetails()
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+  })
+
+  it('should load and save authentication and execution settings', () => {
+    jest.spyOn(store, 'dispatch')
+    const details = {
+      ...createBaseDetails(),
+      authMode: AuthMode.Oauth,
+      executionPolicy: ExecutionPolicy.AlwaysAllow
+    }
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    expect(component.formGroup.get('authMode')?.value).toBe(AuthMode.Oauth)
+    expect(component.formGroup.get('executionPolicy')?.value).toBe(ExecutionPolicy.AlwaysAllow)
+
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details,
+      editMode: true
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    component.save()
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+  })
+
+  it('should not offer the deprecated allow execution policy', () => {
+    expect(component.executionPolicyOptions).toEqual([
+      ExecutionPolicy.AlwaysAsk,
+      ExecutionPolicy.AlwaysAllow,
+      ExecutionPolicy.NeverAsk
+    ])
+    expect(component.executionPolicyOptions).not.toContain(ExecutionPolicy.Allow)
   })
 
   it('cancel clicked should dispatch cancel action', () => {

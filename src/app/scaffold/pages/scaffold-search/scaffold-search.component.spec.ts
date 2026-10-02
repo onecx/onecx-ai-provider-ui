@@ -251,7 +251,7 @@ describe('ScaffoldSearchComponent', () => {
     fixture.detectChanges()
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith([
-      { titleKey: 'SCAFFOLD_SEARCH.BREADCRUMB', labelKey: 'SCAFFOLD_SEARCH.BREADCRUMB', routerLink: '/scaffold' }
+      { titleKey: 'SCAFFOLD_SEARCH.BREADCRUMB', labelKey: 'SCAFFOLD_SEARCH.BREADCRUMB', routerLink: './' }
     ])
   })
 

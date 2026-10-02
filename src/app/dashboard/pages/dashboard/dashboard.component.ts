@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
@@ -6,7 +6,7 @@ import { TranslateModule } from '@ngx-translate/core'
 import { CardModule } from 'primeng/card'
 import { Observable } from 'rxjs'
 
-import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
+import { AngularAcceleratorModule, BreadcrumbService } from '@onecx/angular-accelerator'
 import { PortalPageComponent } from '@onecx/angular-utils'
 
 import { selectDashboardViewModel } from './dashboard.selectors'
@@ -27,7 +27,7 @@ interface DashboardPanel {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   viewModel$: Observable<DashboardViewModel>
   readonly navigationPanels: DashboardPanel[] = [
     {
@@ -74,7 +74,20 @@ export class DashboardComponent {
     // }
   ]
 
-  constructor(private readonly store: Store) {
+  constructor(
+    private readonly store: Store,
+    private readonly breadcrumbService: BreadcrumbService
+  ) {
     this.viewModel$ = this.store.select(selectDashboardViewModel)
+  }
+
+  ngOnInit(): void {
+    this.breadcrumbService.setItems([
+      {
+        titleKey: 'DASHBOARD.HEADER',
+        labelKey: 'DASHBOARD.HEADER',
+        routerLink: './'
+      }
+    ])
   }
 }

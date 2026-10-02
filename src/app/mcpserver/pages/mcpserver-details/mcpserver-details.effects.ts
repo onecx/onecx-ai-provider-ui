@@ -102,11 +102,11 @@ export class MCPServerDetailsEffects {
           ...updatedItem
         } as UpdateToolRequest
         return this.toolService.updateToolById(itemToEditId, itemToEdit).pipe(
-          map(() => {
+          map((details) => {
             this.messageService.success({
               summaryKey: 'MCPSERVER_DETAILS.UPDATE.SUCCESS'
             })
-            return MCPServerDetailsActions.updateMCPServerSucceeded()
+            return MCPServerDetailsActions.updateMCPServerSucceeded({ details })
           }),
           catchError((error) => {
             this.messageService.error({

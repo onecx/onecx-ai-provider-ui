@@ -153,7 +153,7 @@ describe('ProviderSearchComponent', () => {
     fixture.detectChanges()
     expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
     expect(breadcrumbService.setItems).toHaveBeenCalledWith([
-      { titleKey: 'PROVIDER_SEARCH.BREADCRUMB', labelKey: 'PROVIDER_SEARCH.BREADCRUMB', routerLink: '/provider' }
+      { titleKey: 'PROVIDER_SEARCH.BREADCRUMB', labelKey: 'PROVIDER_SEARCH.BREADCRUMB', routerLink: './' }
     ])
   })
 

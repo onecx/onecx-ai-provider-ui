@@ -8,7 +8,7 @@
     [subheader]="'MCPSERVER_SEARCH.SUB_HEADER' | translate"
     (searched)="search(mcpserverSearchFormGroup)"
     (resetted)="resetSearch()"
-    [manualBreadcrumbs]="true"
+    [manualBreadcrumbs]="false"
     [actions]="(headerActions$ | async) ?? []"
     (componentStateChanged)="searchHeaderComponentStateChanged($any($event))"
     [viewMode]="vm.searchHeaderComponentState?.activeViewMode ?? 'basic'"

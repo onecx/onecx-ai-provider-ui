@@ -4,3 +4,11 @@
 
 /* portal core */
 @use 'node_modules/@onecx/angular-accelerator/assets/styles.scss';
+
+input.p-inputtext:disabled,
+.p-password input:disabled,
+textarea.p-textarea:disabled {
+  background: var(--p-form-field-disabled-background, var(--surface-200, #e5e7eb));
+  color: var(--p-form-field-disabled-color, var(--text-color-secondary, #6b7280));
+  opacity: 1;
+}

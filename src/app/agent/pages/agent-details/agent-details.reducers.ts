@@ -124,7 +124,8 @@ export const agentDetailsReducer = createReducer(
     agentDetailsActions.updateAgentCancelled,
     (state: AgentDetailsState): AgentDetailsState => ({
       ...state,
-      editMode: false
+      editMode: false,
+      isSubmitting: false
     })
   ),
   on(agentDetailsActions.updateAgentSucceeded, (state: AgentDetailsState, { details }): AgentDetailsState => ({

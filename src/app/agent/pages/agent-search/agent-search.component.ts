@@ -114,7 +114,7 @@ export class AgentSearchComponent implements OnInit {
       {
         titleKey: 'AGENT_SEARCH.BREADCRUMB',
         labelKey: 'AGENT_SEARCH.BREADCRUMB',
-        routerLink: '/agent'
+        routerLink: './'
       }
     ])
     this.viewModel$.subscribe((vm) => this.agentSearchFormGroup.patchValue(vm.searchCriteria))

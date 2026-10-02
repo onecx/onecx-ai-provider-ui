@@ -51,6 +51,7 @@ app:
             VIEW: View mode for mcpserver
             SEARCH: Search mcpserver
             BACK: Navigate back in details of mcpserver
+            CHANGE_API_KEY: Change ApiKey MCP Server
           DASHBOARD:
             CREATE: Create Dashboard item
             EDIT: Edit Dashboard item

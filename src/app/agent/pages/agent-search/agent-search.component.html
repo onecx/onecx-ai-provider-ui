@@ -8,7 +8,7 @@
     [subheader]="'AGENT_SEARCH.SUB_HEADER' | translate"
     (searched)="search(agentSearchFormGroup)"
     (resetted)="resetSearch()"
-    [manualBreadcrumbs]="true"
+    [manualBreadcrumbs]="false"
     [actions]="(headerActions$ | async) ?? []"
     (componentStateChanged)="searchHeaderComponentStateChanged($event)"
     [viewMode]="vm.searchHeaderComponentState?.activeViewMode ?? 'basic'"

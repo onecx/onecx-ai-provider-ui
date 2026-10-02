@@ -106,7 +106,7 @@ export class ProviderSearchComponent implements OnInit {
       {
         titleKey: 'PROVIDER_SEARCH.BREADCRUMB',
         labelKey: 'PROVIDER_SEARCH.BREADCRUMB',
-        routerLink: '/provider'
+        routerLink: './'
       }
     ])
     this.viewModel$.subscribe((vm) => {

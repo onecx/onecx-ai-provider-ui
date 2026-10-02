@@ -170,7 +170,7 @@ describe('ScaffoldDetailsComponent', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith([
-      { titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB', labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB', routerLink: '/scaffold' }
+      { titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB', labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB', routerLink: '../' }
     ])
   })
 
@@ -242,12 +242,22 @@ describe('ScaffoldDetailsComponent', () => {
     store.refreshState()
 
     component.formGroup.setValue(scaffoldForm)
+    component.formGroup.markAsDirty()
     component.save()
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
       scaffoldDetailsActions.saveButtonClicked({ details: { ...scaffold, ...scaffoldForm } })
     )
+  })
+
+  it('should not dispatch saveButtonClicked when the form has no changes', () => {
+    jest.spyOn(store, 'dispatch')
+    component.formGroup.markAsPristine()
+
+    component.save()
+
+    expect(store.dispatch).not.toHaveBeenCalled()
   })
 
   it('should dispatch deleteButtonClicked action on delete button click', async () => {
@@ -333,9 +343,27 @@ describe('ScaffoldDetailsComponent', () => {
     expect(component.formGroup.getRawValue()).toEqual(scaffoldForm)
   })
 
+  it('should disable the system prompt textarea when editMode is false', () => {
+    store.overrideSelector(selectScaffoldDetailsViewModel, {
+      ...baseScaffoldDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    component.formGroup.get('systemPrompt')?.setValue('Existing system prompt')
+    fixture.detectChanges()
+
+    const systemPrompt = fixture.nativeElement.querySelector('#scaffold_detail_system_prompt')
+    expect(systemPrompt.disabled).toBe(true)
+    expect(systemPrompt.classList).toContain('p-textarea')
+    expect(systemPrompt.classList).toContain('p-filled')
+  })
+
   it('should default tools to an empty array when their control value is null', () => {
     jest.spyOn(store, 'dispatch')
     component.formGroup.get('tools')?.setValue(null)
+    component.formGroup.markAsDirty()
 
     component.save()
 
@@ -351,6 +379,7 @@ describe('ScaffoldDetailsComponent', () => {
   it('should default tools to an empty array when the tools control is missing', () => {
     jest.spyOn(store, 'dispatch')
     component.formGroup.removeControl('tools')
+    component.formGroup.markAsDirty()
 
     component.save()
 

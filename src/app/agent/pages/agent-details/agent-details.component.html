@@ -18,7 +18,7 @@
         [objectDetails]="(objectDetails$ | async) ?? []"
         [actions]="(headerActions$ | async) ?? []"
         [disableDefaultActions]="true"
-        [manualBreadcrumbs]="true"
+        [manualBreadcrumbs]="false"
       >
       </ocx-page-header>
       <ocx-content [attr.aria-label]="'AGENT_DETAILS.ARIA_LABEL' | translate">
@@ -78,22 +78,24 @@
 
                     <p-floatlabel variant="on" controlErrorAnchor>
                       <textarea
-                        pInputText
+                        pTextarea
                         id="agent_detail_description"
                         class="w-full pt-3 pb-2 text-responsive"
                         rows="3"
                         formControlName="description"
+                        [disabled]="!vm.editMode"
                       ></textarea>
                       <label for="agent_detail_description"> {{ 'AGENT_DETAILS.FORM.DESCRIPTION' | translate }} </label>
                     </p-floatlabel>
 
                     <p-floatlabel variant="on" controlErrorAnchor>
                       <textarea
-                        pInputText
+                        pTextarea
                         id="agent_detail_additional_prompt"
                         class="w-full pt-3 pb-2 text-responsive"
                         rows="4"
                         formControlName="additionalPrompt"
+                        [disabled]="!vm.editMode"
                       ></textarea>
                       <label for="agent_detail_additional_prompt">
                         {{ 'AGENT_DETAILS.FORM.ADDITIONAL_PROMPT' | translate }}

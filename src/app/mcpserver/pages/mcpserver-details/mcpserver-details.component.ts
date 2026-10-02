@@ -9,10 +9,12 @@ import { PrimeIcons } from 'primeng/api'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { PasswordModule } from 'primeng/password'
+import { SelectModule } from 'primeng/select'
 
 import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { UserService } from '@onecx/angular-integration-interface'
+import { AuthMode, ExecutionPolicy } from 'src/app/shared/generated'
 
 import { MCPServerDetailsActions } from './mcpserver-details.actions'
 import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
@@ -27,6 +29,7 @@ import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
     FloatLabelModule,
     InputTextModule,
     PasswordModule,
+    SelectModule,
     TranslateModule,
     ReactiveFormsModule,
     PortalPageComponent
@@ -122,6 +125,8 @@ export class MCPServerDetailsComponent implements OnInit {
   )
 
   public formGroup: FormGroup
+  readonly authModeOptions = Object.values(AuthMode)
+  readonly executionPolicyOptions = Object.values(ExecutionPolicy).filter((policy) => policy !== ExecutionPolicy.Allow)
   hasAPIKeyPermission = false
 
   constructor(
@@ -133,7 +138,9 @@ export class MCPServerDetailsComponent implements OnInit {
       apiKey: new FormControl(null, [Validators.maxLength(255)]),
       name: new FormControl(null, [Validators.required, Validators.maxLength(255)]),
       description: new FormControl(null, [Validators.required, Validators.maxLength(1024)]),
-      url: new FormControl(null, [Validators.required, Validators.maxLength(2048)])
+      url: new FormControl(null, [Validators.required, Validators.maxLength(2048)]),
+      authMode: new FormControl<AuthMode | null>(null),
+      executionPolicy: new FormControl<ExecutionPolicy | null>(null)
     })
     this.formGroup.disable()
 
@@ -143,7 +150,9 @@ export class MCPServerDetailsComponent implements OnInit {
           apiKey: vm.details?.apiKey,
           name: vm.details?.name,
           description: vm.details?.description,
-          url: vm.details?.url
+          url: vm.details?.url,
+          authMode: vm.details?.authMode,
+          executionPolicy: vm.details?.executionPolicy
         })
         this.formGroup.markAsPristine()
       }
@@ -163,7 +172,7 @@ export class MCPServerDetailsComponent implements OnInit {
       {
         titleKey: 'MCPSERVER_DETAILS.BREADCRUMB',
         labelKey: 'MCPSERVER_DETAILS.BREADCRUMB',
-        routerLink: '/mcpserver'
+        routerLink: '../'
       }
     ])
   }

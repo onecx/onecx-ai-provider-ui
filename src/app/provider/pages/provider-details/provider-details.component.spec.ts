@@ -146,7 +146,7 @@ describe('ProviderDetailsComponent', () => {
 
       expect(breadcrumbService.setItems).toHaveBeenCalledTimes(1)
       expect(breadcrumbService.setItems).toHaveBeenCalledWith([
-        { titleKey: 'PROVIDER_DETAILS.BREADCRUMB', labelKey: 'PROVIDER_DETAILS.BREADCRUMB', routerLink: '/provider' }
+        { titleKey: 'PROVIDER_DETAILS.BREADCRUMB', labelKey: 'PROVIDER_DETAILS.BREADCRUMB', routerLink: '../' }
       ])
     })
 
@@ -272,6 +272,19 @@ describe('ProviderDetailsComponent', () => {
       cancelAction?.actionCallback?.()
 
       expect(toggleSpy).toHaveBeenCalledWith(false)
+    })
+
+    it('should disable the form when the view model leaves edit mode', () => {
+      component.formGroup.enable()
+      expect(component.formGroup.enabled).toBe(true)
+
+      store.overrideSelector(selectProviderDetailsViewModel, {
+        ...baseProviderDetaulsViewModel,
+        editMode: false
+      })
+      store.refreshState()
+
+      expect(component.formGroup.disabled).toBe(true)
     })
 
     it('should patch form fields with empty string if details fields are undefined', async () => {

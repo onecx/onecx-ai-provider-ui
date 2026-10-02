@@ -113,7 +113,7 @@ export class SkillSearchComponent implements OnInit {
       {
         titleKey: 'SKILL_SEARCH.BREADCRUMB',
         labelKey: 'SKILL_SEARCH.BREADCRUMB',
-        routerLink: '/skill'
+        routerLink: './'
       }
     ])
     this.viewModel$.subscribe((vm) => this.skillSearchFormGroup.patchValue(vm.searchCriteria))

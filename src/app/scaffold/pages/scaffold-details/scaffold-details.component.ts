@@ -9,6 +9,7 @@ import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { TabsModule } from 'primeng/tabs'
+import { TextareaModule } from 'primeng/textarea'
 import { Observable, map } from 'rxjs'
 
 import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
@@ -29,6 +30,7 @@ type ScaffoldWithTools = Scaffold & { tools?: Tool[] }
     FloatLabelModule,
     InputTextModule,
     TabsModule,
+    TextareaModule,
     ReactiveFormsModule,
     AsyncPipe,
     AngularAcceleratorModule,
@@ -180,7 +182,7 @@ export class ScaffoldDetailsComponent implements OnInit {
       {
         titleKey: 'SCAFFOLD_DETAILS.BREADCRUMB',
         labelKey: 'SCAFFOLD_DETAILS.BREADCRUMB',
-        routerLink: '/scaffold'
+        routerLink: '../'
       }
     ])
   }
@@ -194,6 +196,10 @@ export class ScaffoldDetailsComponent implements OnInit {
   }
 
   save() {
+    if (!this.formGroup.dirty) {
+      return
+    }
+
     const details: ScaffoldWithTools = {
       ...this.currentDetails,
       ...this.formGroup.value,

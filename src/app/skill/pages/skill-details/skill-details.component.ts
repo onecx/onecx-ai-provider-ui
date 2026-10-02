@@ -160,7 +160,7 @@ export class SkillDetailsComponent implements OnInit {
       {
         titleKey: 'SKILL_DETAILS.BREADCRUMB',
         labelKey: 'SKILL_DETAILS.BREADCRUMB',
-        routerLink: '/skill'
+        routerLink: '../'
       }
     ])
   }
