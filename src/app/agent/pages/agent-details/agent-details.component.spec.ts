@@ -279,8 +279,11 @@ describe('AgentDetailsComponent', () => {
     store.refreshState()
 
     component.formGroup.setValue(agentForm)
-    component.save()
+    const actions = await firstValueFrom(component.headerActions$)
+    const saveAction = actions.find((a) => a.labelKey === 'AGENT_DETAILS.GENERAL.SAVE')
+    saveAction?.actionCallback?.()
 
+    expect(saveAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
       agentDetailsActions.saveButtonClicked({
