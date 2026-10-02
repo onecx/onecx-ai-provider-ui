@@ -5,7 +5,8 @@ const config = withModuleFederationPlugin({
   name: 'onecx-ai-provider-ui',
   filename: 'remoteEntry.js',
   exposes: {
-    './OneCXAiProviderModule': './src/bootstrap.ts'
+    './OneCXAiProviderModule': './src/bootstrap.ts',
+    './OneCXAiConnectorComponent': './src/app/remotes/ai-connector/onecx-ai-connector.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
