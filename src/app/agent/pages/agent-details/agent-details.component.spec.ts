@@ -184,6 +184,15 @@ describe('AgentDetailsComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('should not put padding classes on General tab controls inside p-floatlabel', () => {
+    fixture.detectChanges()
+    ;['agent_detail_name', 'agent_detail_description', 'agent_detail_additional_prompt'].forEach((id) => {
+      const el: HTMLElement = fixture.debugElement.query(By.css('#' + id)).nativeElement
+      expect(el.classList.contains('pt-3')).toBe(false)
+      expect(el.classList.contains('pb-2')).toBe(false)
+    })
+  })
+
   it('should display correct breadcrumbs', () => {
     const breadcrumbService = component['breadcrumbService'] as BreadcrumbService
     const spy = jest.spyOn(breadcrumbService, 'setItems')
