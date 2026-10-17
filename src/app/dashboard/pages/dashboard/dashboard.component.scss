@@ -1,3 +1,23 @@
-:host ::ng-deep .p-card:hover {
-  background-color: var(--p-gray-200) !important;
+:host ::ng-deep .dashboard-card-link .p-card {
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+:host ::ng-deep .dashboard-card-link:hover .p-card,
+:host ::ng-deep .dashboard-card-link:focus-visible .p-card {
+  background-color: var(--p-gray-200);
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep .dashboard-card-link .p-card {
+    transition: none;
+  }
+
+  :host ::ng-deep .dashboard-card-link:hover .p-card,
+  :host ::ng-deep .dashboard-card-link:focus-visible .p-card {
+    transform: none;
+  }
 }

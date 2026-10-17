@@ -7,7 +7,8 @@ import { TranslateModule } from '@ngx-translate/core'
 import { CardModule } from 'primeng/card'
 import { of } from 'rxjs'
 
-import { PortalPageComponent } from '@onecx/angular-utils'
+import { provideUserServiceMock } from '@onecx/angular-integration-interface/mocks'
+import { PortalPageComponent, providePermissionService } from '@onecx/angular-utils'
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator'
 
 import { DashboardComponent } from './dashboard.component'
@@ -31,7 +32,7 @@ describe('DashboardComponent', () => {
         PortalPageComponent,
         CardModule
       ],
-      providers: [provideMockStore()]
+      providers: [provideMockStore(), ...providePermissionService(), provideUserServiceMock()]
     }).compileComponents()
 
     store = TestBed.inject(MockStore)
@@ -63,5 +64,13 @@ describe('DashboardComponent', () => {
       '../provider',
       '../mcpserver'
     ])
+  })
+
+  it('should render every navigation panel inside a dashboard-card-link', () => {
+    const links = fixture.nativeElement.querySelectorAll('a.dashboard-card-link')
+    expect(links).toHaveLength(component.navigationPanels.length)
+    links.forEach((link: HTMLElement) => {
+      expect(link.querySelector('p-card')).not.toBeNull()
+    })
   })
 })
