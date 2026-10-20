@@ -28,8 +28,8 @@
   },
   "SCAFFOLD_DETAILS": {
     "CHANGE_ME": "ACTION D3: Adjust translation keys for details header",
-    "HEADER": "Scaffold Details",
-    "SUB_HEADER": "Display of Scaffold Details",
+    "HEADER": "Scaffold (Agent Template) Details",
+    "SUB_HEADER": "Baseline configuration template applied when creating or updating agents",
     "HELP_ARTICLE_ID": "Help Article",
     "BREADCRUMB": "Details",
     "ARIA_LABEL": "Page Header with Details",
@@ -65,7 +65,7 @@
     },
     "UPDATE": {
       "CHANGE_ME": "ACTION D3: Adjust translation keys for update dialog",
-      "HEADER": "Update Scaffold",
+      "HEADER": "Update Scaffold (Agent Template)",
       "SUCCESS": "Update successful",
       "ERROR": "Update failed",
       "FORM": {
@@ -75,7 +75,7 @@
     },
     "DELETE": {
       "CHANGE_ME": "ACTION D3: Adjust translation keys for delete dialog",
-      "HEADER": "Delete Scaffold",
+      "HEADER": "Delete Scaffold (Agent Template)",
       "MESSAGE": "Please confirm that you want to delete this Scaffold item.",
       "CONFIRM": "Confirm",
       "CANCEL": "Cancel",
@@ -84,8 +84,8 @@
     }
   },
   "SCAFFOLD_SEARCH": {
-    "HEADER": "Scaffold Search",
-    "SUB_HEADER": "Searching and displaying of Scaffolds",
+    "HEADER": "Scaffold (Agent Template) Search",
+    "SUB_HEADER": "Search and manage reusable templates used as the baseline configuration for new agents",
     "HELP_ARTICLE_ID": "Help Article",
     "EMPTY_RESULTS": "No results.",
     "BREADCRUMB": "Search",
@@ -140,7 +140,7 @@
       "CREATE": "Create"
     },
     "CREATE": {
-      "HEADER": "Create Scaffold",
+      "HEADER": "Create Scaffold (Agent Template)",
       "SUCCESS": "Creation successful",
       "ERROR": "Creation failed",
       "FORM": {
@@ -149,7 +149,7 @@
       }
     },
     "UPDATE": {
-      "HEADER": "Update Scaffold",
+      "HEADER": "Update Scaffold (Agent Template)",
       "SUCCESS": "Update successful",
       "ERROR": "Update failed",
       "FORM": {
@@ -493,9 +493,9 @@
         "DESCRIPTION": "Manage agent definitions, versions, and operational status."
       },
       "SCAFFOLD": {
-        "TITLE": "Scaffold",
+        "TITLE": "Scaffold (Agent Template)",
         "SUBTITLE": "Prompt foundation",
-        "DESCRIPTION": "Control reusable scaffold templates and baseline system prompts."
+        "DESCRIPTION": "Control reusable templates that define the baseline system prompt and skills for new agents."
       },
       "SKILL": {
         "TITLE": "Skill",
@@ -912,5 +912,9 @@
     "DRAFT": "Draft",
     "LIVE": "Live",
     "DEPRECATED": "Deprecated"
+  },
+  "SCAFFOLD_SOURCE": {
+    "TENANT": "Manually created",
+    "GLOBAL": "Imported"
   }
 }

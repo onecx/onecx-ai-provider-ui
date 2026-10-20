@@ -14,7 +14,7 @@ export const scaffoldSearchColumns: DataTableColumn[] = [
     ]
   },
   {
-    columnType: ColumnType.STRING,
+    columnType: ColumnType.TRANSLATION_KEY,
     id: 'source',
     nameKey: 'SCAFFOLD_SEARCH.RESULTS.SOURCE',
     filterable: true,
