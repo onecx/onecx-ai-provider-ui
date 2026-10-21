@@ -18,7 +18,8 @@ export const selectResults = createSelector(
       .map((item) => ({
         imagePath: '',
         ...item,
-        id: item.id
+        id: item.id,
+        source: item.source ? `SCAFFOLD_SOURCE.${item.source}` : item.source
       }))
   }
 )
