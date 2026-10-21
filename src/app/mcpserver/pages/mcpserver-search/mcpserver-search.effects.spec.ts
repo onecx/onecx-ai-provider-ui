@@ -136,6 +136,12 @@ describe('MCPServerSearchEffects', () => {
     store = TestBed.inject(MockStore)
   })
 
+  beforeEach(() => {
+    jest.resetAllMocks()
+    ;(router.navigate as jest.Mock).mockResolvedValue(true)
+    ;(exportDataService.exportCsv as jest.Mock).mockResolvedValue(undefined)
+  })
+
   describe('syncParamsToUrl$', () => {
     beforeEach(() => {
       store.overrideSelector(mcpserverSearchSelectors.selectCriteria, mockCriteria)
@@ -176,6 +182,23 @@ describe('MCPServerSearchEffects', () => {
       })
     })
 
+    it('should log an error when URL sync navigation rejects', (done) => {
+      const error = new Error('navigate failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      route.queryParams = of({ name: 'different-name', description: 'different-description' })
+      ;(router.navigate as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      actions$.next(MCPServerSearchActions.searchButtonClicked({ searchCriteria: mockCriteria }))
+
+      effects.syncParamsToUrl$.subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
+      })
+    })
+
     it('should navigate when resetButtonClicked action is triggered', (done) => {
       const navigateSpy = jest.spyOn(router, 'navigate')
 
@@ -210,6 +233,23 @@ describe('MCPServerSearchEffects', () => {
       effects.detailsButtonClicked$.subscribe(() => {
         expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
         done()
+      })
+    })
+
+    it('should log an error when details navigation rejects', (done) => {
+      const testId = 'test-456'
+      const error = new Error('details navigation failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      ;(router.navigate as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      actions$.next(MCPServerSearchActions.detailsButtonClicked({ id: testId }))
+
+      effects.detailsButtonClicked$.subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
       })
     })
 
@@ -445,6 +485,35 @@ describe('MCPServerSearchEffects', () => {
       effects.exportData$.subscribe(() => {
         expect(exportDataService.exportCsv).toHaveBeenCalledWith(mockColumns, mockResults, 'MCPServer.csv')
         done()
+      })
+
+      actions$.next(MCPServerSearchActions.exportButtonClicked())
+    })
+
+    it('should log an error when exportCsv rejects', (done) => {
+      const error = new Error('export failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      const mockColumns = [
+        { field: 'name', header: 'Name' },
+        { field: 'description', header: 'Description' }
+      ]
+      const mockViewModel = {
+        resultComponentState: {
+          displayedColumns: mockColumns
+        },
+        results: [{ id: '1', name: 'Server 1', description: 'Description 1' }]
+      } as unknown as MCPServerSearchViewModel
+
+      store.overrideSelector(selectMCPServerSearchViewModel, mockViewModel)
+      store.refreshState()
+      ;(exportDataService.exportCsv as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      effects.exportData$.subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
       })
 
       actions$.next(MCPServerSearchActions.exportButtonClicked())

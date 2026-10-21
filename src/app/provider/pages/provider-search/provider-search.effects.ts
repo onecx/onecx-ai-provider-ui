@@ -46,12 +46,14 @@ export class ProviderSearchEffects {
             const params = {
               ...criteria
             }
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: params,
-              replaceUrl: true,
-              onSameUrlNavigation: 'ignore'
-            })
+            this.router
+              .navigate([], {
+                relativeTo: this.route,
+                queryParams: params,
+                replaceUrl: true,
+                onSameUrlNavigation: 'ignore'
+              })
+              .catch((err) => console.error(err))
           }
         })
       )
@@ -68,7 +70,7 @@ export class ProviderSearchEffects {
           const urlTree = this.router.parseUrl(currentUrl)
           urlTree.queryParams = {}
           urlTree.fragment = null
-          this.router.navigate([urlTree.toString(), 'details', action.id])
+          this.router.navigate([urlTree.toString(), 'details', action.id]).catch((err) => console.error(err))
         })
       )
     },
@@ -367,7 +369,9 @@ export class ProviderSearchEffects {
         ofType(ProviderSearchActions.exportButtonClicked),
         concatLatestFrom(() => this.store.select(selectProviderSearchViewModel)),
         map(([, viewModel]) => {
-          this.exportDataService.exportCsv(viewModel.displayedColumns, viewModel.results, 'Provider.csv')
+          this.exportDataService
+            .exportCsv(viewModel.displayedColumns, viewModel.results, 'Provider.csv')
+            .catch((err) => console.error(err))
         })
       )
     },
