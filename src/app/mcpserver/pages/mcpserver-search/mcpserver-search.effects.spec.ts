@@ -5,7 +5,7 @@ import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import { MonoTypeOperatorFunction, ReplaySubject, map, of, take, throwError, firstValueFrom } from 'rxjs'
+import { ReplaySubject, of, take, throwError, firstValueFrom } from 'rxjs'
 
 import { ExportDataService, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageServiceMock, providePortalMessageServiceMock } from '@onecx/angular-integration-interface/mocks'
@@ -22,17 +22,10 @@ import { MCPServerSearchViewModel } from './mcpserver-search.viewmodel'
 
 jest.mock('@onecx/ngrx-accelerator', () => {
   const actual = jest.requireActual('@onecx/ngrx-accelerator')
-  const passThroughOp = <T>(): MonoTypeOperatorFunction<T> => map((x: T) => x)
   return {
     ...actual,
-    filterForNavigatedTo: jest.fn((...args: unknown[]) => {
-      void args
-      return passThroughOp()
-    }),
-    filterOutQueryParamsHaveNotChanged: jest.fn((...args: unknown[]) => {
-      void args
-      return passThroughOp()
-    })
+    filterForNavigatedTo: () => (source: unknown) => source,
+    filterOutQueryParamsHaveNotChanged: () => (source: unknown) => source
   }
 })
 
@@ -73,14 +66,7 @@ describe('MCPServerSearchEffects', () => {
 
     router = {
       navigate: jest.fn().mockReturnValue(Promise.resolve(true)),
-      parseUrl: jest.fn().mockImplementation((url: string) => {
-        const urlParts = url.split('?')[0]
-        return {
-          queryParams: {},
-          fragment: null,
-          toString: () => urlParts
-        }
-      }),
+      parseUrl: jest.fn(),
       events: of()
     } as unknown as jest.Mocked<Router>
 
@@ -139,6 +125,11 @@ describe('MCPServerSearchEffects', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     ;(router.navigate as jest.Mock).mockResolvedValue(true)
+    ;(router.parseUrl as jest.Mock).mockImplementation((url: string) => ({
+      toString: () => (url ? url.split('?')[0].split('#')[0] : '/mcpserver'),
+      queryParams: {},
+      fragment: null
+    }))
     ;(exportDataService.exportCsv as jest.Mock).mockResolvedValue(undefined)
   })
 
@@ -320,6 +311,7 @@ describe('MCPServerSearchEffects', () => {
     })
 
     it('should call performSearch with criteria from store on router navigation', (done) => {
+      const criteriaFromStore = { name: 'fromStore' }
       const expectedAction = MCPServerSearchActions.mcpserverSearchResultsReceived({
         stream: [],
         size: 0,
@@ -328,15 +320,17 @@ describe('MCPServerSearchEffects', () => {
         totalPages: 0
       })
 
+      store.overrideSelector(mcpserverSearchSelectors.selectCriteria, criteriaFromStore)
+      store.refreshState()
+
       const performSpy = jest.spyOn(effects, 'performSearch').mockReturnValue(of(expectedAction) as any)
 
-      actions$.next({ type: routerNavigatedAction.type })
-
-      effects.searchByUrl$.subscribe((action) => {
-        expect(performSpy).toHaveBeenCalledWith(mockCriteria)
+      effects.searchByUrl$.pipe(take(1)).subscribe((action) => {
+        expect(performSpy).toHaveBeenCalledWith(criteriaFromStore)
         expect(action).toEqual(expectedAction)
         done()
       })
+      actions$.next({ type: routerNavigatedAction.type })
     })
 
     it('should call performSearch and dispatch mcpserverSearchResultsReceived on successful search', (done) => {
