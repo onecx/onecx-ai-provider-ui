@@ -3,9 +3,11 @@ import { ChangeDetectionStrategy, Component, DestroyRef, Input, inject, type OnD
 import { Observable, firstValueFrom, map, of, switchMap } from 'rxjs'
 
 import { Gatherer } from '@onecx/accelerator'
+import { AiProviderError } from '@onecx/integration-interface'
 import type { RemoteComponentConfig, ocxRemoteComponent, ocxRemoteWebcomponent } from '@onecx/angular-remote-components'
 
 import { AgentAbstract, AgentPageResult, AgentService, AgentStatus, APIConfiguration } from 'src/app/shared/generated'
+import { toAiProviderError } from 'src/app/shared/utils/ai-provider-error.utils'
 import { createLogger } from 'src/app/shared/utils/logger.utils'
 import { environment } from 'src/environments/environment'
 
@@ -33,7 +35,7 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
   private readonly agentService = inject(AgentService)
   private readonly logger = createLogger('OneCXAiAgentProviderConnectorComponent')
 
-  private aiAgentGatherer: Gatherer<AiAgentRequest, AiAgentResponse[] | null> | undefined
+  private aiAgentGatherer: Gatherer<AiAgentRequest, AiAgentResponse[] | AiProviderError | null> | undefined
 
   @Input()
   set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
@@ -56,8 +58,10 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
     })
 
     if (!this.aiAgentGatherer) {
-      this.aiAgentGatherer = new Gatherer<AiAgentRequest, AiAgentResponse[] | null>('aiAgent', 1, (request) =>
-        this.handleAgentRequest(request)
+      this.aiAgentGatherer = new Gatherer<AiAgentRequest, AiAgentResponse[] | AiProviderError | null>(
+        'aiAgent',
+        1,
+        (request) => this.handleAgentRequest(request)
       )
     }
   }
@@ -67,13 +71,13 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
     this.aiAgentGatherer = undefined
   }
 
-  private async handleAgentRequest(request: AiAgentRequest): Promise<AiAgentResponse[] | null> {
+  private async handleAgentRequest(request: AiAgentRequest): Promise<AiAgentResponse[] | AiProviderError | null> {
     try {
       const agents = await this.fetchLiveAgents()
       return toAiAgentResponses(agents, request.appId)
     } catch (error) {
-      this.logger.error('Failed to fetch AI agents, returning no response', error)
-      return null
+      this.logger.error('Failed to fetch AI agents, returning an AI provider error', error)
+      return toAiProviderError(error)
     }
   }
 
