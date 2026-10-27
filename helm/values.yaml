@@ -17,6 +17,13 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-ai-provider-ui
           tagName: onecx-ai-provider-ui-webcomponent
+        ai-agent-provider-connector:
+          exposedModule: ./OneCXAiAgentProviderConnectorComponent
+          description: Headless connector that provides LIVE AI agents from provider-svc
+          type: COMPONENT
+          technology: WEBCOMPONENTMODULE
+          remoteName: onecx-ai-provider-ui
+          tagName: ocx-ai-agent-provider-connector-component
     permission:
       enabled: true
       spec:
