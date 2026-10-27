@@ -124,6 +124,14 @@ describe('OneCXAiAgentProviderConnectorComponent', () => {
     expect(result?.map((a) => a.id)).toEqual(['a1', 'a2'])
   })
 
+  it('treats a page without stream or totalPages as empty', async () => {
+    agentService.findAgentBySearchCriteria.mockReturnValueOnce(
+      of({ number: 0, size: 100, totalElements: 0 } as AgentPageResult)
+    )
+    await expect(getGatherer().cb({})).resolves.toEqual([])
+    expect(agentService.findAgentBySearchCriteria).toHaveBeenCalledTimes(1)
+  })
+
   it('returns no agents when the provider has none', async () => {
     agentService.findAgentBySearchCriteria.mockReturnValueOnce(of(page([], 0)))
     await expect(getGatherer().cb({})).resolves.toEqual([])

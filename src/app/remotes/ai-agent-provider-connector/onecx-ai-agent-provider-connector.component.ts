@@ -1,6 +1,6 @@
 import { Location } from '@angular/common'
 import { ChangeDetectionStrategy, Component, DestroyRef, Input, inject, type OnDestroy } from '@angular/core'
-import { firstValueFrom } from 'rxjs'
+import { Observable, firstValueFrom, map, of, switchMap } from 'rxjs'
 
 import { Gatherer } from '@onecx/accelerator'
 import type { RemoteComponentConfig, ocxRemoteComponent, ocxRemoteWebcomponent } from '@onecx/angular-remote-components'
@@ -77,22 +77,25 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
     }
   }
 
-  private async fetchLiveAgents(): Promise<AgentAbstract[]> {
-    const agents: AgentAbstract[] = []
-    let pageNumber = 0
-    let totalPages = 0
-    do {
-      const page: AgentPageResult = await firstValueFrom(
-        this.agentService.findAgentBySearchCriteria({
-          status: AgentStatus.Live,
-          pageNumber,
-          pageSize: AGENT_PAGE_SIZE
+  private fetchLiveAgents(): Promise<AgentAbstract[]> {
+    return firstValueFrom(this.fetchLiveAgentsPage(0))
+  }
+
+  private fetchLiveAgentsPage(pageNumber: number): Observable<AgentAbstract[]> {
+    return this.agentService
+      .findAgentBySearchCriteria({
+        status: AgentStatus.Live,
+        pageNumber,
+        pageSize: AGENT_PAGE_SIZE
+      })
+      .pipe(
+        switchMap((page: AgentPageResult) => {
+          const agents = page.stream ?? []
+          const hasNextPage = pageNumber + 1 < (page.totalPages ?? 0)
+          return hasNextPage
+            ? this.fetchLiveAgentsPage(pageNumber + 1).pipe(map((nextAgents) => [...agents, ...nextAgents]))
+            : of(agents)
         })
       )
-      agents.push(...(page.stream ?? []))
-      totalPages = page.totalPages ?? 0
-      pageNumber++
-    } while (pageNumber < totalPages)
-    return agents
   }
 }
