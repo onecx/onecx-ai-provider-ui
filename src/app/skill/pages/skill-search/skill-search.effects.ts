@@ -42,12 +42,14 @@ export class SkillSearchEffects {
             const params = {
               ...criteria
             }
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: params,
-              replaceUrl: true,
-              onSameUrlNavigation: 'ignore'
-            })
+            this.router
+              .navigate([], {
+                relativeTo: this.route,
+                queryParams: params,
+                replaceUrl: true,
+                onSameUrlNavigation: 'ignore'
+              })
+              .catch((err) => console.error(err))
           }
         })
       )
@@ -64,7 +66,7 @@ export class SkillSearchEffects {
           const urlTree = this.router.parseUrl(currentUrl ?? '')
           urlTree.queryParams = {}
           urlTree.fragment = null
-          this.router.navigate([urlTree.toString(), 'details', action.id])
+          this.router.navigate([urlTree.toString(), 'details', action.id]).catch((err) => console.error(err))
         })
       )
     },
@@ -245,11 +247,9 @@ export class SkillSearchEffects {
         ofType(skillSearchActions.exportButtonClicked),
         concatLatestFrom(() => this.store.select(selectSkillSearchViewModel)),
         map(([, viewModel]) => {
-          this.exportDataService.exportCsv(
-            viewModel.resultComponentState?.displayedColumns ?? [],
-            viewModel.results,
-            'export_skill.csv'
-          )
+          this.exportDataService
+            .exportCsv(viewModel.resultComponentState?.displayedColumns ?? [], viewModel.results, 'export_skill.csv')
+            .catch((err) => console.error(err))
         })
       )
     },

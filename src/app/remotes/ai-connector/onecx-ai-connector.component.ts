@@ -67,13 +67,8 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
       encodeParam: currentConfiguration.encodeParam
     })
 
-    if (!this.aiContextGatherer) {
-      this.aiContextGatherer = new AiContextGatherer(() => Promise.resolve(null))
-    }
-
-    if (!this.aiCompletionGatherer) {
-      this.aiCompletionGatherer = new AiCompletionGatherer((request) => this.handleCompletion(request))
-    }
+    this.aiContextGatherer ??= new AiContextGatherer(() => Promise.resolve(null))
+    this.aiCompletionGatherer ??= new AiCompletionGatherer((request) => this.handleCompletion(request))
   }
 
   ngOnDestroy(): void {
