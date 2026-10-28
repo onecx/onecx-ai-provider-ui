@@ -164,7 +164,10 @@ export class MCPServerDetailsComponent implements OnInit {
       }
     })
 
-    this.userService.hasPermission('MCPSERVER#CHANGE_API_KEY').then((res) => (this.hasAPIKeyPermission = res))
+    this.userService
+      .hasPermission('MCPSERVER#CHANGE_API_KEY')
+      .then((res) => (this.hasAPIKeyPermission = res))
+      .catch((err) => console.error(err))
   }
 
   ngOnInit(): void {

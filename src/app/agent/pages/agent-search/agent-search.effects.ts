@@ -41,12 +41,14 @@ export class AgentSearchEffects {
             const params = {
               ...criteria
             }
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: params,
-              replaceUrl: true,
-              onSameUrlNavigation: 'ignore'
-            })
+            this.router
+              .navigate([], {
+                relativeTo: this.route,
+                queryParams: params,
+                replaceUrl: true,
+                onSameUrlNavigation: 'ignore'
+              })
+              .catch((err) => console.error(err))
           }
         })
       )
@@ -63,7 +65,7 @@ export class AgentSearchEffects {
           const urlTree = this.router.parseUrl(currentUrl)
           urlTree.queryParams = {}
           urlTree.fragment = null
-          this.router.navigate([urlTree.toString(), 'details', action.id])
+          this.router.navigate([urlTree.toString(), 'details', action.id]).catch((err) => console.error(err))
         })
       )
     },
@@ -243,11 +245,9 @@ export class AgentSearchEffects {
         ofType(agentSearchActions.exportButtonClicked),
         concatLatestFrom(() => this.store.select(selectAgentSearchViewModel)),
         map(([, viewModel]) => {
-          this.exportDataService.exportCsv(
-            viewModel.resultComponentState?.displayedColumns ?? [],
-            viewModel.results,
-            'agent.csv'
-          )
+          this.exportDataService
+            .exportCsv(viewModel.resultComponentState?.displayedColumns ?? [], viewModel.results, 'agent.csv')
+            .catch((err) => console.error(err))
         })
       )
     },
