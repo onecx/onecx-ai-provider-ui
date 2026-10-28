@@ -27,8 +27,10 @@ jest.mock('@onecx/integration-interface', () => {
   class AiContextGatherer {
     static instances: AiContextGatherer[] = []
     destroyed = false
+    cb: (request: unknown) => Promise<unknown>
     gather: jest.Mock
-    constructor(_cb: unknown) {
+    constructor(cb: (request: unknown) => Promise<unknown>) {
+      this.cb = cb
       this.gather = jest.fn().mockResolvedValue([])
       AiContextGatherer.instances.push(this)
     }
@@ -45,7 +47,12 @@ const { AiCompletionGatherer, AiContextGatherer } = require('@onecx/integration-
     destroyed: boolean
     destroy: () => void
   }
-  AiContextGatherer: new (...args: unknown[]) => { gather: jest.Mock; destroyed: boolean; destroy: () => void }
+  AiContextGatherer: new (...args: unknown[]) => {
+    cb: (request: unknown) => Promise<unknown>
+    gather: jest.Mock
+    destroyed: boolean
+    destroy: () => void
+  }
 }
 
 const gatheredContext: AiContextResponse = {
@@ -119,6 +126,15 @@ describe('OneCXAiConnectorComponent', () => {
     component.ocxInitRemoteComponent(remoteComponentConfig)
     component.ocxInitRemoteComponent(remoteComponentConfig)
     expect((AiCompletionGatherer as unknown as { instances: unknown[] }).instances).toHaveLength(1)
+  })
+
+  it('returns null when the context gatherer callback is triggered without context contribution', async () => {
+    component.ocxInitRemoteComponent(remoteComponentConfig)
+
+    const gatherer = (AiContextGatherer as unknown as { instances: { cb: (request: unknown) => Promise<unknown> }[] })
+      .instances[0]
+
+    await expect(gatherer.cb({ agent: { name: 'Agent A' } })).resolves.toBeNull()
   })
 
   it('initializes the context gatherer when only the completion gatherer exists', () => {
