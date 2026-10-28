@@ -24,7 +24,7 @@ app:
           technology: WEBCOMPONENTMODULE
           remoteName: onecx-ai-provider-ui
           tagName: ocx-ai-agent-provider-connector-component
-        ai-connector:
+        onecx-ai-completion-connector:
           exposedModule: ./OneCXAiConnectorComponent
           description: Headless central orchestration layer of the Inline AI feature
           type: COMPONENT
