@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http'
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
@@ -208,8 +208,24 @@ describe('OneCXAiConnectorComponent', () => {
     expect(response).toEqual({ message: 'BFF says hi' })
   })
 
-  it('returns null (no response) when the BFF call fails, instead of throwing', async () => {
+  it('returns null (contributes no completion) when the BFF call fails with an unexpected error', async () => {
     dispatchService.chat.mockReturnValue(throwError(() => new Error('BFF unavailable')))
+    component.ocxInitRemoteComponent(remoteComponentConfig)
+
+    const answerer = (
+      AiCompletionGatherer as unknown as {
+        instances: { cb: (r: AiCompletionRequest) => Promise<unknown> }[]
+      }
+    ).instances[0]
+    const response = await answerer.cb(request)
+
+    expect(response).toBeNull()
+  })
+
+  it('returns null when the BFF gateway times out', async () => {
+    dispatchService.chat.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 504, error: { errorCode: 'RUNTIME_TIMEOUT', detail: 'slow' } }))
+    )
     component.ocxInitRemoteComponent(remoteComponentConfig)
 
     const answerer = (

@@ -6,7 +6,9 @@ const config = withModuleFederationPlugin({
   filename: 'remoteEntry.js',
   exposes: {
     './OneCXAiProviderModule': './src/bootstrap.ts',
-    './OneCXAiConnectorComponent': './src/app/remotes/ai-connector/onecx-ai-connector.component.main.ts'
+    './OneCXAiConnectorComponent': './src/app/remotes/ai-connector/onecx-ai-connector.component.main.ts',
+    './OneCXAiAgentProviderConnectorComponent':
+      './src/app/remotes/ai-agent-provider-connector/onecx-ai-agent-provider-connector.component.main.ts'
   },
   shared: share({
     '@angular/core': { requiredVersion: 'auto', includeSecondaries: true },
