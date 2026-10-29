@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 
-import { AiContextResponse, AiProviderError, type AiCompletionRequest } from '@onecx/integration-interface'
+import { AiContextResponse, type AiCompletionRequest } from '@onecx/integration-interface'
 
 import { APIConfiguration, DispatchService } from 'src/app/shared/generated'
 
@@ -208,7 +208,7 @@ describe('OneCXAiConnectorComponent', () => {
     expect(response).toEqual({ message: 'BFF says hi' })
   })
 
-  it('returns a typed PROVIDER_ERROR (not null) when the BFF call fails with an unexpected error', async () => {
+  it('returns null (contributes no completion) when the BFF call fails with an unexpected error', async () => {
     dispatchService.chat.mockReturnValue(throwError(() => new Error('BFF unavailable')))
     component.ocxInitRemoteComponent(remoteComponentConfig)
 
@@ -219,11 +219,10 @@ describe('OneCXAiConnectorComponent', () => {
     ).instances[0]
     const response = await answerer.cb(request)
 
-    expect(response).toBeInstanceOf(AiProviderError)
-    expect(response).toMatchObject({ code: 'PROVIDER_ERROR', retryable: false })
+    expect(response).toBeNull()
   })
 
-  it('maps a BFF gateway timeout to a retryable TIMEOUT error with the HTTP status', async () => {
+  it('returns null when the BFF gateway times out', async () => {
     dispatchService.chat.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: 504, error: { errorCode: 'RUNTIME_TIMEOUT', detail: 'slow' } }))
     )
@@ -236,11 +235,10 @@ describe('OneCXAiConnectorComponent', () => {
     ).instances[0]
     const response = await answerer.cb(request)
 
-    expect(response).toBeInstanceOf(AiProviderError)
-    expect(response).toMatchObject({ code: 'TIMEOUT', retryable: true, status: 504 })
+    expect(response).toBeNull()
   })
 
-  it('returns a PROVIDER_ERROR (not null) when the BFF response has no message', async () => {
+  it('returns null when the BFF response has no message', async () => {
     dispatchService.chat.mockReturnValue(of(undefined as never))
     component.ocxInitRemoteComponent(remoteComponentConfig)
 
@@ -251,8 +249,7 @@ describe('OneCXAiConnectorComponent', () => {
     ).instances[0]
     const response = await answerer.cb(request)
 
-    expect(response).toBeInstanceOf(AiProviderError)
-    expect(response).toMatchObject({ code: 'PROVIDER_ERROR', retryable: false })
+    expect(response).toBeNull()
   })
 
   it('preserves an empty message returned by the BFF', async () => {

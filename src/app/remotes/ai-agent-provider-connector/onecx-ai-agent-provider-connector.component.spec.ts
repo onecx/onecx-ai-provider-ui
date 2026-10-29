@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { of, throwError } from 'rxjs'
 
-import { AiProviderError } from '@onecx/integration-interface'
+import type { AiAgentRequest, AiAgentResponse } from '@onecx/integration-interface'
 
 import {
   AgentFilterKeyEnum,
@@ -12,7 +12,6 @@ import {
 } from 'src/app/shared/generated'
 
 import { OneCXAiAgentProviderConnectorComponent } from './onecx-ai-agent-provider-connector.component'
-import type { AiAgentRequest, AiAgentResponse } from './onecx-ai-agent-provider-connector.model'
 
 jest.mock('@onecx/accelerator', () => {
   const actual = jest.requireActual('@onecx/accelerator')
@@ -157,11 +156,10 @@ describe('OneCXAiAgentProviderConnectorComponent', () => {
     expect(result?.map((a) => a.id)).toEqual(['a1'])
   })
 
-  it('returns a typed PROVIDER_ERROR (not null) when the BFF call fails', async () => {
+  it('returns null (contributes no agents) when the BFF call fails', async () => {
     agentService.findAgentBySearchCriteria.mockReturnValueOnce(throwError(() => new Error('boom')))
     const result = await getGatherer().cb({})
-    expect(result).toBeInstanceOf(AiProviderError)
-    expect(result).toMatchObject({ code: 'PROVIDER_ERROR', retryable: false })
+    expect(result).toBeNull()
   })
 
   it('destroys the gatherer on destroy', () => {

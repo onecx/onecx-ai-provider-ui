@@ -6,19 +6,16 @@ import type { RemoteComponentConfig, ocxRemoteComponent, ocxRemoteWebcomponent }
 import {
   AiCompletionGatherer,
   AiContextGatherer,
-  AiProviderError,
-  type AiCompletionProviderResult,
   type AiCompletionRequest,
+  type AiCompletionResponse,
   type AiContextResponse
 } from '@onecx/integration-interface'
 
 import { APIConfiguration, DispatchService } from 'src/app/shared/generated'
-import { toAiProviderError } from 'src/app/shared/utils/ai-provider-error.utils'
 import { createLogger } from 'src/app/shared/utils/logger.utils'
 import { environment } from 'src/environments/environment'
 
 import { toChatRequest } from './onecx-ai-connector.mapper'
-import { Gatherer } from '@onecx/accelerator'
 
 /**
  * OneCXAiConnector -- the headless central orchestration layer of the Inline AI feature.
@@ -56,9 +53,6 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
 
   constructor() {
     this.destroyRef.onDestroy(() => this.ngOnDestroy())
-    //temporary fix to avoid id collisions when multiple gatherer classes are used
-    // remove as soon as onecx-portal-libs version is higher than v6.29.0, v7.13.1, v8.13.0, v9.0.0
-    Gatherer['id'] = 1000
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -80,7 +74,7 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
     this.aiContextGatherer = undefined
   }
 
-  private async handleCompletion(request: AiCompletionRequest): Promise<AiCompletionProviderResult> {
+  private async handleCompletion(request: AiCompletionRequest): Promise<AiCompletionResponse | null> {
     try {
       const gathered: (AiContextResponse | null)[] =
         (await this.aiContextGatherer?.gather({
@@ -92,13 +86,14 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
       const response = await firstValueFrom(this.dispatchService.chat(chatRequest))
 
       if (response?.message == null) {
-        return new AiProviderError('PROVIDER_ERROR', 'AI provider returned an empty response', { retryable: false })
+        this.logger.error('AI provider returned an empty response, contributing no completion')
+        return null
       }
       return { message: response.message }
     } catch (error) {
       // TODO Use OneCX Logger after upgrade to v8 and remove related files from this repo
-      this.logger.error('Failed to handle AI completion request, returning an AI provider error', error)
-      return toAiProviderError(error)
+      this.logger.error('Failed to handle AI completion request, contributing no completion', error)
+      return null
     }
   }
 }

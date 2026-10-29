@@ -1,6 +1,6 @@
 import { AgentAbstract, AgentFilterKeyEnum } from 'src/app/shared/generated'
 
-import type { AiAgentResponse } from './onecx-ai-agent-provider-connector.model'
+import type { AiAgentResponse } from '@onecx/integration-interface'
 
 export function toAiAgentResponse(agent: AgentAbstract): AiAgentResponse | null {
   if (!agent.id) {
