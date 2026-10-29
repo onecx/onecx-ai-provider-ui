@@ -2,15 +2,14 @@ import { Location } from '@angular/common'
 import { ChangeDetectionStrategy, Component, DestroyRef, Input, inject, type OnDestroy } from '@angular/core'
 import { Observable, firstValueFrom, map, of, switchMap } from 'rxjs'
 
-import { Gatherer } from '@onecx/accelerator'
 import type { RemoteComponentConfig, ocxRemoteComponent, ocxRemoteWebcomponent } from '@onecx/angular-remote-components'
+import { AiAgentGatherer, type AiAgentRequest, type AiAgentResponse } from '@onecx/integration-interface'
 
 import { AgentAbstract, AgentPageResult, AgentService, AgentStatus, APIConfiguration } from 'src/app/shared/generated'
 import { createLogger } from 'src/app/shared/utils/logger.utils'
 import { environment } from 'src/environments/environment'
 
 import { toAiAgentResponses } from './onecx-ai-agent-provider-connector.mapper'
-import type { AiAgentRequest, AiAgentResponse } from './onecx-ai-agent-provider-connector.model'
 
 const AGENT_PAGE_SIZE = 100
 
@@ -33,7 +32,7 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
   private readonly agentService = inject(AgentService)
   private readonly logger = createLogger('OneCXAiAgentProviderConnectorComponent')
 
-  private aiAgentGatherer: Gatherer<AiAgentRequest, AiAgentResponse[] | null> | undefined
+  private aiAgentGatherer: AiAgentGatherer | undefined
 
   @Input()
   set ocxRemoteComponentConfig(config: RemoteComponentConfig) {
@@ -42,9 +41,6 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
 
   constructor() {
     this.destroyRef.onDestroy(() => this.ngOnDestroy())
-    //temporary fix to avoid id collisions when multiple gatherer classes are used
-    // remove as soon as onecx-portal-libs version is higher than v6.29.0, v7.13.1, v8.13.0, v9.0.0
-    Gatherer['id'] = 1000
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
@@ -56,9 +52,7 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
     })
 
     if (!this.aiAgentGatherer) {
-      this.aiAgentGatherer = new Gatherer<AiAgentRequest, AiAgentResponse[] | null>('aiAgent', 1, (request) =>
-        this.handleAgentRequest(request)
-      )
+      this.aiAgentGatherer = new AiAgentGatherer((request) => this.handleAgentRequest(request))
     }
   }
 

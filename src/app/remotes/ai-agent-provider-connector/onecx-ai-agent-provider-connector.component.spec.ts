@@ -9,30 +9,28 @@ import {
   APIConfiguration
 } from 'src/app/shared/generated'
 
+import type { AiAgentRequest, AiAgentResponse } from '@onecx/integration-interface'
 import { OneCXAiAgentProviderConnectorComponent } from './onecx-ai-agent-provider-connector.component'
-import type { AiAgentRequest, AiAgentResponse } from './onecx-ai-agent-provider-connector.model'
 
-jest.mock('@onecx/accelerator', () => {
-  class Gatherer {
-    static instances: Gatherer[] = []
-    static id = 0
+jest.mock('@onecx/integration-interface', () => {
+  const actual = jest.requireActual('@onecx/integration-interface')
+  class AiAgentGatherer {
+    static instances: AiAgentGatherer[] = []
     destroyed = false
-    constructor(
-      public name: string,
-      public version: number,
-      public cb: (request: unknown) => Promise<unknown>
-    ) {
-      Gatherer.instances.push(this)
+    readonly name = 'aiAgent'
+    readonly version = 1
+    constructor(public cb: (request: unknown) => Promise<unknown>) {
+      AiAgentGatherer.instances.push(this)
     }
     destroy(): void {
       this.destroyed = true
     }
   }
-  return { Gatherer }
+  return { ...actual, AiAgentGatherer }
 })
 
-const { Gatherer } = require('@onecx/accelerator') as {
-  Gatherer: {
+const { AiAgentGatherer: Gatherer } = require('@onecx/integration-interface') as {
+  AiAgentGatherer: {
     instances: {
       name: string
       version: number
