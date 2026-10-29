@@ -16,7 +16,6 @@ import { createLogger } from 'src/app/shared/utils/logger.utils'
 import { environment } from 'src/environments/environment'
 
 import { toChatRequest } from './onecx-ai-connector.mapper'
-import { Gatherer } from '@onecx/accelerator'
 
 /**
  * OneCXAiConnector -- the headless central orchestration layer of the Inline AI feature.
@@ -54,9 +53,6 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
 
   constructor() {
     this.destroyRef.onDestroy(() => this.ngOnDestroy())
-    //temporary fix to avoid id collisions when multiple gatherer classes are used
-    // remove as soon as onecx-portal-libs version is higher than v6.29.0, v7.13.1, v8.13.0, v9.0.0
-    Gatherer['id'] = 1000
   }
 
   ocxInitRemoteComponent(config: RemoteComponentConfig): void {
