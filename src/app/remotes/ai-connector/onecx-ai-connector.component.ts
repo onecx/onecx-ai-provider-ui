@@ -1,4 +1,5 @@
 import { Location } from '@angular/common'
+import { HttpErrorResponse } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, DestroyRef, Input, inject, type OnDestroy } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 
@@ -6,8 +7,9 @@ import type { RemoteComponentConfig, ocxRemoteComponent, ocxRemoteWebcomponent }
 import {
   AiCompletionGatherer,
   AiContextGatherer,
+  AiProviderError,
+  type AiCompletionProviderResult,
   type AiCompletionRequest,
-  type AiCompletionResponse,
   type AiContextResponse
 } from '@onecx/integration-interface'
 
@@ -74,7 +76,7 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
     this.aiContextGatherer = undefined
   }
 
-  private async handleCompletion(request: AiCompletionRequest): Promise<AiCompletionResponse | null> {
+  private async handleCompletion(request: AiCompletionRequest): Promise<AiCompletionProviderResult> {
     try {
       const gathered: (AiContextResponse | null)[] =
         (await this.aiContextGatherer?.gather({
@@ -92,8 +94,23 @@ export class OneCXAiConnectorComponent implements ocxRemoteComponent, ocxRemoteW
       return { message: response.message }
     } catch (error) {
       // TODO Use OneCX Logger after upgrade to v8 and remove related files from this repo
-      this.logger.error('Failed to handle AI completion request, contributing no completion', error)
-      return null
+      this.logger.error('Failed to handle AI completion request', error)
+      return toAiProviderError(error)
     }
   }
+}
+
+const BFF_ERROR_CODE_MAP: Record<string, 'AGENT_NOT_FOUND' | 'TIMEOUT'> = {
+  AGENT_NOT_FOUND: 'AGENT_NOT_FOUND',
+  RUNTIME_TIMEOUT: 'TIMEOUT'
+}
+
+/**
+ * Maps a failed BFF call to an AiProviderError. The BFF returns a ProblemDetail with an errorCode;
+ * codes not listed in BFF_ERROR_CODE_MAP (runtime errors, unavailable runtime) become PROVIDER_ERROR.
+ */
+function toAiProviderError(error: unknown): AiProviderError {
+  const bffErrorCode = error instanceof HttpErrorResponse ? error.error?.errorCode : undefined
+  const code = (bffErrorCode && BFF_ERROR_CODE_MAP[bffErrorCode]) || 'PROVIDER_ERROR'
+  return new AiProviderError(code, 'AI provider request failed')
 }

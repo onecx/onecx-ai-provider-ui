@@ -208,7 +208,7 @@ describe('OneCXAiConnectorComponent', () => {
     expect(response).toEqual({ message: 'BFF says hi' })
   })
 
-  it('returns null (contributes no completion) when the BFF call fails with an unexpected error', async () => {
+  it('maps an unexpected BFF failure to a PROVIDER_ERROR provider error', async () => {
     dispatchService.chat.mockReturnValue(throwError(() => new Error('BFF unavailable')))
     component.ocxInitRemoteComponent(remoteComponentConfig)
 
@@ -219,10 +219,26 @@ describe('OneCXAiConnectorComponent', () => {
     ).instances[0]
     const response = await answerer.cb(request)
 
-    expect(response).toBeNull()
+    expect(response).toEqual(expect.objectContaining({ code: 'PROVIDER_ERROR' }))
   })
 
-  it('returns null when the BFF gateway times out', async () => {
+  it('maps a BFF agent-not-found error to an AGENT_NOT_FOUND provider error', async () => {
+    dispatchService.chat.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 404, error: { errorCode: 'AGENT_NOT_FOUND' } }))
+    )
+    component.ocxInitRemoteComponent(remoteComponentConfig)
+
+    const answerer = (
+      AiCompletionGatherer as unknown as {
+        instances: { cb: (r: AiCompletionRequest) => Promise<unknown> }[]
+      }
+    ).instances[0]
+    const response = await answerer.cb(request)
+
+    expect(response).toEqual(expect.objectContaining({ code: 'AGENT_NOT_FOUND' }))
+  })
+
+  it('maps a BFF runtime timeout to a TIMEOUT provider error', async () => {
     dispatchService.chat.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: 504, error: { errorCode: 'RUNTIME_TIMEOUT', detail: 'slow' } }))
     )
@@ -235,7 +251,23 @@ describe('OneCXAiConnectorComponent', () => {
     ).instances[0]
     const response = await answerer.cb(request)
 
-    expect(response).toBeNull()
+    expect(response).toEqual(expect.objectContaining({ code: 'TIMEOUT' }))
+  })
+
+  it('maps other BFF failures to a PROVIDER_ERROR provider error', async () => {
+    dispatchService.chat.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 502, error: { errorCode: 'RUNTIME_ERROR' } }))
+    )
+    component.ocxInitRemoteComponent(remoteComponentConfig)
+
+    const answerer = (
+      AiCompletionGatherer as unknown as {
+        instances: { cb: (r: AiCompletionRequest) => Promise<unknown> }[]
+      }
+    ).instances[0]
+    const response = await answerer.cb(request)
+
+    expect(response).toEqual(expect.objectContaining({ code: 'PROVIDER_ERROR' }))
   })
 
   it('returns null when the BFF response has no message', async () => {
