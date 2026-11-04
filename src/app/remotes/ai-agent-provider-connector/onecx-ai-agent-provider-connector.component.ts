@@ -51,7 +51,9 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
       encodeParam: currentConfiguration.encodeParam
     })
 
-    this.aiAgentGatherer ??= new AiAgentGatherer((request) => this.handleAgentRequest(request))
+    if (!this.aiAgentGatherer) {
+      this.aiAgentGatherer = new AiAgentGatherer((request) => this.handleAgentRequest(request))
+    }
   }
 
   ngOnDestroy(): void {
@@ -64,7 +66,7 @@ export class OneCXAiAgentProviderConnectorComponent implements ocxRemoteComponen
       const agents = await this.fetchLiveAgents()
       return toAiAgentResponses(agents, request.appId)
     } catch (error) {
-      this.logger.error('Failed to fetch AI agents, contributing no agents to the request', error)
+      this.logger.error('Failed to fetch AI agents, returning no response', error)
       return null
     }
   }
