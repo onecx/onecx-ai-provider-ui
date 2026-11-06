@@ -315,7 +315,7 @@ describe('AgentDetailsComponent', () => {
       tools: [],
       groups: [],
       newGroupName: null,
-      voiceEnabled: false,
+      voiceEnabled: null,
       languageCode: null,
       filters: []
     }
@@ -347,11 +347,31 @@ describe('AgentDetailsComponent', () => {
           tools: [],
           groups: [],
           filter: undefined,
-          voiceEnabled: false,
+          voiceEnabled: undefined,
           languageCode: undefined
         }
       })
     )
+  })
+
+  it('should include a selected voice language in the save payload', () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: true,
+      details: { id: '123' }
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    component.formGroup.patchValue({ voiceEnabled: true, languageCode: 'en' })
+
+    component.save()
+
+    const saveAction = (store.dispatch as jest.Mock).mock.calls[0][0] as ReturnType<
+      typeof agentDetailsActions.saveButtonClicked
+    >
+    expect(saveAction.details.voiceEnabled).toBe(true)
+    expect(saveAction.details.languageCode).toBe('en')
   })
 
   it('should dispatch deleteButtonClicked action on delete button click', async () => {

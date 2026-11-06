@@ -237,6 +237,29 @@ describe('SkillDetailsComponent', () => {
     )
   })
 
+  it('should dispatch saveButtonClicked when the save header callback is invoked', async () => {
+    jest.spyOn(store, 'dispatch')
+    const details = { id: '123', name: 'title' }
+    store.overrideSelector(selectSkillDetailsViewModel, {
+      ...baseSkillDetailsViewModel,
+      editMode: true,
+      details
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    component.formGroup.patchValue({ name: 'title' })
+
+    const actions = await firstValueFrom(component.headerActions$)
+    actions.find((action) => action.labelKey === 'SKILL_DETAILS.GENERAL.SAVE')?.actionCallback?.()
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: skillDetailsActions.saveButtonClicked.type,
+        details: expect.objectContaining({ id: '123', name: 'title' })
+      })
+    )
+  })
+
   it('should dispatch deleteButtonClicked action on delete button click', async () => {
     jest.spyOn(store, 'dispatch')
     store.overrideSelector(selectSkillDetailsViewModel, {

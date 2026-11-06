@@ -471,6 +471,16 @@ describe('AgentDetailsEffects', () => {
   })
 
   describe('publishConfigurationVersionButtonClicked$', () => {
+    it('should cancel without opening a dialog when no agent ID is loaded', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionButtonClicked())
+      const action = await firstValueFrom(effects.publishConfigurationVersionButtonClicked$)
+
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionCancelled())
+      expect(portalDialogService.openDialog).not.toHaveBeenCalled()
+    })
+
     it('should submit the trimmed dialog name with the current agent ID', async () => {
       jest.spyOn(store, 'select').mockReturnValueOnce(of({ id: 'agent-1' }))
       ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(

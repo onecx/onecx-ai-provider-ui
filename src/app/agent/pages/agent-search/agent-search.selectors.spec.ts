@@ -1,6 +1,7 @@
 import { ColumnType } from '@onecx/angular-accelerator'
 
 import * as selectors from './agent-search.selectors'
+import { initialState } from './agent-search.reducers'
 
 describe('AgentSearch selectors', () => {
   describe('selectResults projector', () => {
@@ -77,6 +78,30 @@ describe('AgentSearch selectors', () => {
       diagramComponentState: null,
       chartVisible,
       searchLoadingIndicator: false,
+      searchExecuted: true
+    })
+  })
+
+  it('should derive the view model from the agent feature state', () => {
+    const searchState = {
+      ...initialState,
+      columns: [{ id: 'name', nameKey: 'Col 1', columnType: ColumnType.STRING }],
+      criteria: { name: 'A' },
+      results: [{ id: '1', name: 'A' }] as never[],
+      chartVisible: true,
+      searchLoadingIndicator: true,
+      searchExecuted: true
+    }
+
+    expect(selectors.selectAgentSearchViewModel({ agent: { search: searchState } } as never)).toEqual({
+      columns: searchState.columns,
+      searchCriteria: searchState.criteria,
+      results: [{ id: '1', imagePath: '', name: 'A' }],
+      resultComponentState: null,
+      searchHeaderComponentState: null,
+      diagramComponentState: null,
+      chartVisible: true,
+      searchLoadingIndicator: true,
       searchExecuted: true
     })
   })
