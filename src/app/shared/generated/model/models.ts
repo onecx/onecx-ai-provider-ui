@@ -1,5 +1,6 @@
 export * from './agent';
 export * from './agentAbstract';
+export * from './agentConfigurationVersion';
 export * from './agentFilter';
 export * from './agentGroup';
 export * from './agentGroupOrchestrationMode';
@@ -50,6 +51,7 @@ export * from './providerHealthStatusResponse';
 export * from './providerPageResult';
 export * from './providerSearchCriteria';
 export * from './providerType';
+export * from './publishAgentConfigurationVersionRequest';
 export * from './requestContext';
 export * from './scaffold';
 export * from './scaffoldPageResult';

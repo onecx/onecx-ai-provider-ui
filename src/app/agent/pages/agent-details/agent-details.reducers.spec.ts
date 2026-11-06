@@ -33,7 +33,8 @@ describe('agentDetailsReducer', () => {
         groupsLoadingIndicator: true,
         groupsLoaded: false,
         editMode: false,
-        isSubmitting: false
+        isSubmitting: false,
+        isPublishingConfigurationVersion: false
       })
     })
 
@@ -348,6 +349,42 @@ describe('agentDetailsReducer', () => {
       const nextState = agentDetailsReducer(intermediateState, action)
 
       expect(nextState).toEqual({ ...initialState, isSubmitting: false })
+    })
+  })
+
+  describe('publishConfigurationVersionSubmitted', () => {
+    it('should set isPublishingConfigurationVersion to true', () => {
+      const action = agentDetailsActions.publishConfigurationVersionSubmitted({
+        agentId: 'agent-1',
+        name: 'Release 1'
+      })
+
+      expect(agentDetailsReducer(initialState, action)).toEqual({
+        ...initialState,
+        isPublishingConfigurationVersion: true
+      })
+    })
+  })
+
+  describe('publishConfigurationVersionSucceeded', () => {
+    it('should reset isPublishingConfigurationVersion', () => {
+      const action = agentDetailsActions.publishConfigurationVersionSucceeded({
+        version: { id: 'version-1', name: 'Release 1', active: true }
+      })
+
+      expect(agentDetailsReducer({ ...initialState, isPublishingConfigurationVersion: true }, action)).toEqual(
+        initialState
+      )
+    })
+  })
+
+  describe('publishConfigurationVersionFailed', () => {
+    it('should reset isPublishingConfigurationVersion', () => {
+      const action = agentDetailsActions.publishConfigurationVersionFailed({ error: 'publish failed' })
+
+      expect(agentDetailsReducer({ ...initialState, isPublishingConfigurationVersion: true }, action)).toEqual(
+        initialState
+      )
     })
   })
 

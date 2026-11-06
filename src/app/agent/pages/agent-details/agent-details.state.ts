@@ -27,4 +27,5 @@ export interface AgentDetailsState {
 
   editMode: boolean
   isSubmitting: boolean
+  isPublishingConfigurationVersion: boolean
 }

@@ -5,7 +5,7 @@ import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
 import { PrimeIcons } from 'primeng/api'
-import { catchError, filter, map, mergeMap, of, switchMap, tap } from 'rxjs'
+import { catchError, exhaustMap, filter, map, mergeMap, of, switchMap, tap } from 'rxjs'
 
 import { DialogState, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -15,6 +15,7 @@ import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.sel
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
 import {
   Agent,
+  AgentConfigurationVersion,
   AgentGroupService,
   AgentService,
   ModelService,
@@ -25,6 +26,7 @@ import {
 } from 'src/app/shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
+import { AgentConfigurationVersionPublishComponent } from './dialogs/agent-configuration-version-publish/agent-configuration-version-publish.component'
 import { agentDetailsSelectors } from './agent-details.selectors'
 
 @Injectable()
@@ -278,6 +280,69 @@ export class AgentDetailsEffects {
       })
     )
   })
+
+  publishConfigurationVersionButtonClicked$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(agentDetailsActions.publishConfigurationVersionButtonClicked),
+      concatLatestFrom(() => this.store.select(agentDetailsSelectors.selectDetails)),
+      switchMap(([, details]) => {
+        if (!details?.id) {
+          return of(agentDetailsActions.publishConfigurationVersionCancelled())
+        }
+        const agentId = details.id
+        return this.portalDialogService
+          .openDialog<string | undefined>(
+            'AGENT_DETAILS.PUBLISH_CONFIGURATION.HEADER',
+            {
+              type: AgentConfigurationVersionPublishComponent
+            },
+            'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.PUBLISH',
+            'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.CANCEL',
+            {
+              baseZIndex: 100
+            }
+          )
+          .pipe(
+            switchMap((dialogResult) => {
+              const name = dialogResult?.result?.trim()
+              if (!name || dialogResult.button === 'secondary') {
+                return of(agentDetailsActions.publishConfigurationVersionCancelled())
+              }
+              return of(agentDetailsActions.publishConfigurationVersionSubmitted({ agentId, name }))
+            })
+          )
+      })
+    )
+  )
+
+  publishConfigurationVersion$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(agentDetailsActions.publishConfigurationVersionSubmitted),
+      exhaustMap(({ agentId, name }) =>
+        this.agentService.publishAgentConfigurationVersion(agentId, { name }).pipe(
+          map((version: AgentConfigurationVersion) => {
+            if (!version.active) {
+              throw new Error('Published configuration version is not active')
+            }
+            this.messageService.success({
+              summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+            })
+            return agentDetailsActions.publishConfigurationVersionSucceeded({ version })
+          }),
+          catchError((error: unknown) => {
+            const errorCode = (error as { error?: { errorCode?: string } })?.error?.errorCode
+            this.messageService.error({
+              summaryKey:
+                errorCode === 'DUPLICATE_AGENT_CONFIGURATION_VERSION_NAME'
+                  ? 'AGENT_DETAILS.PUBLISH_CONFIGURATION.DUPLICATE_NAME'
+                  : 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
+            })
+            return of(agentDetailsActions.publishConfigurationVersionFailed({ error }))
+          })
+        )
+      )
+    )
+  )
 
   deleteButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(

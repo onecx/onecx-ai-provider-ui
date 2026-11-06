@@ -297,7 +297,8 @@
       "EDIT": "Bearbeiten",
       "DELETE": "Löschen",
       "CANCEL": "Abbrechen",
-      "SAVE": "Speichern"
+      "SAVE": "Speichern",
+      "PUBLISH_CONFIGURATION": "Konfiguration veröffentlichen"
     },
     "FORM": {
       "ID": "ID",
@@ -371,6 +372,18 @@
       "CANCEL": "Abbrechen",
       "SUCCESS": "Agent erfolgreich gelöscht",
       "ERROR": "Konnte Agent nicht löschen"
+    },
+    "PUBLISH_CONFIGURATION": {
+      "HEADER": "Konfiguration veröffentlichen",
+      "FORM": {
+        "NAME": "Konfigurationsname",
+        "NAME_INVALID": "Geben Sie einen nicht leeren Namen mit höchstens 255 Zeichen ein.",
+        "PUBLISH": "Veröffentlichen",
+        "CANCEL": "Abbrechen"
+      },
+      "SUCCESS": "Konfigurationsversion veröffentlicht und aktiviert.",
+      "DUPLICATE_NAME": "Für diesen Agenten existiert bereits eine Konfigurationsversion mit diesem Namen.",
+      "ERROR": "Die Konfigurationsversion konnte nicht veröffentlicht und aktiviert werden."
     }
   },
   "AGENT_SEARCH": {

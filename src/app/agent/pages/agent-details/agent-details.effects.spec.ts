@@ -10,6 +10,7 @@ import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import {
+  AgentConfigurationVersion,
   AgentGroupService,
   AgentService,
   AgentStatus,
@@ -40,7 +41,12 @@ describe('AgentDetailsEffects', () => {
   let route: ActivatedRoute
   let messageService: Partial<jest.Mocked<PortalMessageService>>
   let portalDialogService: Partial<jest.Mocked<PortalDialogService>>
-  const agentService = { getAgent: jest.fn(), updateAgent: jest.fn(), deleteAgent: jest.fn() }
+  const agentService = {
+    getAgent: jest.fn(),
+    updateAgent: jest.fn(),
+    deleteAgent: jest.fn(),
+    publishAgentConfigurationVersion: jest.fn()
+  }
   const providerService = { findProviderBySearchCriteria: jest.fn() }
   const modelService = { findModelByCriteria: jest.fn() }
   const scaffoldService = { findScaffoldByCriteria: jest.fn() }
@@ -460,6 +466,101 @@ describe('AgentDetailsEffects', () => {
       expect(agentService.updateAgent).toHaveBeenCalledTimes(1)
       expect(messageService.error).toHaveBeenCalledWith({
         summaryKey: 'AGENT_DETAILS.UPDATE.ERROR'
+      })
+    })
+  })
+
+  describe('publishConfigurationVersionButtonClicked$', () => {
+    it('should submit the trimmed dialog name with the current agent ID', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of({ id: 'agent-1' }))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(
+        of({ button: 'primary', result: '  Release 1  ' })
+      )
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionButtonClicked())
+      const action = await firstValueFrom(effects.publishConfigurationVersionButtonClicked$)
+
+      expect(action).toEqual(
+        agentDetailsActions.publishConfigurationVersionSubmitted({
+          agentId: 'agent-1',
+          name: 'Release 1'
+        })
+      )
+      expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+        'AGENT_DETAILS.PUBLISH_CONFIGURATION.HEADER',
+        expect.objectContaining({ type: expect.any(Function) }),
+        'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.PUBLISH',
+        'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.CANCEL',
+        { baseZIndex: 100 }
+      )
+    })
+
+    it('should not publish when the dialog is cancelled', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of({ id: 'agent-1' }))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'secondary' }))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionButtonClicked())
+      const action = await firstValueFrom(effects.publishConfigurationVersionButtonClicked$)
+
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionCancelled())
+      expect(agentService.publishAgentConfigurationVersion).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('publishConfigurationVersion$', () => {
+    it('should publish and report success when the returned version is active', async () => {
+      const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: true }
+      agentService.publishAgentConfigurationVersion.mockReturnValueOnce(of(version))
+
+      actions$.next(
+        agentDetailsActions.publishConfigurationVersionSubmitted({
+          agentId: 'agent-1',
+          name: 'Release 1'
+        })
+      )
+      const action = await firstValueFrom(effects.publishConfigurationVersion$)
+
+      expect(agentService.publishAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', { name: 'Release 1' })
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      expect(messageService.success).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+      })
+    })
+
+    it('should show the duplicate-name message for a name conflict', async () => {
+      const error = { error: { errorCode: 'DUPLICATE_AGENT_CONFIGURATION_VERSION_NAME' } }
+      agentService.publishAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
+
+      actions$.next(
+        agentDetailsActions.publishConfigurationVersionSubmitted({
+          agentId: 'agent-1',
+          name: 'Release 1'
+        })
+      )
+      const action = await firstValueFrom(effects.publishConfigurationVersion$)
+
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionFailed({ error }))
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.DUPLICATE_NAME'
+      })
+    })
+
+    it('should not report success when the service returns an inactive version', async () => {
+      const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
+      agentService.publishAgentConfigurationVersion.mockReturnValueOnce(of(version))
+
+      actions$.next(
+        agentDetailsActions.publishConfigurationVersionSubmitted({
+          agentId: 'agent-1',
+          name: 'Release 1'
+        })
+      )
+      const action = await firstValueFrom(effects.publishConfigurationVersion$)
+
+      expect(action.type).toBe(agentDetailsActions.publishConfigurationVersionFailed.type)
+      expect(messageService.success).not.toHaveBeenCalled()
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
       })
     })
   })

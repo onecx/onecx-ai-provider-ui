@@ -22,4 +22,5 @@ export interface AgentDetailsViewModel {
   detailsLoaded: boolean
   editMode: boolean
   isSubmitting: boolean
+  isPublishingConfigurationVersion: boolean
 }

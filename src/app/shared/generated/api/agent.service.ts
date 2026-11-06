@@ -19,6 +19,8 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { Agent } from '../model/agent';
 // @ts-ignore
+import { AgentConfigurationVersion } from '../model/agentConfigurationVersion';
+// @ts-ignore
 import { AgentMcpToolRuleList } from '../model/agentMcpToolRuleList';
 // @ts-ignore
 import { AgentPageResult } from '../model/agentPageResult';
@@ -30,6 +32,8 @@ import { CreateAgentMcpToolRuleRequest } from '../model/createAgentMcpToolRuleRe
 import { CreateAgentRequest } from '../model/createAgentRequest';
 // @ts-ignore
 import { ProblemDetailResponse } from '../model/problemDetailResponse';
+// @ts-ignore
+import { PublishAgentConfigurationVersionRequest } from '../model/publishAgentConfigurationVersionRequest';
 // @ts-ignore
 import { UpdateAgentMcpToolRuleRequest } from '../model/updateAgentMcpToolRuleRequest';
 // @ts-ignore
@@ -551,6 +555,78 @@ export class AgentService {
         return this.httpClient.request<AgentMcpToolRuleList>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Publish and activate a named version of the agent\&#39;s current saved configuration
+     * @param id
+     * @param publishAgentConfigurationVersionRequest
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public publishAgentConfigurationVersion(id: string, publishAgentConfigurationVersionRequest: PublishAgentConfigurationVersionRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<AgentConfigurationVersion>;
+    public publishAgentConfigurationVersion(id: string, publishAgentConfigurationVersionRequest: PublishAgentConfigurationVersionRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<AgentConfigurationVersion>>;
+    public publishAgentConfigurationVersion(id: string, publishAgentConfigurationVersionRequest: PublishAgentConfigurationVersionRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<AgentConfigurationVersion>>;
+    public publishAgentConfigurationVersion(id: string, publishAgentConfigurationVersionRequest: PublishAgentConfigurationVersionRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling publishAgentConfigurationVersion.');
+        }
+        if (publishAgentConfigurationVersionRequest === null || publishAgentConfigurationVersionRequest === undefined) {
+            throw new Error('Required parameter publishAgentConfigurationVersionRequest was null or undefined when calling publishAgentConfigurationVersion.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/agents/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/configuration/versions`;
+        return this.httpClient.request<AgentConfigurationVersion>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: publishAgentConfigurationVersionRequest,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

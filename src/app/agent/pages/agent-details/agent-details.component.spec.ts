@@ -114,7 +114,8 @@ describe('AgentDetailsComponent', () => {
     detailsLoaded: true,
     backNavigationPossible: true,
     editMode: true,
-    isSubmitting: false
+    isSubmitting: false,
+    isPublishingConfigurationVersion: false
   }
 
   beforeEach(async () => {
@@ -164,6 +165,7 @@ describe('AgentDetailsComponent', () => {
       'AGENT#CREATE',
       'AGENT#EDIT',
       'AGENT#DELETE',
+      'AGENT#PUBLISH_CONFIGURATION',
       'AGENT#IMPORT',
       'AGENT#EXPORT',
       'AGENT#VIEW',
@@ -235,6 +237,53 @@ describe('AgentDetailsComponent', () => {
     expect(editAction).toBeTruthy()
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(agentDetailsActions.editButtonClicked())
+  })
+
+  it('should show the publish action only outside edit mode with its dedicated permission', async () => {
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+
+    const actions = await firstValueFrom(component.headerActions$)
+    const publishAction = actions.find((action) => action.labelKey === 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION')
+
+    expect(publishAction).toEqual(
+      expect.objectContaining({
+        permission: 'AGENT#PUBLISH_CONFIGURATION',
+        conditional: true,
+        showCondition: true,
+        disabled: false
+      })
+    )
+
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: true,
+      isPublishingConfigurationVersion: true
+    })
+    store.refreshState()
+    const editModeActions = await firstValueFrom(component.headerActions$)
+    const hiddenPublishAction = editModeActions.find(
+      (action) => action.labelKey === 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION'
+    )
+    expect(hiddenPublishAction?.showCondition).toBe(false)
+    expect(hiddenPublishAction?.disabled).toBe(true)
+  })
+
+  it('should dispatch publishConfigurationVersionButtonClicked on publish action click', async () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+
+    const actions = await firstValueFrom(component.headerActions$)
+    actions.find((action) => action.labelKey === 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION')?.actionCallback?.()
+
+    expect(store.dispatch).toHaveBeenCalledWith(agentDetailsActions.publishConfigurationVersionButtonClicked())
   })
 
   it('should dispatch cancelButtonClicked action on edit button click', async () => {

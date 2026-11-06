@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/agent.service.ts
@@ -19,6 +18,7 @@ git_push.sh
 index.ts
 model/agent.ts
 model/agentAbstract.ts
+model/agentConfigurationVersion.ts
 model/agentFilter.ts
 model/agentGroup.ts
 model/agentGroupOrchestrationMode.ts
@@ -70,6 +70,7 @@ model/providerHealthStatusResponse.ts
 model/providerPageResult.ts
 model/providerSearchCriteria.ts
 model/providerType.ts
+model/publishAgentConfigurationVersionRequest.ts
 model/requestContext.ts
 model/scaffold.ts
 model/scaffoldPageResult.ts

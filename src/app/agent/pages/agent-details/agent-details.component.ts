@@ -129,6 +129,19 @@ export class AgentDetailsComponent implements OnInit {
           }
         },
         {
+          titleKey: 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION',
+          labelKey: 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION',
+          permission: 'AGENT#PUBLISH_CONFIGURATION',
+          show: 'always',
+          icon: PrimeIcons.SAVE,
+          conditional: true,
+          showCondition: !vm.editMode,
+          disabled: vm.isPublishingConfigurationVersion,
+          actionCallback: () => {
+            this.store.dispatch(agentDetailsActions.publishConfigurationVersionButtonClicked())
+          }
+        },
+        {
           titleKey: 'AGENT_DETAILS.GENERAL.CANCEL',
           labelKey: 'AGENT_DETAILS.GENERAL.CANCEL',
           show: 'always',

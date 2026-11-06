@@ -23,7 +23,8 @@ export const initialState: AgentDetailsState = {
   groupsLoadingIndicator: true,
   groupsLoaded: false,
   editMode: false,
-  isSubmitting: false
+  isSubmitting: false,
+  isPublishingConfigurationVersion: false
 }
 
 export const agentDetailsReducer = createReducer(
@@ -137,5 +138,17 @@ export const agentDetailsReducer = createReducer(
   on(agentDetailsActions.updateAgentFailed, (state: AgentDetailsState): AgentDetailsState => ({
     ...state,
     isSubmitting: false
-  }))
+  })),
+  on(agentDetailsActions.publishConfigurationVersionSubmitted, (state: AgentDetailsState): AgentDetailsState => ({
+    ...state,
+    isPublishingConfigurationVersion: true
+  })),
+  on(
+    agentDetailsActions.publishConfigurationVersionSucceeded,
+    agentDetailsActions.publishConfigurationVersionFailed,
+    (state: AgentDetailsState): AgentDetailsState => ({
+      ...state,
+      isPublishingConfigurationVersion: false
+    })
+  )
 )
