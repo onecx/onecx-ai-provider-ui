@@ -226,7 +226,9 @@ export class ProviderDetailsEffects {
                 modificationCount: model.modificationCount ?? 0,
                 name: dialogResult.result.name,
                 modelIdentifier: dialogResult.result.modelIdentifier,
-                modelConfig: dialogResult.result.modelConfig ?? model.modelConfig
+                modelConfig: dialogResult.result.modelConfig ?? model.modelConfig,
+                provider: model.provider ?? details,
+                communicationMode: model.communicationMode
               }
               return this.modelService
                 .updateModelById(modelId, modelUpdate)

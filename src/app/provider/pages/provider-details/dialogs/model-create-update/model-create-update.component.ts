@@ -104,7 +104,7 @@ export class ModelCreateUpdateComponent
     try {
       const parsed: unknown = JSON.parse(modelConfig)
       const config = this.validateModelConfig(parsed)
-      if (!config) {
+      if (!config || this.hasDuplicateConfigKeys(modelConfig)) {
         this.hasLegacyModelConfigWarning = true
         return { api: 'chat-completions', reasoningEffort: '' }
       }
@@ -116,6 +116,33 @@ export class ModelCreateUpdateComponent
       this.hasLegacyModelConfigWarning = true
       return { api: 'chat-completions', reasoningEffort: '' }
     }
+  }
+
+  private hasDuplicateConfigKeys(json: string): boolean {
+    const keys = new Set<string>()
+    // JSON.parse has checked syntax. Scan whole string tokens so escaped quotes and key spellings are decoded safely.
+    for (let index = 0; index < json.length; index++) {
+      if (json[index] !== '"') {
+        continue
+      }
+      const start = index++
+      while (index < json.length && json[index] !== '"') {
+        index += json[index] === '\\' ? 2 : 1
+      }
+      if (
+        json
+          .slice(index + 1)
+          .trimStart()
+          .startsWith(':')
+      ) {
+        const key: string = JSON.parse(json.slice(start, index + 1))
+        if (keys.has(key)) {
+          return true
+        }
+        keys.add(key)
+      }
+    }
+    return false
   }
 
   private validateModelConfig(value: unknown): ModelConfiguration | undefined {

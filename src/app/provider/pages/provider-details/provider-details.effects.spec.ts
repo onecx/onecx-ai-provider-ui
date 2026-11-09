@@ -353,6 +353,29 @@ describe('ProviderDetailsEffects', () => {
   })
 
   describe('updateProviderModel$', () => {
+    it('uses the displayed provider when the model payload has no provider', async () => {
+      const details = { id: 'p1', name: 'Provider' } as Provider
+      const existing = { id: 'm1', name: 'old', modelIdentifier: 'old', communicationMode: 'SYNC' } as Model
+      store.overrideSelector(ProviderDetailsSelectors.selectDetails, details)
+      store.refreshState()
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { ...existing, name: 'new', modelIdentifier: 'new' } }) as never
+      )
+      modelService.updateModelById.mockReturnValue(of({}))
+
+      actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: existing }))
+      await firstValueFrom(effects.updateProviderModel$)
+
+      expect(modelService.updateModelById).toHaveBeenCalledWith('m1', {
+        modificationCount: 0,
+        name: 'new',
+        modelIdentifier: 'new',
+        modelConfig: undefined,
+        provider: details,
+        communicationMode: 'SYNC'
+      })
+    })
+
     it('updates the model using its current modificationCount and submitted configuration', async () => {
       const details = { id: 'p1', name: 'Provider' } as Provider
       const existing = {
@@ -360,7 +383,9 @@ describe('ProviderDetailsEffects', () => {
         name: 'old-name',
         modelIdentifier: 'old-name',
         modelConfig: '{}',
-        modificationCount: 7
+        modificationCount: 7,
+        provider: { id: 'p1', name: 'Existing provider' },
+        communicationMode: 'ASYNC'
       } as Model
       const submitted = {
         ...existing,
@@ -390,7 +415,9 @@ describe('ProviderDetailsEffects', () => {
         modificationCount: 7,
         name: 'new-name',
         modelIdentifier: 'new-name',
-        modelConfig: '{"api":"responses"}'
+        modelConfig: '{"api":"responses"}',
+        provider: existing.provider,
+        communicationMode: 'ASYNC'
       })
       expect(action).toEqual(ProviderDetailsActions.providerModelUpdateSucceeded())
     })
@@ -403,7 +430,8 @@ describe('ProviderDetailsEffects', () => {
         modelIdentifier: 'old-name',
         modelConfig: 'legacy setting',
         modificationCount: 2,
-        provider: { type: 'ANTHROPIC' }
+        provider: { id: 'p1', type: 'ANTHROPIC' },
+        communicationMode: 'SYNC'
       } as Model
       const submitted = { ...existing, name: 'new-name', modelIdentifier: 'new-name' }
       store.overrideSelector(ProviderDetailsSelectors.selectDetails, details)
@@ -414,10 +442,14 @@ describe('ProviderDetailsEffects', () => {
       actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: existing }))
       await firstValueFrom(effects.updateProviderModel$)
 
-      expect(modelService.updateModelById).toHaveBeenCalledWith(
-        'm1',
-        expect.objectContaining({ modelConfig: 'legacy setting', modelIdentifier: 'new-name' })
-      )
+      expect(modelService.updateModelById).toHaveBeenCalledWith('m1', {
+        modificationCount: 2,
+        name: 'new-name',
+        modelIdentifier: 'new-name',
+        modelConfig: 'legacy setting',
+        provider: existing.provider,
+        communicationMode: 'SYNC'
+      })
     })
   })
 

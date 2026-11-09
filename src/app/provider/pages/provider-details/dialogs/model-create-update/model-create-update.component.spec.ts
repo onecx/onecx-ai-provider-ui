@@ -1,3 +1,5 @@
+import { TestBed } from '@angular/core/testing'
+import { TranslateTestingModule } from 'ngx-translate-testing'
 import { Model, Provider, ProviderType } from 'src/app/shared/generated'
 import { ModelCreateUpdateComponent } from './model-create-update.component'
 
@@ -69,6 +71,10 @@ describe('ModelCreateUpdateComponent', () => {
     ['unknown keys', '{"temperature":0.2}'],
     ['unsupported API type', '{"api":2}'],
     ['wrong value types', '{"reasoningEffort":1}'],
+    ['duplicate API', '{"api":"chat-completions","api":"responses","reasoningEffort":"medium"}'],
+    ['escaped duplicate API', '{"api":"chat-completions","\\u0061pi":"responses"}'],
+    ['duplicate effort', '{"reasoningEffort":"low","reasoningEffort":"medium"}'],
+    ['escaped duplicate effort', '{"reasoningEffort":"low","reasoning\\u0045ffort":"medium"}'],
     ['non-object JSON', '[]']
   ])('warns and uses defaults for legacy %s', (_description, modelConfig) => {
     const component = createComponent({ modelIdentifier: 'legacy', modelConfig })
@@ -79,6 +85,58 @@ describe('ModelCreateUpdateComponent', () => {
 
     component.ocxDialogButtonClicked()
     expect(component.dialogResult?.modelConfig).toBe('{}')
+  })
+
+  it('renders a warning and default controls for duplicate-key legacy configuration, then saves supported settings', async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        ModelCreateUpdateComponent,
+        TranslateTestingModule.withTranslations({
+          en: { PROVIDER_DETAILS: { MODELS: { LEGACY_CONFIG_WARNING: 'Legacy configuration is not applied' } } }
+        })
+      ]
+    }).compileComponents()
+    const fixture = TestBed.createComponent(ModelCreateUpdateComponent)
+    fixture.componentRef.setInput('vm', {
+      model: {
+        modelIdentifier: 'legacy',
+        modelConfig: '{"api":"chat-completions","api":"responses","reasoningEffort":"medium"}'
+      },
+      provider: { type: ProviderType.Openai }
+    })
+    fixture.detectChanges()
+    const element: HTMLElement = fixture.nativeElement
+    expect(element.querySelector('[role="status"]')?.textContent).toContain('Legacy configuration is not applied')
+    expect(element.querySelector<HTMLSelectElement>('#model_api')?.value).toBe('chat-completions')
+    expect(element.querySelector<HTMLInputElement>('#model_reasoning_effort')?.value).toBe('')
+
+    fixture.componentInstance.ocxDialogButtonClicked()
+    expect(fixture.componentInstance.dialogResult?.modelConfig).toBe('{}')
+  })
+
+  it.each([
+    ['{"\\u0061pi":"responses","reasoning\\u0045ffort":"medium"}', '{"api":"responses","reasoningEffort":"medium"}'],
+    [
+      '{"api":"responses","reasoningEffort":"api: \\"responses\\", \\"api\\": \\"other\\""}',
+      '{"api":"responses","reasoningEffort":"api: \\"responses\\", \\"api\\": \\"other\\""}'
+    ],
+    [
+      '{"reasoningEffort":"colon: and backslash \\\\ and quote \\""}',
+      '{"reasoningEffort":"colon: and backslash \\\\ and quote \\""}'
+    ]
+  ])('does not mistake escaped keys or string contents for duplicate keys: %s', (modelConfig, saved) => {
+    const component = createComponent({ modelIdentifier: 'model', modelConfig })
+    expect(component.hasLegacyModelConfigWarning).toBe(false)
+    component.ocxDialogButtonClicked()
+    expect(component.dialogResult?.modelConfig).toBe(saved)
+  })
+
+  it('preserves duplicate-key configuration for non-OpenAI providers without warning', () => {
+    const modelConfig = '{"api":"chat-completions","api":"responses"}'
+    const component = createComponent({ modelIdentifier: 'model', modelConfig }, ProviderType.Anthropic)
+    expect(component.hasLegacyModelConfigWarning).toBe(false)
+    component.ocxDialogButtonClicked()
+    expect(component.dialogResult?.modelConfig).toBe(modelConfig)
   })
 
   it('reads supported configuration and omits default API on save', () => {
