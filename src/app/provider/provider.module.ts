@@ -14,6 +14,7 @@ import { ProviderFeature } from './provider.reducers'
 import { routes } from './provider.routes'
 import { ProviderDetailsComponent } from './pages/provider-details/provider-details.component'
 import { ProviderDetailsEffects } from './pages/provider-details/provider-details.effects'
+import { ModelCreateUpdateComponent } from './pages/provider-details/dialogs/model-create-update/model-create-update.component'
 import { ProviderSearchComponent } from './pages/provider-search/provider-search.component'
 import { ProviderSearchEffects } from './pages/provider-search/provider-search.effects'
 import { ProviderCreateUpdateComponent } from './pages/provider-search/dialogs/provider-create-update/provider-create-update.component'
@@ -29,6 +30,7 @@ import { ProviderCreateUpdateComponent } from './pages/provider-search/dialogs/p
     DatePickerModule,
     ProviderCreateUpdateComponent,
     ProviderDetailsComponent,
+    ModelCreateUpdateComponent,
     ProviderSearchComponent,
     StoreModule.forFeature(ProviderFeature),
     EffectsModule.forFeature([ProviderDetailsEffects, ProviderSearchEffects]),

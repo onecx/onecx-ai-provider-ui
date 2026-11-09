@@ -65,8 +65,7 @@ export class ProviderDetailsComponent implements OnInit {
       llmUrl: new FormControl(null, [Validators.maxLength(255)]),
       type: new FormControl<ProviderType | null>(null),
       authMode: new FormControl<AuthMode | null>(null),
-      apiKey: new FormControl(null, [Validators.maxLength(255)]),
-      newModelIdentifier: new FormControl<string | null>(null, [Validators.maxLength(255)])
+      apiKey: new FormControl(null, [Validators.maxLength(255)])
     })
   }
 
@@ -185,13 +184,14 @@ export class ProviderDetailsComponent implements OnInit {
   }
 
   createModelInPlace() {
-    const newModelIdentifier = this.formGroup.get('newModelIdentifier')
-    const modelIdentifier = newModelIdentifier?.value?.trim()
-    if (!newModelIdentifier || !modelIdentifier) {
+    this.store.dispatch(ProviderDetailsActions.providerModelCreateClicked())
+  }
+
+  editModel(model: Model) {
+    if (!model.id) {
       return
     }
-    this.store.dispatch(ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier }))
-    newModelIdentifier.setValue(null)
+    this.store.dispatch(ProviderDetailsActions.providerModelEditClicked({ model }))
   }
 
   deleteModel(model: Model) {

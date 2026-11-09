@@ -1,0 +1,12 @@
+= Model configuration
+
+Provider details let administrators create and edit model identifiers. For OpenAI providers, the model dialog also offers:
+
+* **API**: Chat Completions (the default) or Responses.
+* **Reasoning effort**: an optional free-text value sent as configured by the runtime.
+
+The UI stores these supported settings in the existing model configuration field. It omits the default Chat Completions value and blank reasoning effort, so the default configuration is `{}`. The dialog does not expose a JSON editor or accept arbitrary configuration keys.
+
+Existing malformed or unsupported OpenAI model configuration is shown with a warning and treated as unset in the form. Saving replaces that value with the settings currently shown. Configurations longer than the 255-character storage limit cannot be saved.
+
+These controls are only shown for OpenAI providers. Editing another provider's model preserves its existing model configuration.

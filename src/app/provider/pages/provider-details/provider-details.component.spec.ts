@@ -187,8 +187,7 @@ describe('ProviderDetailsComponent', () => {
         llmUrl: 'Test llmUrl',
         type: 'OPENAI',
         authMode: 'API_KEY',
-        apiKey: 'TestAPIKey',
-        newModelIdentifier: null
+        apiKey: 'TestAPIKey'
       })
     })
 
@@ -307,8 +306,7 @@ describe('ProviderDetailsComponent', () => {
         llmUrl: undefined,
         type: undefined,
         authMode: undefined,
-        apiKey: undefined,
-        newModelIdentifier: null
+        apiKey: undefined
       })
     })
   })
@@ -390,41 +388,28 @@ describe('ProviderDetailsComponent', () => {
     })
   })
 
-  describe('createModelInPlace', () => {
-    it('should not dispatch when the model identifier is not set', () => {
+  describe('model dialog actions', () => {
+    it('should dispatch the model-create action', () => {
       jest.spyOn(store, 'dispatch')
 
       component.createModelInPlace()
 
-      expect(store.dispatch).not.toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelCreateClicked())
     })
 
-    it('should not dispatch when the model identifier is blank', () => {
+    it('should dispatch the selected model for editing', () => {
       jest.spyOn(store, 'dispatch')
-      component.formGroup.get('newModelIdentifier')?.setValue('   ')
+      const model = { id: 'm1', modelIdentifier: 'gpt-4o' }
 
-      component.createModelInPlace()
+      component.editModel(model as any)
 
-      expect(store.dispatch).not.toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelEditClicked({ model }))
     })
 
-    it('should dispatch providerModelCreateClicked with the trimmed name and reset the input', () => {
+    it('should not dispatch model editing when the id is missing', () => {
       jest.spyOn(store, 'dispatch')
-      component.formGroup.get('newModelIdentifier')?.setValue('  gpt-4  ')
 
-      component.createModelInPlace()
-
-      expect(store.dispatch).toHaveBeenCalledWith(
-        ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier: 'gpt-4' })
-      )
-      expect(component.formGroup.get('newModelIdentifier')?.value).toBeNull()
-    })
-
-    it('should not dispatch or throw when the newModelIdentifier control is missing', () => {
-      jest.spyOn(store, 'dispatch')
-      component.formGroup.removeControl('newModelIdentifier')
-
-      expect(() => component.createModelInPlace()).not.toThrow()
+      component.editModel({ modelIdentifier: 'gpt-4o' } as any)
       expect(store.dispatch).not.toHaveBeenCalled()
     })
   })
