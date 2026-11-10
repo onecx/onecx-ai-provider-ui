@@ -1,5 +1,10 @@
 import { AfterViewInit, Directive, ElementRef, Input, OnChanges } from '@angular/core'
 
+// PrimeNG 19.1.4 does not forward host aria-describedby to its focusable combobox
+// and exposes neither ariaDescribedBy nor pt/passThrough inputs (only naming APIs).
+// https://github.com/primefaces/primeng/blob/19.1.4/packages/primeng/src/select/select.ts#L154-L178
+// Remove this bridge when the installed Select has a public description/attribute API
+// targeting that combobox; ariaLabel/ariaLabelledBy change its name, not its description.
 @Directive({
   selector: 'p-select[appDescribedBy]',
   standalone: true
