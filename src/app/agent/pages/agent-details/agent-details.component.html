@@ -398,6 +398,7 @@
                             <td class="text-center">
                               @if (!version.active) {
                                 <button
+                                  *ocxIfPermission="'AGENT#EDIT'"
                                   pButton
                                   type="button"
                                   icon="pi pi-check"

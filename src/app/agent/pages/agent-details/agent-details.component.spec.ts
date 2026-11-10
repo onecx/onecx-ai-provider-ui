@@ -379,6 +379,39 @@ describe('AgentDetailsComponent', () => {
   })
 
   describe('configuration version details', () => {
+    const inactiveVersion = { id: 'version-1', name: 'v1.0', active: false } as AgentConfigurationVersion
+
+    const findActivateButton = (): HTMLButtonElement | undefined => {
+      fixture.nativeElement.querySelector('p-tab[value="3"]')?.dispatchEvent(new Event('click'))
+      fixture.detectChanges()
+      return Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button')).find(
+        (button) => button.textContent?.trim() === 'Activate'
+      )
+    }
+
+    it('should show the Activate button for an inactive version when the user can edit agents', () => {
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        configurationVersions: [inactiveVersion]
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      expect(findActivateButton()).toBeDefined()
+    })
+
+    it('should hide the Activate button when the user cannot edit agents', () => {
+      TestBed.inject(UserServiceMock).permissionsTopic$.publish(['AGENT#VIEW'])
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        configurationVersions: [inactiveVersion]
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      expect(findActivateButton()).toBeUndefined()
+    })
+
     it('should dispatch activateConfigurationVersionClicked when activating a version', () => {
       jest.spyOn(store, 'dispatch')
 
