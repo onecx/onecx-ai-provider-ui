@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
 import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { provideMockActions } from '@ngrx/effects/testing'
@@ -336,6 +337,32 @@ describe('ProviderDetailsEffects', () => {
       expect(action).toEqual(ProviderDetailsActions.providerModelCreateCancelled())
     })
 
+    it('should cancel when the dialog returns no result', async () => {
+      const details = { id: 'p1', name: 'Provider' } as Provider
+      store.overrideSelector(ProviderDetailsSelectors.selectDetails, details)
+      store.refreshState()
+      portalDialogService.openDialog.mockReturnValue(of(undefined) as never)
+
+      actions$.next(ProviderDetailsActions.providerModelCreateClicked())
+      const action = await firstValueFrom(effects.createProviderModel$)
+
+      expect(modelService.createModel).not.toHaveBeenCalled()
+      expect(action).toEqual(ProviderDetailsActions.providerModelCreateCancelled())
+    })
+
+    it('should fail without creating when the dialog returns no model', async () => {
+      const details = { id: 'p1', name: 'Provider' } as Provider
+      store.overrideSelector(ProviderDetailsSelectors.selectDetails, details)
+      store.refreshState()
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      actions$.next(ProviderDetailsActions.providerModelCreateClicked())
+      const action = await firstValueFrom(effects.createProviderModel$)
+
+      expect(modelService.createModel).not.toHaveBeenCalled()
+      expect(action).toEqual(ProviderDetailsActions.providerModelCreateFailed({ error: 'Missing model dialog result' }))
+    })
+
     it('should dispatch providerModelCreateFailed on API error', async () => {
       const details = { id: 'p1', name: 'Provider' } as Provider
       store.overrideSelector(ProviderDetailsSelectors.selectDetails, details)
@@ -353,6 +380,48 @@ describe('ProviderDetailsEffects', () => {
   })
 
   describe('updateProviderModel$', () => {
+    it('should fail when the edited model has no id', async () => {
+      actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: { name: 'no-id' } as Model }))
+
+      const action = await firstValueFrom(effects.updateProviderModel$)
+
+      expect(portalDialogService.openDialog).not.toHaveBeenCalled()
+      expect(action).toEqual(ProviderDetailsActions.providerModelUpdateFailed({ error: 'Missing model id' }))
+    })
+
+    it('should cancel without updating when the dialog is dismissed', async () => {
+      const existing = { id: 'm1' } as Model
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'secondary', result: undefined }) as never)
+
+      actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: existing }))
+      const action = await firstValueFrom(effects.updateProviderModel$)
+
+      expect(modelService.updateModelById).not.toHaveBeenCalled()
+      expect(action).toEqual(ProviderDetailsActions.providerModelUpdateCancelled())
+    })
+
+    it('should cancel when the edit dialog returns no result', async () => {
+      const existing = { id: 'm1' } as Model
+      portalDialogService.openDialog.mockReturnValue(of(undefined) as never)
+
+      actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: existing }))
+      const action = await firstValueFrom(effects.updateProviderModel$)
+
+      expect(modelService.updateModelById).not.toHaveBeenCalled()
+      expect(action).toEqual(ProviderDetailsActions.providerModelUpdateCancelled())
+    })
+
+    it('should fail without updating when the dialog returns no model', async () => {
+      const existing = { id: 'm1' } as Model
+      portalDialogService.openDialog.mockReturnValue(of({ button: 'primary', result: undefined }) as never)
+
+      actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: existing }))
+      const action = await firstValueFrom(effects.updateProviderModel$)
+
+      expect(modelService.updateModelById).not.toHaveBeenCalled()
+      expect(action).toEqual(ProviderDetailsActions.providerModelUpdateFailed({ error: 'Missing model dialog result' }))
+    })
+
     it('uses the displayed provider when the model payload has no provider', async () => {
       const details = { id: 'p1', name: 'Provider' } as Provider
       const existing = { id: 'm1', name: 'old', modelIdentifier: 'old', communicationMode: 'SYNC' } as Model
@@ -451,6 +520,23 @@ describe('ProviderDetailsEffects', () => {
         communicationMode: 'SYNC'
       })
     })
+
+    it('dispatches update failure when the model service rejects the update', async () => {
+      const existing = { id: 'm1', modelIdentifier: 'gpt-4' } as Model
+      const error = new HttpErrorResponse({
+        status: 400,
+        error: { errorCode: 'INVALID_MODEL_CONFIG', detail: 'The model settings are invalid.' }
+      })
+      portalDialogService.openDialog.mockReturnValue(
+        of({ button: 'primary', result: { ...existing, modelConfig: '{}' } }) as never
+      )
+      modelService.updateModelById.mockReturnValue(throwError(() => error))
+
+      actions$.next(ProviderDetailsActions.providerModelEditClicked({ model: existing }))
+      const action = await firstValueFrom(effects.updateProviderModel$)
+
+      expect(action).toEqual(ProviderDetailsActions.providerModelUpdateFailed({ error }))
+    })
   })
 
   describe('deleteProviderModel$', () => {
@@ -525,6 +611,15 @@ describe('ProviderDetailsEffects', () => {
       })
     })
 
+    it('should display success message on providerModelUpdateSucceeded', async () => {
+      actions$.next(ProviderDetailsActions.providerModelUpdateSucceeded())
+      await firstValueFrom(effects.displaySuccess$)
+
+      expect(messageService.success).toHaveBeenCalledWith({
+        summaryKey: 'PROVIDER_DETAILS.SUCCESS_MESSAGES.MODEL_UPDATE_SUCCEEDED'
+      })
+    })
+
     it('should display success message on providerModelDeleteSucceeded', async () => {
       actions$.next(ProviderDetailsActions.providerModelDeleteSucceeded())
       await firstValueFrom(effects.displaySuccess$)
@@ -569,6 +664,60 @@ describe('ProviderDetailsEffects', () => {
 
       expect(messageService.error).toHaveBeenCalledWith({
         summaryKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_CREATE_FAILED'
+      })
+    })
+
+    it('shows the service validation detail for an invalid model configuration on create', async () => {
+      const error = new HttpErrorResponse({
+        status: 400,
+        error: { errorCode: 'INVALID_MODEL_CONFIG', detail: '<img src=x onerror=alert(1)> secret' }
+      })
+      actions$.next(ProviderDetailsActions.providerModelCreateFailed({ error }))
+      await firstValueFrom(effects.displayError$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_CREATE_FAILED',
+        detailKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.INVALID_MODEL_CONFIG_DETAIL'
+      })
+    })
+
+    it('shows the service validation detail for an invalid model configuration on update', async () => {
+      const error = new HttpErrorResponse({
+        status: 400,
+        error: { errorCode: 'INVALID_MODEL_CONFIG', detail: 'The API value is unsupported.' }
+      })
+      actions$.next(ProviderDetailsActions.providerModelUpdateFailed({ error }))
+      await firstValueFrom(effects.displayError$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_UPDATE_FAILED',
+        detailKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.INVALID_MODEL_CONFIG_DETAIL'
+      })
+    })
+
+    it('uses the generic summary when a failed action has no error value', async () => {
+      actions$.next({ type: ProviderDetailsActions.providerModelUpdateFailed.type })
+      await firstValueFrom(effects.displayError$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_UPDATE_FAILED'
+      })
+    })
+
+    it.each([
+      ['a non-HTTP error', { errorCode: 'INVALID_MODEL_CONFIG', detail: 'Do not display this.' }],
+      ['an unrelated error code', new HttpErrorResponse({ error: { errorCode: 'OTHER', detail: 'No.' } })],
+      ['a missing detail', new HttpErrorResponse({ error: { errorCode: 'INVALID_MODEL_CONFIG' } })],
+      ['a non-string detail', new HttpErrorResponse({ error: { errorCode: 'INVALID_MODEL_CONFIG', detail: 10 } })],
+      ['an empty detail', new HttpErrorResponse({ error: { errorCode: 'INVALID_MODEL_CONFIG', detail: '   ' } })],
+      ['an array body', new HttpErrorResponse({ error: [] })],
+      ['a malformed body', new HttpErrorResponse({ error: 'not an object' })]
+    ])('keeps the generic summary for %s', async (_description, error) => {
+      actions$.next(ProviderDetailsActions.providerModelUpdateFailed({ error }))
+      await firstValueFrom(effects.displayError$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_UPDATE_FAILED'
       })
     })
 

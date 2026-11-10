@@ -3,21 +3,24 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule } from '@ngx-translate/core'
 import { FloatLabelModule } from 'primeng/floatlabel'
 import { InputTextModule } from 'primeng/inputtext'
+import { SelectModule } from 'primeng/select'
 import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '@onecx/angular-accelerator'
 
 import { Model, Provider, ProviderType } from 'src/app/shared/generated'
 import { ModelCreateUpdateViewModel } from './model-create-update.viewmodel'
-
-type ModelApi = 'chat-completions' | 'responses'
-
-interface ModelConfiguration {
-  api?: ModelApi
-  reasoningEffort?: string
-}
+import { ModelApi, parseModelConfig, serializeModelConfig } from './model-config.utils'
+import { PrimeSelectDescribedByDirective } from './prime-select-describedby.directive'
 
 @Component({
   selector: 'app-model-create-update',
-  imports: [TranslateModule, ReactiveFormsModule, FloatLabelModule, InputTextModule],
+  imports: [
+    TranslateModule,
+    ReactiveFormsModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    PrimeSelectDescribedByDirective
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './model-create-update.component.html'
 })
@@ -30,7 +33,10 @@ export class ModelCreateUpdateComponent
 {
   @Input() vm: ModelCreateUpdateViewModel = { model: {} }
 
-  readonly apiOptions: ModelApi[] = ['chat-completions', 'responses']
+  readonly apiOptions = [
+    { label: 'PROVIDER_DETAILS.MODELS.API_OPTIONS.chat-completions', value: 'chat-completions' as const },
+    { label: 'PROVIDER_DETAILS.MODELS.API_OPTIONS.responses', value: 'responses' as const }
+  ]
   readonly formGroup: FormGroup
   readonly primaryButtonEnabled = new EventEmitter<boolean>()
   dialogResult: Model | undefined
@@ -61,18 +67,34 @@ export class ModelCreateUpdateComponent
   }
 
   get serializedModelConfigLength(): number {
-    return this.isOpenAi ? this.serializeModelConfig().length : 0
+    return this.isOpenAi ? this.serializeCurrentModelConfig().length : 0
   }
 
   get configurationTooLong(): boolean {
     return this.isOpenAi && this.serializedModelConfigLength > 255
   }
 
+  get modelIdentifierInvalid(): boolean {
+    const identifier = String(this.formGroup.controls['modelIdentifier'].value ?? '')
+    return !identifier.trim() || identifier.length > 255
+  }
+
+  get reasoningEffortDescribedBy(): string | null {
+    const descriptions = [
+      this.hasLegacyModelConfigWarning ? 'model_config_legacy_warning' : '',
+      this.configurationTooLong ? 'model_config_too_long' : ''
+    ].filter((description) => description.length > 0)
+    return descriptions.length > 0 ? descriptions.join(' ') : null
+  }
+
   ngOnInit(): void {
-    const model = this.vm.model ?? {}
+    const model = this.vm.model
+    const parsedConfig = parseModelConfig(model.modelConfig, this.isOpenAi)
+    this.hasLegacyModelConfigWarning = parsedConfig.hasLegacyWarning
     this.formGroup.patchValue({
       modelIdentifier: model.modelIdentifier ?? model.name ?? '',
-      ...(this.isOpenAi ? this.parseModelConfig(model.modelConfig) : {})
+      api: parsedConfig.api,
+      reasoningEffort: parsedConfig.reasoningEffort
     })
     this.updatePrimaryButton()
   }
@@ -82,97 +104,24 @@ export class ModelCreateUpdateComponent
       return
     }
 
-    const modelIdentifier = String(this.formGroup.get('modelIdentifier')?.value ?? '').trim()
-    if (!modelIdentifier) {
-      return
-    }
-
+    const modelIdentifier = String(this.formGroup.controls['modelIdentifier'].value).trim()
     this.dialogResult = {
       ...this.vm.model,
-      name: modelIdentifier,
+      name: this.vm.model.name ?? modelIdentifier,
       modelIdentifier,
-      ...(this.isOpenAi ? { modelConfig: this.serializeModelConfig() } : {})
+      ...(this.isOpenAi
+        ? {
+            modelConfig: this.serializeCurrentModelConfig()
+          }
+        : {})
     }
   }
 
-  private parseModelConfig(modelConfig?: string): Partial<{ api: ModelApi; reasoningEffort: string }> {
-    this.hasLegacyModelConfigWarning = false
-    if (!modelConfig?.trim()) {
-      return { api: 'chat-completions', reasoningEffort: '' }
-    }
-
-    try {
-      const parsed: unknown = JSON.parse(modelConfig)
-      const config = this.validateModelConfig(parsed)
-      if (!config || this.hasDuplicateConfigKeys(modelConfig)) {
-        this.hasLegacyModelConfigWarning = true
-        return { api: 'chat-completions', reasoningEffort: '' }
-      }
-      return {
-        api: config.api ?? 'chat-completions',
-        reasoningEffort: config.reasoningEffort?.trim() ?? ''
-      }
-    } catch {
-      this.hasLegacyModelConfigWarning = true
-      return { api: 'chat-completions', reasoningEffort: '' }
-    }
-  }
-
-  private hasDuplicateConfigKeys(json: string): boolean {
-    const keys = new Set<string>()
-    // JSON.parse has checked syntax. Scan whole string tokens so escaped quotes and key spellings are decoded safely.
-    for (let index = 0; index < json.length; index++) {
-      if (json[index] !== '"') {
-        continue
-      }
-      const start = index++
-      while (index < json.length && json[index] !== '"') {
-        index += json[index] === '\\' ? 2 : 1
-      }
-      if (
-        json
-          .slice(index + 1)
-          .trimStart()
-          .startsWith(':')
-      ) {
-        const key: string = JSON.parse(json.slice(start, index + 1))
-        if (keys.has(key)) {
-          return true
-        }
-        keys.add(key)
-      }
-    }
-    return false
-  }
-
-  private validateModelConfig(value: unknown): ModelConfiguration | undefined {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      return undefined
-    }
-    const entries = value as Record<string, unknown>
-    if (Object.keys(entries).some((key) => key !== 'api' && key !== 'reasoningEffort')) {
-      return undefined
-    }
-    if (entries['api'] !== undefined && entries['api'] !== 'chat-completions' && entries['api'] !== 'responses') {
-      return undefined
-    }
-    if (entries['reasoningEffort'] !== undefined && typeof entries['reasoningEffort'] !== 'string') {
-      return undefined
-    }
-    return {
-      ...(entries['api'] === undefined ? {} : { api: entries['api'] as ModelApi }),
-      ...(entries['reasoningEffort'] === undefined ? {} : { reasoningEffort: entries['reasoningEffort'] as string })
-    }
-  }
-
-  private serializeModelConfig(): string {
-    const api = this.formGroup.get('api')?.value as ModelApi
-    const reasoningEffort = String(this.formGroup.get('reasoningEffort')?.value ?? '').trim()
-    const config: ModelConfiguration = {
-      ...(api === 'responses' ? { api } : {}),
-      ...(reasoningEffort ? { reasoningEffort } : {})
-    }
-    return JSON.stringify(config)
+  private serializeCurrentModelConfig(): string {
+    return serializeModelConfig(
+      this.formGroup.get('api')?.value as ModelApi,
+      String(this.formGroup.controls['reasoningEffort'].value ?? '')
+    )
   }
 
   private updatePrimaryButton(): void {

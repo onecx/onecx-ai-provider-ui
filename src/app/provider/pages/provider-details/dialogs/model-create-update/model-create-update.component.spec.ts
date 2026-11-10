@@ -19,6 +19,7 @@ describe('ModelCreateUpdateComponent', () => {
 
     expect(component.formGroup.get('api')?.value).toBe('chat-completions')
     expect(component.formGroup.get('reasoningEffort')?.value).toBe('')
+    expect(component.reasoningEffortDescribedBy).toBeNull()
 
     component.ocxDialogButtonClicked()
 
@@ -29,6 +30,17 @@ describe('ModelCreateUpdateComponent', () => {
     })
   })
 
+  it('does not allow a model identifier longer than 255 characters', () => {
+    const component = createComponent()
+    component.formGroup.patchValue({ modelIdentifier: 'x'.repeat(256) })
+
+    component.ocxDialogButtonClicked()
+
+    expect(component.formGroup.valid).toBe(false)
+    expect(component.modelIdentifierInvalid).toBe(true)
+    expect(component.dialogResult).toBeUndefined()
+  })
+
   it('serializes Responses and trims a nonblank reasoning effort', () => {
     const component = createComponent()
     component.formGroup.patchValue({
@@ -36,13 +48,46 @@ describe('ModelCreateUpdateComponent', () => {
       api: 'responses',
       reasoningEffort: '  medium  '
     })
-
     component.ocxDialogButtonClicked()
 
     expect(component.dialogResult).toEqual({
       modelIdentifier: 'gpt-5',
       name: 'gpt-5',
       modelConfig: '{"api":"responses","reasoningEffort":"medium"}'
+    })
+  })
+
+  it('preserves the existing model name and unrelated values when editing model settings', () => {
+    const component = createComponent({
+      id: 'm1',
+      name: 'Imported display name',
+      modelIdentifier: 'gpt-4',
+      provider: { id: 'p1' },
+      communicationMode: 'ASYNC'
+    } as Model)
+    component.formGroup.patchValue({ api: 'responses', reasoningEffort: ' high ' })
+
+    component.ocxDialogButtonClicked()
+
+    expect(component.dialogResult).toEqual({
+      id: 'm1',
+      name: 'Imported display name',
+      modelIdentifier: 'gpt-4',
+      modelConfig: '{"api":"responses","reasoningEffort":"high"}',
+      provider: { id: 'p1' },
+      communicationMode: 'ASYNC'
+    })
+
+    component.formGroup.patchValue({ modelIdentifier: 'gpt-4.1' })
+    component.ocxDialogButtonClicked()
+
+    expect(component.dialogResult).toEqual({
+      id: 'm1',
+      name: 'Imported display name',
+      modelIdentifier: 'gpt-4.1',
+      modelConfig: '{"api":"responses","reasoningEffort":"high"}',
+      provider: { id: 'p1' },
+      communicationMode: 'ASYNC'
     })
   })
 
@@ -56,6 +101,14 @@ describe('ModelCreateUpdateComponent', () => {
     expect(component.dialogResult).toBeUndefined()
   })
 
+  it('treats a null model identifier as invalid', () => {
+    const component = createComponent()
+    component.formGroup.controls['modelIdentifier'].setValue(null)
+
+    expect(component.modelIdentifierInvalid).toBe(true)
+    expect(component.formGroup.valid).toBe(false)
+  })
+
   it('omits the default API when serializing an explicit reasoning effort', () => {
     const component = createComponent()
     component.formGroup.patchValue({ modelIdentifier: 'o3', reasoningEffort: ' none ' })
@@ -63,6 +116,26 @@ describe('ModelCreateUpdateComponent', () => {
     component.ocxDialogButtonClicked()
 
     expect(component.dialogResult?.modelConfig).toBe('{"reasoningEffort":"none"}')
+  })
+
+  it('omits a null reasoning effort when serializing', () => {
+    const component = createComponent({ modelIdentifier: 'gpt-4' })
+    component.formGroup.controls['reasoningEffort'].setValue(null)
+
+    component.ocxDialogButtonClicked()
+
+    expect(component.dialogResult?.modelConfig).toBe('{}')
+  })
+
+  it('uses the existing name when model identifier is absent', () => {
+    const component = createComponent({ id: 'm1', name: 'imported-model' })
+
+    expect(component.formGroup.get('modelIdentifier')?.value).toBe('imported-model')
+
+    component.ocxDialogButtonClicked()
+
+    expect(component.dialogResult?.name).toBe('imported-model')
+    expect(component.dialogResult?.modelIdentifier).toBe('imported-model')
   })
 
   it.each([
@@ -92,7 +165,16 @@ describe('ModelCreateUpdateComponent', () => {
       imports: [
         ModelCreateUpdateComponent,
         TranslateTestingModule.withTranslations({
-          en: { PROVIDER_DETAILS: { MODELS: { LEGACY_CONFIG_WARNING: 'Legacy configuration is not applied' } } }
+          en: {
+            PROVIDER_DETAILS: {
+              MODELS: {
+                LEGACY_CONFIG_WARNING: 'Legacy configuration is not applied',
+                IDENTIFIER_VALIDATION:
+                  'A non-blank model identifier of at most 255 characters is required to enable Save.',
+                API_OPTIONS: { 'chat-completions': 'Chat Completions', responses: 'Responses' }
+              }
+            }
+          }
         })
       ]
     }).compileComponents()
@@ -106,12 +188,67 @@ describe('ModelCreateUpdateComponent', () => {
     })
     fixture.detectChanges()
     const element: HTMLElement = fixture.nativeElement
-    expect(element.querySelector('[role="status"]')?.textContent).toContain('Legacy configuration is not applied')
-    expect(element.querySelector<HTMLSelectElement>('#model_api')?.value).toBe('chat-completions')
+    expect(element.querySelector('#model_config_legacy_warning')?.textContent).toContain(
+      'Legacy configuration is not applied'
+    )
+    expect(element.querySelector('#model_api')).not.toBeNull()
+    expect(element.querySelector('#model_api')?.getAttribute('aria-describedby')).toBe('model_config_legacy_warning')
+    expect(fixture.componentInstance.formGroup.get('api')?.value).toBe('chat-completions')
+    expect(element.querySelector('#model_reasoning_effort')?.getAttribute('aria-describedby')).toBe(
+      'model_config_legacy_warning'
+    )
+    expect(element.querySelector('#model_identifier_validation')).toBeNull()
     expect(element.querySelector<HTMLInputElement>('#model_reasoning_effort')?.value).toBe('')
 
     fixture.componentInstance.ocxDialogButtonClicked()
     expect(fixture.componentInstance.dialogResult?.modelConfig).toBe('{}')
+
+    fixture.componentInstance.formGroup.patchValue({ modelIdentifier: '   ' })
+    fixture.detectChanges()
+    expect(fixture.componentInstance.formGroup.valid).toBe(false)
+    expect(element.querySelector('#model_identifier_validation')?.textContent).toContain('enable Save')
+    expect(element.querySelector('#model_identifier')?.getAttribute('aria-describedby')).toBe(
+      'model_identifier_validation'
+    )
+  })
+
+  it('associates the configuration size error with its reasoning effort input', async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        ModelCreateUpdateComponent,
+        TranslateTestingModule.withTranslations({
+          en: {
+            PROVIDER_DETAILS: {
+              MODELS: {
+                API_OPTIONS: { 'chat-completions': 'Chat Completions', responses: 'Responses' },
+                CONFIGURATION_TOO_LONG: 'Configuration exceeds the 255-character storage limit.',
+                IDENTIFIER_VALIDATION:
+                  'A non-blank model identifier of at most 255 characters is required to enable Save.'
+              }
+            }
+          }
+        })
+      ]
+    }).compileComponents()
+    const fixture = TestBed.createComponent(ModelCreateUpdateComponent)
+    fixture.componentRef.setInput('vm', {
+      model: {
+        modelIdentifier: 'gpt-4',
+        modelConfig: '{"api":"chat-completions","api":"responses"}'
+      },
+      provider: { type: ProviderType.Openai }
+    })
+    fixture.detectChanges()
+    fixture.componentInstance.formGroup.patchValue({ reasoningEffort: 'x'.repeat(234) })
+    fixture.detectChanges()
+    const element: HTMLElement = fixture.nativeElement
+
+    expect(element.querySelector('#model_config_too_long')?.textContent).toContain('255-character')
+    expect(element.querySelector('#model_reasoning_effort')?.getAttribute('aria-describedby')).toBe(
+      'model_config_legacy_warning model_config_too_long'
+    )
+    expect(element.querySelector('#model_config_legacy_warning')).not.toBeNull()
+    expect(fixture.componentInstance.formGroup.valid).toBe(false)
   })
 
   it.each([
@@ -184,13 +321,14 @@ describe('ModelCreateUpdateComponent', () => {
     component.formGroup.patchValue({ modelIdentifier: 'new-name' })
 
     expect(component.isOpenAi).toBe(false)
+    expect(component.serializedModelConfigLength).toBe(0)
     expect(component.hasLegacyModelConfigWarning).toBe(false)
 
     component.ocxDialogButtonClicked()
 
     expect(component.dialogResult).toEqual({
       id: 'm1',
-      name: 'new-name',
+      name: 'old-name',
       modelIdentifier: 'new-name',
       modelConfig: 'legacy payload'
     })

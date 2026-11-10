@@ -811,7 +811,8 @@
       "MODELS_LOADING_FAILED": "Modelle konnten nicht geladen werden.",
       "MODEL_CREATE_FAILED": "Modell konnte nicht erstellt werden.",
       "MODEL_UPDATE_FAILED": "Modell konnte nicht aktualisiert werden.",
-      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden."
+      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden.",
+      "INVALID_MODEL_CONFIG_DETAIL": "Überprüfen Sie die Einstellungen für Modell-API und Reasoning-Aufwand."
     },
     "SUCCESS_MESSAGES": {
       "UPDATE_SUCCEEDED": "Provider wurde erfolgreich aktualisiert.",
@@ -831,13 +832,13 @@
       "MODELS": "Modelle"
     },
     "MODELS": {
-      "NEW_MODEL": "Neuer Modell-Identifikator",
       "CREATE": "Modell erstellen",
       "CREATE_HEADER": "Modell erstellen",
       "EDIT_HEADER": "Modell bearbeiten",
       "SAVE": "Speichern",
       "CANCEL": "Abbrechen",
       "MODEL_IDENTIFIER": "Modell-Identifikator",
+      "IDENTIFIER_VALIDATION": "Geben Sie einen nicht leeren Modell-Identifikator mit höchstens 255 Zeichen ein, um Speichern zu aktivieren.",
       "EDIT": "Modell bearbeiten",
       "DELETE": "Modell loeschen",
       "API": "API",

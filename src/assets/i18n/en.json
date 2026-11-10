@@ -824,7 +824,8 @@
       "MODELS_LOADING_FAILED": "Loading models failed.",
       "MODEL_CREATE_FAILED": "Creating model failed.",
       "MODEL_UPDATE_FAILED": "Updating model failed.",
-      "MODEL_DELETE_FAILED": "Deleting model failed."
+      "MODEL_DELETE_FAILED": "Deleting model failed.",
+      "INVALID_MODEL_CONFIG_DETAIL": "Check the model API and reasoning effort settings."
     },
     "SUCCESS_MESSAGES": {
       "UPDATE_SUCCEEDED": "Provider updated successfully.",
@@ -844,13 +845,13 @@
       "MODELS": "Models"
     },
     "MODELS": {
-      "NEW_MODEL": "New model identifier",
       "CREATE": "Create model",
       "CREATE_HEADER": "Create model",
       "EDIT_HEADER": "Edit model",
       "SAVE": "Save",
       "CANCEL": "Cancel",
       "MODEL_IDENTIFIER": "Model identifier",
+      "IDENTIFIER_VALIDATION": "Enter a non-blank model identifier up to 255 characters to enable Save.",
       "EDIT": "Edit model",
       "DELETE": "Delete model",
       "API": "API",

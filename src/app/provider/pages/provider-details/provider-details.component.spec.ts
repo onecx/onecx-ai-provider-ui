@@ -23,6 +23,7 @@ import { selectProviderDetailsViewModel } from './provider-details.selectors'
 import { ProviderDetailsViewModel } from './provider-details.viewmodel'
 import { ProviderSearchActions } from '../provider-search/provider-search.actions'
 import { ProviderDetailsActions } from './provider-details.actions'
+import { Model } from 'src/app/shared/generated'
 
 describe('ProviderDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -135,6 +136,31 @@ describe('ProviderDetailsComponent', () => {
   describe('ProviderDetailsComponent UI', () => {
     it('should create', () => {
       expect(component).toBeTruthy()
+    })
+
+    it('dispatches an action when creating a model in place', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.createModelInPlace()
+
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelCreateClicked())
+    })
+
+    it('does not dispatch an edit action for a model without an id', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.editModel({ name: 'model without id' } as Model)
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('dispatches an edit action for a model with an id', () => {
+      const model = { id: 'm1' } as Model
+      jest.spyOn(store, 'dispatch')
+
+      component.editModel(model)
+
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelEditClicked({ model }))
     })
 
     it('should display correct breadcrumbs', () => {

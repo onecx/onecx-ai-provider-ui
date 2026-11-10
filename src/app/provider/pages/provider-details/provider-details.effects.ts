@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
@@ -22,6 +23,24 @@ import { ProviderDetailsActions } from './provider-details.actions'
 import { ProviderDetailsComponent } from './provider-details.component'
 import { ProviderDetailsSelectors } from './provider-details.selectors'
 import { ModelCreateUpdateComponent } from './dialogs/model-create-update/model-create-update.component'
+
+function getInvalidModelConfigDetail(error: unknown): string | undefined {
+  if (!(error instanceof HttpErrorResponse) || !isRecord(error.error)) {
+    return undefined
+  }
+  const { errorCode, detail } = error.error
+  return errorCode === 'INVALID_MODEL_CONFIG' && typeof detail === 'string' && detail.trim()
+    ? 'PROVIDER_DETAILS.ERROR_MESSAGES.INVALID_MODEL_CONFIG_DETAIL'
+    : undefined
+}
+
+function getActionError(action: Action): unknown {
+  return 'error' in action ? action.error : undefined
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
 
 @Injectable()
 export class ProviderDetailsEffects {
@@ -329,7 +348,15 @@ export class ProviderDetailsEffects {
         tap((action) => {
           const e = this.errorMessages.find((e) => e.action.type === action.type)
           if (e) {
-            this.messageService.error({ summaryKey: e.key })
+            const detailKey =
+              action.type === ProviderDetailsActions.providerModelCreateFailed.type ||
+              action.type === ProviderDetailsActions.providerModelUpdateFailed.type
+                ? getInvalidModelConfigDetail(getActionError(action))
+                : undefined
+            this.messageService.error({
+              summaryKey: e.key,
+              ...(detailKey ? { detailKey } : {})
+            })
           }
         })
       )
