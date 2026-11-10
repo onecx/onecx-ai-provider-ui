@@ -48,9 +48,7 @@ describe('model-config.utils', () => {
       ['unsupported API value', '{"api":"other"}'],
       ['wrong API type', '{"api":2}'],
       ['wrong reasoning effort type', '{"reasoningEffort":2}'],
-      ['non-object JSON', '[1, 2]'],
-      ['duplicate keys', '{"api":"chat-completions","api":"responses"}'],
-      ['decoded duplicate keys', '{"api":"chat-completions","\\u0061pi":"responses"}']
+      ['non-object JSON', '[1, 2]']
     ])('flags %s as legacy and supplies defaults', (_description, modelConfig) => {
       expect(parseModelConfig(modelConfig)).toEqual({
         api: 'chat-completions',
@@ -59,7 +57,18 @@ describe('model-config.utils', () => {
       })
     })
 
-    it('allows escaped keys and duplicate-looking text inside string values', () => {
+    it('uses standard JSON parsing and serializes repeated keys into a single supported setting', () => {
+      const config = parseModelConfig('{"api":"chat-completions","api":"responses"}')
+
+      expect(config).toEqual({
+        api: 'responses',
+        reasoningEffort: '',
+        hasLegacyWarning: false
+      })
+      expect(serializeModelConfig(config.api, config.reasoningEffort)).toBe('{"api":"responses"}')
+    })
+
+    it('reads escaped keys and quoted string values', () => {
       expect(parseModelConfig('{"\\u0061pi":"responses","reasoning\\u0045ffort":"api: \\"api\\""}')).toEqual({
         api: 'responses',
         reasoningEffort: 'api: "api"',

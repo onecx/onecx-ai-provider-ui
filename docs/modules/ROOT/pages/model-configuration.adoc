@@ -7,6 +7,8 @@ Provider details let administrators create and edit model identifiers. For OpenA
 
 The UI stores these supported settings in the existing model configuration field. It omits the default Chat Completions value and blank reasoning effort, so the default configuration is `{}`. The dialog does not expose a JSON editor or accept arbitrary configuration keys.
 
+The dialog reads existing configuration with standard JSON parsing and validates the supported fields. Saving serializes the form values into a new JSON object. The service enforces strict validation, including rejecting duplicate keys in API requests.
+
 Existing malformed or unsupported OpenAI model configuration is shown with a warning and treated as unset in the form. Saving replaces that value with the settings currently shown. Configurations longer than the 255-character storage limit cannot be saved.
 
 These controls are only shown for OpenAI providers. Editing another provider's model preserves its existing model configuration.
