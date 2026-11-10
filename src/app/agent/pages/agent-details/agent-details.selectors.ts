@@ -72,6 +72,11 @@ export const selectAgentDetailsCoreState = createSelector(
   agentDetailsSelectors.selectEditMode,
   agentDetailsSelectors.selectIsSubmitting,
   agentDetailsSelectors.selectIsPublishingConfigurationVersion,
+  agentDetailsSelectors.selectConfigurationVersions,
+  agentDetailsSelectors.selectConfigurationVersionsLoadingIndicator,
+  agentDetailsSelectors.selectActivatingConfigurationVersionId,
+  agentDetailsSelectors.selectConfigurationVersionDetails,
+  agentDetailsSelectors.selectLoadingVersionDetailIds,
   selectBackNavigationPossible,
   (
     details: Agent | undefined,
@@ -80,6 +85,11 @@ export const selectAgentDetailsCoreState = createSelector(
     editMode,
     isSubmitting,
     isPublishingConfigurationVersion,
+    configurationVersions,
+    configurationVersionsLoadingIndicator,
+    activatingConfigurationVersionId,
+    configurationVersionDetails,
+    loadingVersionDetailIds,
     backNavigationPossible
   ) => ({
     details,
@@ -88,6 +98,11 @@ export const selectAgentDetailsCoreState = createSelector(
     editMode,
     isSubmitting,
     isPublishingConfigurationVersion,
+    configurationVersions,
+    configurationVersionsLoadingIndicator,
+    activatingConfigurationVersionId,
+    configurationVersionDetails,
+    loadingVersionDetailIds,
     backNavigationPossible
   })
 )

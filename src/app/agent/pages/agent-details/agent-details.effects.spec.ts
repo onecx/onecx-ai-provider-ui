@@ -10,6 +10,7 @@ import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import {
+  AgentConfiguration,
   AgentConfigurationVersion,
   AgentGroupService,
   AgentService,
@@ -45,7 +46,10 @@ describe('AgentDetailsEffects', () => {
     getAgent: jest.fn(),
     updateAgent: jest.fn(),
     deleteAgent: jest.fn(),
-    publishAgentConfigurationVersion: jest.fn()
+    createAgentConfigurationVersion: jest.fn(),
+    getAgentConfigurationVersions: jest.fn(),
+    getAgentConfigurationVersion: jest.fn(),
+    activateAgentConfigurationVersion: jest.fn()
   }
   const providerService = { findProviderBySearchCriteria: jest.fn() }
   const modelService = { findModelByCriteria: jest.fn() }
@@ -482,7 +486,10 @@ describe('AgentDetailsEffects', () => {
     })
 
     it('should submit the trimmed dialog name with the current agent ID', async () => {
-      jest.spyOn(store, 'select').mockReturnValueOnce(of({ id: 'agent-1' }))
+      jest
+        .spyOn(store, 'select')
+        .mockReturnValueOnce(of({ id: 'agent-1' }))
+        .mockReturnValueOnce(of([]))
       ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(
         of({ button: 'primary', result: '  Release 1  ' })
       )
@@ -505,7 +512,49 @@ describe('AgentDetailsEffects', () => {
       )
     })
 
+    it('should pass the next version name as the suggested dialog name', async () => {
+      jest
+        .spyOn(store, 'select')
+        .mockReturnValueOnce(of({ id: 'agent-1' }))
+        .mockReturnValueOnce(of([{ name: 'v1.0' }, { name: 'v2.0' }]))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'secondary' }))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionButtonClicked())
+      await firstValueFrom(effects.publishConfigurationVersionButtonClicked$)
+
+      expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+        'AGENT_DETAILS.PUBLISH_CONFIGURATION.HEADER',
+        expect.objectContaining({ inputs: { suggestedName: 'v3.0' } }),
+        expect.anything(),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
+    it('should suggest a version name when existing versions have no name', async () => {
+      jest
+        .spyOn(store, 'select')
+        .mockReturnValueOnce(of({ id: 'agent-1' }))
+        .mockReturnValueOnce(of([{ id: 'version-1' }]))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'secondary' }))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionButtonClicked())
+      await firstValueFrom(effects.publishConfigurationVersionButtonClicked$)
+
+      expect(portalDialogService.openDialog).toHaveBeenCalledWith(
+        'AGENT_DETAILS.PUBLISH_CONFIGURATION.HEADER',
+        expect.objectContaining({ inputs: { suggestedName: expect.any(String) } }),
+        expect.anything(),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+
     it('should not publish when the dialog is cancelled', async () => {
+      jest
+        .spyOn(store, 'select')
+        .mockReturnValueOnce(of({ id: 'agent-1' }))
+        .mockReturnValueOnce(of([]))
       jest.spyOn(store, 'select').mockReturnValueOnce(of({ id: 'agent-1' }))
       ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'secondary' }))
 
@@ -513,14 +562,14 @@ describe('AgentDetailsEffects', () => {
       const action = await firstValueFrom(effects.publishConfigurationVersionButtonClicked$)
 
       expect(action).toEqual(agentDetailsActions.publishConfigurationVersionCancelled())
-      expect(agentService.publishAgentConfigurationVersion).not.toHaveBeenCalled()
+      expect(agentService.createAgentConfigurationVersion).not.toHaveBeenCalled()
     })
   })
 
   describe('publishConfigurationVersion$', () => {
-    it('should publish and report success when the returned version is active', async () => {
+    it('should create and report success when the returned version is active', async () => {
       const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: true }
-      agentService.publishAgentConfigurationVersion.mockReturnValueOnce(of(version))
+      agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(version))
 
       actions$.next(
         agentDetailsActions.publishConfigurationVersionSubmitted({
@@ -530,7 +579,7 @@ describe('AgentDetailsEffects', () => {
       )
       const action = await firstValueFrom(effects.publishConfigurationVersion$)
 
-      expect(agentService.publishAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', { name: 'Release 1' })
+      expect(agentService.createAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', { name: 'Release 1' })
       expect(action).toEqual(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
@@ -539,7 +588,7 @@ describe('AgentDetailsEffects', () => {
 
     it('should show the duplicate-name message for a name conflict', async () => {
       const error = { error: { errorCode: 'DUPLICATE_AGENT_CONFIGURATION_VERSION_NAME' } }
-      agentService.publishAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
+      agentService.createAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
 
       actions$.next(
         agentDetailsActions.publishConfigurationVersionSubmitted({
@@ -555,9 +604,9 @@ describe('AgentDetailsEffects', () => {
       })
     })
 
-    it('should not report success when the service returns an inactive version', async () => {
-      const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
-      agentService.publishAgentConfigurationVersion.mockReturnValueOnce(of(version))
+    it('should show the generic message for other publish errors', async () => {
+      const error = { status: 500 }
+      agentService.createAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
 
       actions$.next(
         agentDetailsActions.publishConfigurationVersionSubmitted({
@@ -567,11 +616,287 @@ describe('AgentDetailsEffects', () => {
       )
       const action = await firstValueFrom(effects.publishConfigurationVersion$)
 
-      expect(action.type).toBe(agentDetailsActions.publishConfigurationVersionFailed.type)
-      expect(messageService.success).not.toHaveBeenCalled()
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionFailed({ error }))
       expect(messageService.error).toHaveBeenCalledWith({
         summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
       })
+    })
+
+    it('should report success when the service returns an inactive version', async () => {
+      const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
+      agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(version))
+
+      actions$.next(
+        agentDetailsActions.publishConfigurationVersionSubmitted({
+          agentId: 'agent-1',
+          name: 'Release 1'
+        })
+      )
+      const action = await firstValueFrom(effects.publishConfigurationVersion$)
+
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      expect(messageService.success).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+      })
+    })
+  })
+
+  describe('loadConfigurationVersionDetail$', () => {
+    it('should fetch the version detail when the version is marked as loading by the reducer', async () => {
+      const configuration = { schemaVersion: '1' } as AgentConfiguration
+      const selectSpy = jest.spyOn(store, 'select').mockReturnValueOnce(of({})).mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersion.mockReturnValueOnce(of(configuration))
+
+      actions$.next(agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' }))
+      const action = await firstValueFrom(effects.loadConfigurationVersionDetail$)
+
+      expect(selectSpy).toHaveBeenCalledTimes(2)
+      expect(agentService.getAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', 'version-1')
+      expect(action).toEqual(
+        agentDetailsActions.configurationVersionDetailReceived({ versionId: 'version-1', configuration })
+      )
+    })
+
+    it('should not fetch the version detail when it is already loaded', async () => {
+      jest
+        .spyOn(store, 'select')
+        .mockReturnValueOnce(of({ 'version-1': { schemaVersion: '1' } }))
+        .mockReturnValueOnce(of('agent-1'))
+
+      actions$.next(agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' }))
+      const emitted: Action[] = []
+      const subscription = effects.loadConfigurationVersionDetail$.subscribe((a) => emitted.push(a))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(agentService.getAgentConfigurationVersion).not.toHaveBeenCalled()
+      expect(emitted).toEqual([])
+    })
+  })
+
+  describe('loadConfigurationVersionDetail$ failure', () => {
+    it('should report a loading failure for the version when the detail request fails', async () => {
+      const error = { status: 500 }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of({})).mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
+
+      actions$.next(agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' }))
+      const action = await firstValueFrom(effects.loadConfigurationVersionDetail$)
+
+      expect(action).toEqual(
+        agentDetailsActions.configurationVersionDetailLoadingFailed({ versionId: 'version-1', error })
+      )
+    })
+  })
+
+  describe('loadConfigurationVersions$', () => {
+    it('should dispatch configurationVersionsReceived with the loaded versions', async () => {
+      const versions = [{ id: 'version-1', name: 'v1.0' }] as AgentConfigurationVersion[]
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(of({ versions }))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: 'agent-1' }))
+      const action = await firstValueFrom(effects.loadConfigurationVersions$)
+
+      expect(agentService.getAgentConfigurationVersions).toHaveBeenCalledWith('agent-1')
+      expect(action).toEqual(agentDetailsActions.configurationVersionsReceived({ versions }))
+    })
+
+    it('should dispatch an empty list when the response has no versions', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(of({}))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: 'agent-1' }))
+      const action = await firstValueFrom(effects.loadConfigurationVersions$)
+
+      expect(action).toEqual(agentDetailsActions.configurationVersionsReceived({ versions: [] }))
+    })
+
+    it('should dispatch configurationVersionsLoadingFailed on error', async () => {
+      const error = { status: 500 }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(throwError(() => error))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: 'agent-1' }))
+      const action = await firstValueFrom(effects.loadConfigurationVersions$)
+
+      expect(action).toEqual(agentDetailsActions.configurationVersionsLoadingFailed({ error }))
+    })
+
+    it('should not load versions when no agent ID is in the route', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
+      const emitted: Action[] = []
+      const subscription = effects.loadConfigurationVersions$.subscribe((a) => emitted.push(a))
+
+      actions$.next(agentDetailsActions.navigatedToDetailsPage({ id: undefined }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(agentService.getAgentConfigurationVersions).not.toHaveBeenCalled()
+      expect(emitted).toEqual([])
+    })
+  })
+
+  describe('reloadConfigurationVersionsAfterPublish$', () => {
+    const version = { id: 'version-1', name: 'v1.0', active: true } as AgentConfigurationVersion
+
+    it('should reload versions after a publish succeeds', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(of({ versions: [version] }))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      const action = await firstValueFrom(effects.reloadConfigurationVersionsAfterPublish$)
+
+      expect(action).toEqual(agentDetailsActions.configurationVersionsReceived({ versions: [version] }))
+    })
+
+    it('should reload versions after an activation succeeds', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(of({ versions: [version] }))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionSucceeded({ version }))
+      const action = await firstValueFrom(effects.reloadConfigurationVersionsAfterPublish$)
+
+      expect(action).toEqual(agentDetailsActions.configurationVersionsReceived({ versions: [version] }))
+    })
+
+    it('should dispatch an empty list when the reload response has no versions', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(of({}))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      const action = await firstValueFrom(effects.reloadConfigurationVersionsAfterPublish$)
+
+      expect(action).toEqual(agentDetailsActions.configurationVersionsReceived({ versions: [] }))
+    })
+
+    it('should dispatch configurationVersionsLoadingFailed when the reload fails', async () => {
+      const error = { status: 500 }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersions.mockReturnValueOnce(throwError(() => error))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      const action = await firstValueFrom(effects.reloadConfigurationVersionsAfterPublish$)
+
+      expect(action).toEqual(agentDetailsActions.configurationVersionsLoadingFailed({ error }))
+    })
+
+    it('should not reload versions when no agent ID is in the route', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
+      const emitted: Action[] = []
+      const subscription = effects.reloadConfigurationVersionsAfterPublish$.subscribe((a) => emitted.push(a))
+
+      actions$.next(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(agentService.getAgentConfigurationVersions).not.toHaveBeenCalled()
+      expect(emitted).toEqual([])
+    })
+  })
+
+  describe('activateConfigurationVersion$', () => {
+    it('should request confirmation and dispatch activateConfigurationVersionConfirmed when confirmed', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'primary' }))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-2' }))
+      const action = await firstValueFrom(effects.activateConfigurationVersion$)
+
+      expect(portalDialogService.openDialog).toHaveBeenCalled()
+      expect(action).toEqual(agentDetailsActions.activateConfigurationVersionConfirmed({ versionId: 'version-2' }))
+    })
+
+    it('should dispatch activateConfigurationVersionCancelled when the dialog is dismissed', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of({ button: 'secondary' }))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-2' }))
+      const action = await firstValueFrom(effects.activateConfigurationVersion$)
+
+      expect(action).toEqual(agentDetailsActions.activateConfigurationVersionCancelled())
+    })
+
+    it('should dispatch activateConfigurationVersionCancelled when the dialog returns nothing', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      ;(portalDialogService.openDialog as jest.Mock).mockReturnValueOnce(of(undefined))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-2' }))
+      const action = await firstValueFrom(effects.activateConfigurationVersion$)
+
+      expect(action).toEqual(agentDetailsActions.activateConfigurationVersionCancelled())
+    })
+
+    it('should not open the dialog when no agent ID is in the route', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
+      const emitted: Action[] = []
+      const subscription = effects.activateConfigurationVersion$.subscribe((a) => emitted.push(a))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-2' }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(portalDialogService.openDialog).not.toHaveBeenCalled()
+      expect(emitted).toEqual([])
+    })
+  })
+
+  describe('activateConfigurationVersionConfirmed$', () => {
+    const version = { id: 'version-2', name: 'v2.0', active: true } as AgentConfigurationVersion
+
+    it('should activate the version and report success', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.activateAgentConfigurationVersion.mockReturnValueOnce(of(version))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionConfirmed({ versionId: 'version-2' }))
+      const action = await firstValueFrom(effects.activateConfigurationVersionConfirmed$)
+
+      expect(agentService.activateAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', 'version-2')
+      expect(messageService.success).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_SUCCESS'
+      })
+      expect(action).toEqual(agentDetailsActions.activateConfigurationVersionSucceeded({ version }))
+    })
+
+    it('should show the dependency message when activation fails with invalid dependencies', async () => {
+      const error = { error: { errorCode: 'INVALID_AGENT_CONFIGURATION_DEPENDENCIES' } }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.activateAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionConfirmed({ versionId: 'version-2' }))
+      const action = await firstValueFrom(effects.activateConfigurationVersionConfirmed$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_ERROR_DEPENDENCIES'
+      })
+      expect(action).toEqual(agentDetailsActions.activateConfigurationVersionFailed({ error }))
+    })
+
+    it('should show the generic message for other activation errors', async () => {
+      const error = { error: { errorCode: 'SOMETHING_ELSE' } }
+      jest.spyOn(store, 'select').mockReturnValueOnce(of('agent-1'))
+      agentService.activateAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionConfirmed({ versionId: 'version-2' }))
+      const action = await firstValueFrom(effects.activateConfigurationVersionConfirmed$)
+
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_ERROR'
+      })
+      expect(action).toEqual(agentDetailsActions.activateConfigurationVersionFailed({ error }))
+    })
+
+    it('should not activate when no agent ID is in the route', async () => {
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(undefined))
+      const emitted: Action[] = []
+      const subscription = effects.activateConfigurationVersionConfirmed$.subscribe((a) => emitted.push(a))
+
+      actions$.next(agentDetailsActions.activateConfigurationVersionConfirmed({ versionId: 'version-2' }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(agentService.activateAgentConfigurationVersion).not.toHaveBeenCalled()
+      expect(emitted).toEqual([])
     })
   })
 

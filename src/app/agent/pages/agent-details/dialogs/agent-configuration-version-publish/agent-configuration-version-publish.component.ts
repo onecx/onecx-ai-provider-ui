@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { TranslateModule } from '@ngx-translate/core'
 import { FloatLabelModule } from 'primeng/floatlabel'
@@ -15,14 +15,16 @@ import { DialogButtonClicked, DialogPrimaryButtonDisabled, DialogResult } from '
 })
 export class AgentConfigurationVersionPublishComponent
   implements
+    OnInit,
     DialogPrimaryButtonDisabled,
     DialogResult<string | undefined>,
     DialogButtonClicked<AgentConfigurationVersionPublishComponent>
 {
+  @Input() suggestedName = ''
   readonly nameControl = new FormControl('', [Validators.required, Validators.maxLength(255), Validators.pattern(/\S/)])
   readonly formGroup = new FormGroup({ name: this.nameControl })
   readonly primaryButtonEnabled = new EventEmitter<boolean>()
-  dialogResult: string | undefined
+  dialogResult: string | undefined = undefined
 
   constructor() {
     this.formGroup.statusChanges
@@ -31,6 +33,10 @@ export class AgentConfigurationVersionPublishComponent
         map((status) => status === 'VALID')
       )
       .subscribe(this.primaryButtonEnabled)
+  }
+
+  ngOnInit() {
+    this.nameControl.setValue(this.suggestedName)
   }
 
   ocxDialogButtonClicked() {

@@ -1,4 +1,13 @@
-import { Agent, AgentGroup, Model, Provider, Scaffold, Tool } from 'src/app/shared/generated'
+import {
+  Agent,
+  AgentConfiguration,
+  AgentConfigurationVersion,
+  AgentGroup,
+  Model,
+  Provider,
+  Scaffold,
+  Tool
+} from 'src/app/shared/generated'
 
 export interface AgentDetailsState {
   details: Agent | undefined
@@ -24,6 +33,12 @@ export interface AgentDetailsState {
   groups: AgentGroup[]
   groupsLoadingIndicator: boolean
   groupsLoaded: boolean
+
+  configurationVersions: AgentConfigurationVersion[]
+  configurationVersionsLoadingIndicator: boolean
+  activatingConfigurationVersionId: string | undefined
+  configurationVersionDetails: Record<string, AgentConfiguration>
+  loadingVersionDetailIds: string[]
 
   editMode: boolean
   isSubmitting: boolean

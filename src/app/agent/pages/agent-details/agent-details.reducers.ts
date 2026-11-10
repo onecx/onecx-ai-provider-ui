@@ -22,6 +22,11 @@ export const initialState: AgentDetailsState = {
   groups: [],
   groupsLoadingIndicator: true,
   groupsLoaded: false,
+  configurationVersions: [],
+  configurationVersionsLoadingIndicator: false,
+  activatingConfigurationVersionId: undefined,
+  configurationVersionDetails: {},
+  loadingVersionDetailIds: [],
   editMode: false,
   isSubmitting: false,
   isPublishingConfigurationVersion: false
@@ -109,7 +114,8 @@ export const agentDetailsReducer = createReducer(
   })),
   on(agentDetailsActions.navigatedToDetailsPage, (): AgentDetailsState => ({
     ...initialState,
-    detailsLoadingIndicator: true
+    detailsLoadingIndicator: true,
+    configurationVersionsLoadingIndicator: true
   })),
   on(agentDetailsActions.editButtonClicked, (state: AgentDetailsState): AgentDetailsState => ({
     ...state,
@@ -143,12 +149,61 @@ export const agentDetailsReducer = createReducer(
     ...state,
     isPublishingConfigurationVersion: true
   })),
+  on(agentDetailsActions.publishConfigurationVersionSucceeded, (state, { version }): AgentDetailsState => ({
+    ...state,
+    isPublishingConfigurationVersion: false,
+    configurationVersions: [
+      ...state.configurationVersions.map((v) => (version.active ? { ...v, active: false } : v)),
+      version
+    ]
+  })),
+  on(agentDetailsActions.publishConfigurationVersionFailed, (state: AgentDetailsState): AgentDetailsState => ({
+    ...state,
+    isPublishingConfigurationVersion: false
+  })),
+  on(agentDetailsActions.configurationVersionsReceived, (state, { versions }): AgentDetailsState => ({
+    ...state,
+    configurationVersions: versions,
+    configurationVersionsLoadingIndicator: false
+  })),
+  on(agentDetailsActions.configurationVersionsLoadingFailed, (state): AgentDetailsState => ({
+    ...state,
+    configurationVersions: [],
+    configurationVersionsLoadingIndicator: false
+  })),
+  on(agentDetailsActions.activateConfigurationVersionClicked, (state, { versionId }): AgentDetailsState => ({
+    ...state,
+    activatingConfigurationVersionId: versionId
+  })),
+  on(agentDetailsActions.activateConfigurationVersionSucceeded, (state, { version }): AgentDetailsState => ({
+    ...state,
+    activatingConfigurationVersionId: undefined,
+    configurationVersions: state.configurationVersions.map((v) => ({
+      ...v,
+      active: v.id === version.id
+    }))
+  })),
+  on(agentDetailsActions.activateConfigurationVersionFailed, (state): AgentDetailsState => ({
+    ...state,
+    activatingConfigurationVersionId: undefined
+  })),
+  on(agentDetailsActions.configurationVersionDetailRequested, (state, { versionId }): AgentDetailsState => {
+    // Cached details are never fetched again, so marking them as loading would leave the spinner forever.
+    if (state.configurationVersionDetails[versionId] || state.loadingVersionDetailIds.includes(versionId)) {
+      return state
+    }
+    return { ...state, loadingVersionDetailIds: [...state.loadingVersionDetailIds, versionId] }
+  }),
   on(
-    agentDetailsActions.publishConfigurationVersionSucceeded,
-    agentDetailsActions.publishConfigurationVersionFailed,
-    (state: AgentDetailsState): AgentDetailsState => ({
+    agentDetailsActions.configurationVersionDetailReceived,
+    (state, { versionId, configuration }): AgentDetailsState => ({
       ...state,
-      isPublishingConfigurationVersion: false
+      configurationVersionDetails: { ...state.configurationVersionDetails, [versionId]: configuration },
+      loadingVersionDetailIds: state.loadingVersionDetailIds.filter((id) => id !== versionId)
     })
-  )
+  ),
+  on(agentDetailsActions.configurationVersionDetailLoadingFailed, (state, { versionId }): AgentDetailsState => ({
+    ...state,
+    loadingVersionDetailIds: state.loadingVersionDetailIds.filter((id) => id !== versionId)
+  }))
 )

@@ -29,7 +29,7 @@ import {
   TranslationConnectionService
 } from '@onecx/angular-utils'
 
-import { AgentFilterKeyEnum, AgentGroupService, AgentStatus } from 'src/app/shared/generated'
+import { AgentFilterKeyEnum, AgentConfigurationVersion, AgentGroupService, AgentStatus } from 'src/app/shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { AgentDetailsHarness } from './agent-details.harness'
@@ -115,7 +115,12 @@ describe('AgentDetailsComponent', () => {
     backNavigationPossible: true,
     editMode: true,
     isSubmitting: false,
-    isPublishingConfigurationVersion: false
+    isPublishingConfigurationVersion: false,
+    configurationVersions: [],
+    configurationVersionsLoadingIndicator: false,
+    activatingConfigurationVersionId: undefined,
+    configurationVersionDetails: {},
+    loadingVersionDetailIds: []
   }
 
   beforeEach(async () => {
@@ -372,6 +377,52 @@ describe('AgentDetailsComponent', () => {
     >
     expect(saveAction.details.voiceEnabled).toBe(true)
     expect(saveAction.details.languageCode).toBe('en')
+  })
+
+  describe('configuration version details', () => {
+    it('should dispatch activateConfigurationVersionClicked when activating a version', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.activateConfigurationVersion('version-1')
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-1' })
+      )
+    })
+
+    it('should request details when a version is expanded and its details are not loaded', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onVersionExpand('version-1', false)
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' })
+      )
+    })
+
+    it('should not request details when a version is expanded and its details are already loaded', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onVersionExpand('version-1', true)
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should request details for the expanded row when it has an ID', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onRowExpand({ data: { id: 'version-2', name: 'v2.0', active: false } })
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-2' })
+      )
+    })
+
+    it('should not request details for an expanded row without an ID', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onRowExpand({ data: { name: 'v2.0' } as AgentConfigurationVersion })
+    })
   })
 
   it('should dispatch deleteButtonClicked action on delete button click', async () => {

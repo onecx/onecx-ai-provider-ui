@@ -35,6 +35,9 @@
                 <p-tab value="2">
                   {{ 'AGENT_DETAILS.TABS.TOOL_RULES' | translate }}
                 </p-tab>
+                <p-tab value="3">
+                  {{ 'AGENT_DETAILS.TABS.CONFIGURATION' | translate }}
+                </p-tab>
               </p-tablist>
               <p-tabpanels>
                 <p-tabpanel value="0">
@@ -320,6 +323,473 @@
                       <div class="text-500 p-4 text-center">
                         {{ 'AGENT_DETAILS.TOOL_RULES.SELECT_TOOL_HINT' | translate }}
                       </div>
+                    }
+                  </div>
+                </p-tabpanel>
+
+                <p-tabpanel value="3">
+                  <div class="flex flex-column gap-3 mt-3">
+                    @if (vm.configurationVersionsLoadingIndicator) {
+                      <p-progressSpinner styleClass="w-2rem h-2rem" />
+                    } @else if (vm.configurationVersions.length === 0) {
+                      <div class="text-500 p-4 text-center">
+                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.EMPTY' | translate }}
+                      </div>
+                    } @else {
+                      <app-agent-configuration-version-compare
+                        [versions]="vm.configurationVersions"
+                        [details]="vm.configurationVersionDetails"
+                        (detailRequested)="onVersionExpand($event, false)"
+                      />
+                      <p-table
+                        [value]="vm.configurationVersions"
+                        [paginator]="true"
+                        [rows]="10"
+                        [rowsPerPageOptions]="[10, 20, 50]"
+                        [sortField]="'name'"
+                        [sortOrder]="1"
+                        dataKey="id"
+                        styleClass="p-datatable-sm"
+                        [tableStyle]="{ 'min-width': '50rem' }"
+                        (onRowExpand)="onRowExpand($event)"
+                      >
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th style="width: 3rem"></th>
+                            <th pSortableColumn="name">
+                              {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.NAME' | translate }}
+                              <p-sortIcon field="name" />
+                            </th>
+                            <th pSortableColumn="active">
+                              {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.STATUS' | translate }}
+                              <p-sortIcon field="active" />
+                            </th>
+                            <th>{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIONS' | translate }}</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-version let-expanded="expanded">
+                          <tr>
+                            <td>
+                              <button
+                                pButton
+                                type="button"
+                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                                [text]="true"
+                                [attr.aria-label]="'AGENT_DETAILS.CONFIGURATION_VERSIONS.TOGGLE_DETAILS' | translate"
+                                [pRowToggler]="version"
+                              ></button>
+                            </td>
+                            <td>{{ version.name }}</td>
+                            <td>
+                              @if (version.active) {
+                                <p-tag
+                                  [value]="'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVE' | translate"
+                                  severity="success"
+                                />
+                              } @else {
+                                <p-tag
+                                  [value]="'AGENT_DETAILS.CONFIGURATION_VERSIONS.INACTIVE' | translate"
+                                  severity="secondary"
+                                />
+                              }
+                            </td>
+                            <td>
+                              @if (!version.active) {
+                                <button
+                                  pButton
+                                  type="button"
+                                  icon="pi pi-check"
+                                  [text]="true"
+                                  [loading]="vm.activatingConfigurationVersionId === version.id"
+                                  [disabled]="!!vm.activatingConfigurationVersionId"
+                                  [attr.aria-label]="'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE' | translate"
+                                  (click)="activateConfigurationVersion(version.id!)"
+                                >
+                                  {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE' | translate }}
+                                </button>
+                              }
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="expandedrow" let-version>
+                          <tr>
+                            <td colspan="4">
+                              @if (vm.loadingVersionDetailIds.includes(version.id!)) {
+                                <div class="flex justify-content-center p-3">
+                                  <p-progressSpinner styleClass="w-2rem h-2rem" />
+                                </div>
+                              } @else if (vm.configurationVersionDetails[version.id!]) {
+                                <div class="flex flex-column gap-3 p-3">
+                                  <div class="grid">
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.SCHEMA_VERSION' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].schemaVersion }}
+                                      </div>
+                                    </div>
+                                    @if (vm.configurationVersionDetails[version.id!].provider) {
+                                      <div class="col-12 md:col-6 lg:col-3">
+                                        <div class="text-500 text-sm">
+                                          {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.PROVIDER' | translate }}
+                                        </div>
+                                        <div class="font-medium">
+                                          {{ vm.configurationVersionDetails[version.id!].provider!.name }}
+                                        </div>
+                                      </div>
+                                    }
+                                    @if (vm.configurationVersionDetails[version.id!].model) {
+                                      <div class="col-12 md:col-6 lg:col-3">
+                                        <div class="text-500 text-sm">
+                                          {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.MODEL' | translate }}
+                                        </div>
+                                        <div class="font-medium">
+                                          {{ vm.configurationVersionDetails[version.id!].model!.name }}
+                                        </div>
+                                      </div>
+                                    }
+                                    @if (vm.configurationVersionDetails[version.id!].scaffold) {
+                                      <div class="col-12 md:col-6 lg:col-3">
+                                        <div class="text-500 text-sm">
+                                          {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.SCAFFOLD' | translate }}
+                                        </div>
+                                        <div class="font-medium">
+                                          {{ vm.configurationVersionDetails[version.id!].scaffold!.name }}
+                                        </div>
+                                      </div>
+                                    }
+                                  </div>
+
+                                  <div class="grid">
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.AGENT_NAME' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].agent?.name ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.AGENT_ID' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].agent?.id ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.TENANT_ID' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].context?.tenantId ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.PRINCIPAL' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].context?.principal ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.DESCRIPTION' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].agent?.description ?? '-' }}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="grid">
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.PROVIDER_TYPE' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].provider?.type ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.LLM_URL' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].provider?.llmUrl ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.AUTH_MODE' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].provider?.authMode ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.CREDENTIAL_REF' | translate }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].provider?.credentialRef ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{
+                                          'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.MODEL_IDENTIFIER' | translate
+                                        }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{ vm.configurationVersionDetails[version.id!].model?.modelIdentifier ?? '-' }}
+                                      </div>
+                                    </div>
+                                    <div class="col-12 md:col-6 lg:col-3">
+                                      <div class="text-500 text-sm">
+                                        {{
+                                          'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.COMMUNICATION_MODE' | translate
+                                        }}
+                                      </div>
+                                      <div class="font-medium">
+                                        {{
+                                          vm.configurationVersionDetails[version.id!].model?.communicationMode ?? '-'
+                                        }}
+                                      </div>
+                                    </div>
+                                    @if (vm.configurationVersionDetails[version.id!].model?.modelConfig) {
+                                      <div class="col-12">
+                                        <div class="text-500 text-sm">
+                                          {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.MODEL_CONFIG' | translate }}
+                                        </div>
+                                        <pre
+                                          class="m-0 text-sm white-space-pre-wrap border-1 surface-border p-3 border-round"
+                                          >{{ vm.configurationVersionDetails[version.id!].model!.modelConfig }}</pre>
+                                      </div>
+                                    }
+                                  </div>
+
+                                  @if (vm.configurationVersionDetails[version.id!].voice) {
+                                    <div class="grid">
+                                      <div class="col-12 md:col-6">
+                                        <div class="text-500 text-sm">
+                                          {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.VOICE_ENABLED' | translate }}
+                                        </div>
+                                        <div class="font-medium">
+                                          {{
+                                            vm.configurationVersionDetails[version.id!].voice!.voiceEnabled
+                                              ? ('AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.YES' | translate)
+                                              : ('AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.NO' | translate)
+                                          }}
+                                        </div>
+                                      </div>
+                                      @if (vm.configurationVersionDetails[version.id!].voice!.languageCode) {
+                                        <div class="col-12 md:col-6">
+                                          <div class="text-500 text-sm">
+                                            {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.LANGUAGE' | translate }}
+                                          </div>
+                                          <div class="font-medium">
+                                            {{ vm.configurationVersionDetails[version.id!].voice!.languageCode }}
+                                          </div>
+                                        </div>
+                                      }
+                                    </div>
+                                  }
+
+                                  @if (
+                                    vm.configurationVersionDetails[version.id!].skills &&
+                                    vm.configurationVersionDetails[version.id!].skills!.length > 0
+                                  ) {
+                                    <div>
+                                      <div class="text-500 text-sm mb-1">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.SKILLS' | translate }}
+                                      </div>
+                                      <div class="flex flex-wrap gap-2">
+                                        @for (
+                                          skill of vm.configurationVersionDetails[version.id!].skills;
+                                          track skill.id
+                                        ) {
+                                          <div class="surface-100 border-round p-3 w-full">
+                                            <div class="font-medium mb-2">{{ skill.name }}</div>
+                                            <div class="grid text-sm">
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.SOURCE' | translate
+                                                  }}:</span
+                                                >
+                                                {{ skill.source ?? '-' }}
+                                              </div>
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.POSITION' | translate
+                                                  }}:</span
+                                                >
+                                                {{ skill.position ?? '-' }}
+                                              </div>
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.DESCRIPTION'
+                                                      | translate
+                                                  }}:</span
+                                                >
+                                                {{ skill.description ?? '-' }}
+                                              </div>
+                                            </div>
+                                            @if (skill.instruction) {
+                                              <div class="text-500 text-sm mt-2">
+                                                {{
+                                                  'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.INSTRUCTION' | translate
+                                                }}
+                                              </div>
+                                              <pre
+                                                class="m-0 text-sm white-space-pre-wrap border-1 surface-border p-3 border-round"
+                                                >{{ skill.instruction }}</pre>
+                                            }
+                                          </div>
+                                        }
+                                      </div>
+                                    </div>
+                                  }
+
+                                  @if (
+                                    vm.configurationVersionDetails[version.id!].mcpServers &&
+                                    vm.configurationVersionDetails[version.id!].mcpServers!.length > 0
+                                  ) {
+                                    <div>
+                                      <div class="text-500 text-sm mb-1">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.MCP_SERVERS' | translate }}
+                                      </div>
+                                      <div class="flex flex-wrap gap-2">
+                                        @for (
+                                          server of vm.configurationVersionDetails[version.id!].mcpServers;
+                                          track server.id
+                                        ) {
+                                          <div class="surface-100 border-round p-3 w-full">
+                                            <div class="font-medium mb-2">{{ server.name }}</div>
+                                            <div class="grid text-sm">
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.DESCRIPTION'
+                                                      | translate
+                                                  }}:</span
+                                                >
+                                                {{ server.description ?? '-' }}
+                                              </div>
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.URL' | translate
+                                                  }}:</span
+                                                >
+                                                {{ server.url ?? '-' }}
+                                              </div>
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.CREDENTIAL_REF'
+                                                      | translate
+                                                  }}:</span
+                                                >
+                                                {{ server.credentialRef ?? '-' }}
+                                              </div>
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.UNLISTED_TOOL_PERMISSION'
+                                                      | translate
+                                                  }}:</span
+                                                >
+                                                {{ server.unlistedToolPermission ?? '-' }}
+                                              </div>
+                                              <div class="col-12 md:col-4">
+                                                <span class="text-500"
+                                                  >{{
+                                                    'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.UNLISTED_TOOL_PERMISSION_SOURCE'
+                                                      | translate
+                                                  }}:</span
+                                                >
+                                                {{ server.unlistedToolPermissionSource ?? '-' }}
+                                              </div>
+                                            </div>
+                                            @if (server.toolRules && server.toolRules.length > 0) {
+                                              <div class="text-500 text-sm mt-2">
+                                                {{
+                                                  'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.TOOL_RULES' | translate
+                                                }}
+                                              </div>
+                                              <table class="w-full text-sm mt-1">
+                                                <thead>
+                                                  <tr class="text-500 text-left">
+                                                    <th>
+                                                      {{
+                                                        'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.TOOL_NAME'
+                                                          | translate
+                                                      }}
+                                                    </th>
+                                                    <th>
+                                                      {{
+                                                        'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.PERMISSION'
+                                                          | translate
+                                                      }}
+                                                    </th>
+                                                    <th>
+                                                      {{
+                                                        'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.POLICY_SOURCE'
+                                                          | translate
+                                                      }}
+                                                    </th>
+                                                    <th>
+                                                      {{
+                                                        'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.DESCRIPTION'
+                                                          | translate
+                                                      }}
+                                                    </th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  @for (rule of server.toolRules; track $index) {
+                                                    <tr>
+                                                      <td>{{ rule.toolName ?? '-' }}</td>
+                                                      <td>{{ rule.permission ?? '-' }}</td>
+                                                      <td>{{ rule.policySource ?? '-' }}</td>
+                                                      <td>{{ rule.description ?? '-' }}</td>
+                                                    </tr>
+                                                  }
+                                                </tbody>
+                                              </table>
+                                            }
+                                          </div>
+                                        }
+                                      </div>
+                                    </div>
+                                  }
+
+                                  @if (vm.configurationVersionDetails[version.id!].scaffold?.systemPrompt) {
+                                    <div>
+                                      <div class="text-500 text-sm mb-1">
+                                        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.SYSTEM_PROMPT' | translate }}
+                                      </div>
+                                      <pre
+                                        class="m-0 text-sm white-space-pre-wrap border-1 surface-border p-3 border-round"
+                                        >{{ vm.configurationVersionDetails[version.id!].scaffold!.systemPrompt }}</pre>
+                                    </div>
+                                  }
+                                </div>
+                              } @else {
+                                <div class="text-500 p-3 text-center">
+                                  {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.NOT_AVAILABLE' | translate }}
+                                </div>
+                              }
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
                     }
                   </div>
                 </p-tabpanel>

@@ -44,9 +44,21 @@ describe('AgentConfigurationVersionPublishComponent', () => {
     expect(component.dialogResult).toBe('Release 1')
   })
 
+  it('should declare dialogResult as an instance property so the dialog host copies the submitted name', () => {
+    expect('dialogResult' in component).toBe(true)
+  })
+
   it('should reject names longer than 255 characters', () => {
     component.nameControl.setValue('x'.repeat(256))
 
     expect(component.nameControl.invalid).toBe(true)
+  })
+
+  it('should prefill the name field with the suggested name', () => {
+    const suggested = TestBed.createComponent(AgentConfigurationVersionPublishComponent)
+    suggested.componentInstance.suggestedName = 'v4.0'
+    suggested.detectChanges()
+
+    expect(suggested.componentInstance.nameControl.value).toBe('v4.0')
   })
 })

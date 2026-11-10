@@ -15,9 +15,11 @@ import { selectBackNavigationPossible } from 'src/app/shared/selectors/onecx.sel
 import { selectRouteParam, selectUrl } from 'src/app/shared/selectors/router.selectors'
 import {
   Agent,
+  AgentConfiguration,
   AgentConfigurationVersion,
   AgentGroupService,
   AgentService,
+  CreateAgentConfigurationVersion,
   ModelService,
   ProviderService,
   ScaffoldService,
@@ -27,6 +29,7 @@ import {
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { AgentConfigurationVersionPublishComponent } from './dialogs/agent-configuration-version-publish/agent-configuration-version-publish.component'
+import { suggestNextVersionName } from './configuration-version-compare/configuration-version-diff'
 import { agentDetailsSelectors } from './agent-details.selectors'
 
 @Injectable()
@@ -284,8 +287,11 @@ export class AgentDetailsEffects {
   publishConfigurationVersionButtonClicked$ = createEffect(() =>
     this.actions$.pipe(
       ofType(agentDetailsActions.publishConfigurationVersionButtonClicked),
-      concatLatestFrom(() => this.store.select(agentDetailsSelectors.selectDetails)),
-      switchMap(([, details]) => {
+      concatLatestFrom(() => [
+        this.store.select(agentDetailsSelectors.selectDetails),
+        this.store.select(agentDetailsSelectors.selectConfigurationVersions)
+      ]),
+      switchMap(([, details, versions]) => {
         if (!details?.id) {
           return of(agentDetailsActions.publishConfigurationVersionCancelled())
         }
@@ -294,7 +300,8 @@ export class AgentDetailsEffects {
           .openDialog<string | undefined>(
             'AGENT_DETAILS.PUBLISH_CONFIGURATION.HEADER',
             {
-              type: AgentConfigurationVersionPublishComponent
+              type: AgentConfigurationVersionPublishComponent,
+              inputs: { suggestedName: suggestNextVersionName(versions.map((version) => version.name ?? '')) }
             },
             'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.PUBLISH',
             'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.CANCEL',
@@ -318,31 +325,144 @@ export class AgentDetailsEffects {
   publishConfigurationVersion$ = createEffect(() =>
     this.actions$.pipe(
       ofType(agentDetailsActions.publishConfigurationVersionSubmitted),
-      exhaustMap(({ agentId, name }) =>
-        this.agentService.publishAgentConfigurationVersion(agentId, { name }).pipe(
-          map((version: AgentConfigurationVersion) => {
-            if (!version.active) {
-              throw new Error('Published configuration version is not active')
-            }
-            this.messageService.success({
-              summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+      exhaustMap(({ agentId, name }) => {
+        return this.agentService
+          .createAgentConfigurationVersion(agentId, { name } as CreateAgentConfigurationVersion)
+          .pipe(
+            map((version: AgentConfigurationVersion) => {
+              this.messageService.success({
+                summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+              })
+              return agentDetailsActions.publishConfigurationVersionSucceeded({ version })
+            }),
+            catchError((error: unknown) => {
+              const errorCode = (error as { error?: { errorCode?: string } })?.error?.errorCode
+              this.messageService.error({
+                summaryKey:
+                  errorCode === 'DUPLICATE_AGENT_CONFIGURATION_VERSION_NAME'
+                    ? 'AGENT_DETAILS.PUBLISH_CONFIGURATION.DUPLICATE_NAME'
+                    : 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
+              })
+              return of(agentDetailsActions.publishConfigurationVersionFailed({ error }))
             })
-            return agentDetailsActions.publishConfigurationVersionSucceeded({ version })
+          )
+      })
+    )
+  )
+
+  loadConfigurationVersions$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.navigatedToDetailsPage),
+      concatLatestFrom(() => this.store.select(selectRouteParam('id'))),
+      filter(([, id]) => !!id),
+      switchMap(([, id]) =>
+        this.agentService.getAgentConfigurationVersions(id!).pipe(
+          map(({ versions }) => agentDetailsActions.configurationVersionsReceived({ versions: versions ?? [] })),
+          catchError((error) => of(agentDetailsActions.configurationVersionsLoadingFailed({ error })))
+        )
+      )
+    )
+  })
+
+  reloadConfigurationVersionsAfterPublish$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        agentDetailsActions.publishConfigurationVersionSucceeded,
+        agentDetailsActions.activateConfigurationVersionSucceeded
+      ),
+      concatLatestFrom(() => this.store.select(selectRouteParam('id'))),
+      filter(([, id]) => !!id),
+      switchMap(([, id]) =>
+        this.agentService.getAgentConfigurationVersions(id!).pipe(
+          map(({ versions }) => agentDetailsActions.configurationVersionsReceived({ versions: versions ?? [] })),
+          catchError((error) => of(agentDetailsActions.configurationVersionsLoadingFailed({ error })))
+        )
+      )
+    )
+  })
+
+  activateConfigurationVersion$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.activateConfigurationVersionClicked),
+      concatLatestFrom(() => this.store.select(selectRouteParam('id'))),
+      filter(([, id]) => !!id),
+      switchMap(([action, id]) =>
+        this.portalDialogService
+          .openDialog<unknown>(
+            'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_CONFIRM_HEADER',
+            'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_CONFIRM_MESSAGE',
+            {
+              key: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE',
+              icon: PrimeIcons.CHECK
+            },
+            {
+              key: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.CANCEL',
+              icon: PrimeIcons.TIMES
+            }
+          )
+          .pipe(
+            switchMap((dialogResult) => {
+              if (!dialogResult || dialogResult.button === 'secondary') {
+                return of(agentDetailsActions.activateConfigurationVersionCancelled())
+              }
+              return of(agentDetailsActions.activateConfigurationVersionConfirmed({ versionId: action.versionId }))
+            })
+          )
+      )
+    )
+  })
+
+  activateConfigurationVersionConfirmed$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.activateConfigurationVersionConfirmed),
+      concatLatestFrom(() => this.store.select(selectRouteParam('id'))),
+      filter(([, id]) => !!id),
+      exhaustMap(([action, id]) =>
+        this.agentService.activateAgentConfigurationVersion(id!, action.versionId).pipe(
+          map((version: AgentConfigurationVersion) => {
+            this.messageService.success({
+              summaryKey: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_SUCCESS'
+            })
+            return agentDetailsActions.activateConfigurationVersionSucceeded({ version })
           }),
           catchError((error: unknown) => {
             const errorCode = (error as { error?: { errorCode?: string } })?.error?.errorCode
             this.messageService.error({
               summaryKey:
-                errorCode === 'DUPLICATE_AGENT_CONFIGURATION_VERSION_NAME'
-                  ? 'AGENT_DETAILS.PUBLISH_CONFIGURATION.DUPLICATE_NAME'
-                  : 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
+                errorCode === 'INVALID_AGENT_CONFIGURATION_DEPENDENCIES'
+                  ? 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_ERROR_DEPENDENCIES'
+                  : 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIVATE_ERROR'
             })
-            return of(agentDetailsActions.publishConfigurationVersionFailed({ error }))
+            return of(agentDetailsActions.activateConfigurationVersionFailed({ error }))
           })
         )
       )
     )
-  )
+  })
+
+  loadConfigurationVersionDetail$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.configurationVersionDetailRequested),
+      concatLatestFrom(() => [
+        this.store.select(agentDetailsSelectors.selectConfigurationVersionDetails),
+        this.store.select(selectRouteParam('id'))
+      ]),
+      filter(([action, details, id]) => !!id && !details[action.versionId]),
+      mergeMap(([action, , id]) =>
+        this.agentService.getAgentConfigurationVersion(id!, action.versionId).pipe(
+          map((configuration: AgentConfiguration) =>
+            agentDetailsActions.configurationVersionDetailReceived({
+              versionId: action.versionId,
+              configuration
+            })
+          ),
+          catchError((error) =>
+            of(agentDetailsActions.configurationVersionDetailLoadingFailed({ versionId: action.versionId, error }))
+          )
+        )
+      )
+    )
+  })
 
   deleteButtonClicked$ = createEffect(() => {
     return this.actions$.pipe(
