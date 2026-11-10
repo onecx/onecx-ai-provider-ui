@@ -364,7 +364,7 @@
                               {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.STATUS' | translate }}
                               <p-sortIcon field="active" />
                             </th>
-                            <th>{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIONS' | translate }}</th>
+                            <th class="text-center">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIONS' | translate }}</th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-version let-expanded="expanded">
@@ -393,7 +393,7 @@
                                 />
                               }
                             </td>
-                            <td>
+                            <td class="text-center">
                               @if (!version.active) {
                                 <button
                                   pButton
