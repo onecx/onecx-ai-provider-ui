@@ -567,9 +567,11 @@ describe('AgentDetailsEffects', () => {
   })
 
   describe('publishConfigurationVersion$', () => {
-    it('should create and report success when the returned version is active', async () => {
-      const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: true }
-      agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(version))
+    it('should create and activate the new version and report success', async () => {
+      const created: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
+      const activated: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: true }
+      agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(created))
+      agentService.activateAgentConfigurationVersion.mockReturnValueOnce(of(activated))
 
       actions$.next(
         agentDetailsActions.publishConfigurationVersionSubmitted({
@@ -580,7 +582,8 @@ describe('AgentDetailsEffects', () => {
       const action = await firstValueFrom(effects.publishConfigurationVersion$)
 
       expect(agentService.createAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', { name: 'Release 1' })
-      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
+      expect(agentService.activateAgentConfigurationVersion).toHaveBeenCalledWith('agent-1', 'version-1')
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionSucceeded({ version: activated }))
       expect(messageService.success).toHaveBeenCalledWith({
         summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
       })
@@ -622,9 +625,11 @@ describe('AgentDetailsEffects', () => {
       })
     })
 
-    it('should report success when the service returns an inactive version', async () => {
-      const version: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
-      agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(version))
+    it('should show the generic message and not report success when activation fails', async () => {
+      const created: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
+      const error = { status: 500 }
+      agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(created))
+      agentService.activateAgentConfigurationVersion.mockReturnValueOnce(throwError(() => error))
 
       actions$.next(
         agentDetailsActions.publishConfigurationVersionSubmitted({
@@ -634,9 +639,10 @@ describe('AgentDetailsEffects', () => {
       )
       const action = await firstValueFrom(effects.publishConfigurationVersion$)
 
-      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionSucceeded({ version }))
-      expect(messageService.success).toHaveBeenCalledWith({
-        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+      expect(action).toEqual(agentDetailsActions.publishConfigurationVersionFailed({ error }))
+      expect(messageService.success).not.toHaveBeenCalled()
+      expect(messageService.error).toHaveBeenCalledWith({
+        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
       })
     })
   })

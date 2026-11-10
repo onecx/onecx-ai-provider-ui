@@ -329,6 +329,9 @@ export class AgentDetailsEffects {
         return this.agentService
           .createAgentConfigurationVersion(agentId, { name } as CreateAgentConfigurationVersion)
           .pipe(
+            switchMap((created: AgentConfigurationVersion) =>
+              this.agentService.activateAgentConfigurationVersion(agentId, created.id!)
+            ),
             map((version: AgentConfigurationVersion) => {
               this.messageService.success({
                 summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
