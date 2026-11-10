@@ -186,7 +186,7 @@ paths:
       x-onecx:
         permissions:
           agents:
-            - publish-configuration
+            - write
       tags:
         - agent
       description: Save an immutable version of the currently resolved configuration.
@@ -259,7 +259,7 @@ paths:
       x-onecx:
         permissions:
           agents:
-            - publish-configuration
+            - write
       tags:
         - agent
       description: Make a saved version active without changing its identifier or content.

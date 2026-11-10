@@ -170,7 +170,6 @@ describe('AgentDetailsComponent', () => {
       'AGENT#CREATE',
       'AGENT#EDIT',
       'AGENT#DELETE',
-      'AGENT#PUBLISH_CONFIGURATION',
       'AGENT#IMPORT',
       'AGENT#EXPORT',
       'AGENT#VIEW',
@@ -256,7 +255,7 @@ describe('AgentDetailsComponent', () => {
 
     expect(publishAction).toEqual(
       expect.objectContaining({
-        permission: 'AGENT#PUBLISH_CONFIGURATION',
+        permission: 'AGENT#EDIT',
         conditional: true,
         showCondition: true,
         disabled: false

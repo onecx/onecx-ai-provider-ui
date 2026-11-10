@@ -140,7 +140,7 @@ export class AgentDetailsComponent implements OnInit {
         {
           titleKey: 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION',
           labelKey: 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION',
-          permission: 'AGENT#PUBLISH_CONFIGURATION',
+          permission: 'AGENT#EDIT',
           show: 'always',
           icon: PrimeIcons.SAVE,
           conditional: true,
