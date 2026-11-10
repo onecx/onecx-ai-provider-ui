@@ -384,7 +384,8 @@
       },
       "SUCCESS": "Konfigurationsversion veröffentlicht und aktiviert.",
       "DUPLICATE_NAME": "Für diesen Agenten existiert bereits eine Konfigurationsversion mit diesem Namen.",
-      "ERROR": "Die Konfigurationsversion konnte nicht veröffentlicht und aktiviert werden."
+      "ERROR": "Die Konfigurationsversion konnte nicht veröffentlicht und aktiviert werden.",
+      "CREATED_NOT_ACTIVATED": "Die Konfigurationsversion wurde erstellt, konnte aber nicht aktiviert werden. Aktivieren Sie sie in der Liste unten."
     },
     "CONFIGURATION_VERSIONS": {
       "EMPTY": "Es wurden noch keine Konfigurationsversionen veröffentlicht.",

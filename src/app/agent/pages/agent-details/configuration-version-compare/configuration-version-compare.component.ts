@@ -51,7 +51,6 @@ export class AgentConfigurationVersionCompareComponent implements OnChanges {
     if (!this.rightId || !this.options.some((option) => option.value === this.rightId)) {
       this.rightId = this.options[0]?.value
     }
-    this.requestMissingDetails()
     this.recalculate()
   }
 

@@ -49,14 +49,14 @@ describe('AgentConfigurationVersionCompareComponent', () => {
     expect(component.changedCount).toBe(1)
   })
 
-  it('requests details for selected versions that are not loaded yet', () => {
+  it('does not request details from ngOnChanges; the parent prefetches the defaults', () => {
     const requested: string[] = []
     component.detailRequested.subscribe((id: string) => requested.push(id))
     component.versions = versions
     component.details = {}
     component.ngOnChanges()
 
-    expect(requested).toEqual(['v1', 'v2'])
+    expect(requested).toEqual([])
   })
 
   it('does not request details that are already loaded', () => {
@@ -77,8 +77,12 @@ describe('AgentConfigurationVersionCompareComponent', () => {
     component.ngOnChanges()
     expect(component.rows).toEqual([])
 
-    component.details = { v1: configV1, v2: configV2 }
+    component.details = { v1: configV1 }
     component.rightId = 'v2'
+    component.onSelectionChange()
+    expect(requested).toEqual(['v2'])
+
+    component.details = { v1: configV1, v2: configV2 }
     component.onSelectionChange()
 
     expect(requested).toEqual(['v2'])

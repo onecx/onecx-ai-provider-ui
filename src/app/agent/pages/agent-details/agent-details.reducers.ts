@@ -187,6 +187,10 @@ export const agentDetailsReducer = createReducer(
     ...state,
     activatingConfigurationVersionId: undefined
   })),
+  on(agentDetailsActions.activateConfigurationVersionCancelled, (state): AgentDetailsState => ({
+    ...state,
+    activatingConfigurationVersionId: undefined
+  })),
   on(agentDetailsActions.configurationVersionDetailRequested, (state, { versionId }): AgentDetailsState => {
     // Cached details are never fetched again, so marking them as loading would leave the spinner forever.
     if (state.configurationVersionDetails[versionId] || state.loadingVersionDetailIds.includes(versionId)) {

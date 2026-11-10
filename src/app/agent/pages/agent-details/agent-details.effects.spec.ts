@@ -4,7 +4,7 @@ import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction, RouterNavigatedPayload, SerializedRouterStateSnapshot } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs'
+import { firstValueFrom, of, ReplaySubject, Subject, throwError } from 'rxjs'
 
 import { PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -625,7 +625,7 @@ describe('AgentDetailsEffects', () => {
       })
     })
 
-    it('should show the generic message and not report success when activation fails', async () => {
+    it('should report a created but not activated version when activation fails', async () => {
       const created: AgentConfigurationVersion = { id: 'version-1', name: 'Release 1', active: false }
       const error = { status: 500 }
       agentService.createAgentConfigurationVersion.mockReturnValueOnce(of(created))
@@ -642,7 +642,7 @@ describe('AgentDetailsEffects', () => {
       expect(action).toEqual(agentDetailsActions.publishConfigurationVersionFailed({ error }))
       expect(messageService.success).not.toHaveBeenCalled()
       expect(messageService.error).toHaveBeenCalledWith({
-        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.ERROR'
+        summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.CREATED_NOT_ACTIVATED'
       })
     })
   })
@@ -692,6 +692,67 @@ describe('AgentDetailsEffects', () => {
       expect(action).toEqual(
         agentDetailsActions.configurationVersionDetailLoadingFailed({ versionId: 'version-1', error })
       )
+    })
+  })
+
+  describe('loadConfigurationVersionDetail$ deduplication', () => {
+    it('should fetch a version only once while its request is in flight', async () => {
+      const response = new Subject<AgentConfiguration>()
+      const configuration = { schemaVersion: '1' } as AgentConfiguration
+      jest
+        .spyOn(store, 'select')
+        .mockReturnValueOnce(of({}))
+        .mockReturnValueOnce(of('agent-1'))
+        .mockReturnValueOnce(of({}))
+        .mockReturnValueOnce(of('agent-1'))
+      agentService.getAgentConfigurationVersion.mockReturnValueOnce(response)
+
+      const emitted: Action[] = []
+      const subscription = effects.loadConfigurationVersionDetail$.subscribe((a) => emitted.push(a))
+      actions$.next(agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' }))
+      actions$.next(agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' }))
+      response.next(configuration)
+      response.complete()
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(agentService.getAgentConfigurationVersion).toHaveBeenCalledTimes(1)
+      expect(emitted).toEqual([
+        agentDetailsActions.configurationVersionDetailReceived({ versionId: 'version-1', configuration })
+      ])
+    })
+  })
+
+  describe('prefetchDefaultConfigurationVersionDetails$', () => {
+    it('should request details for the two first listed versions', async () => {
+      const versions = [{ id: 'v3' }, { id: 'v2' }, { id: 'v1' }] as AgentConfigurationVersion[]
+
+      const emitted: Action[] = []
+      const subscription = effects.prefetchDefaultConfigurationVersionDetails$.subscribe((a) => emitted.push(a))
+      actions$.next(agentDetailsActions.configurationVersionsReceived({ versions }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(emitted).toEqual([
+        agentDetailsActions.configurationVersionDetailRequested({ versionId: 'v3' }),
+        agentDetailsActions.configurationVersionDetailRequested({ versionId: 'v2' })
+      ])
+    })
+
+    it('should skip listed versions without an ID', async () => {
+      const versions = [
+        { name: 'unsaved', active: false },
+        { id: 'v2', name: 'v2', active: false },
+        { id: 'v1', name: 'v1', active: false }
+      ] as AgentConfigurationVersion[]
+
+      const emitted: Action[] = []
+      const subscription = effects.prefetchDefaultConfigurationVersionDetails$.subscribe((a) => emitted.push(a))
+      actions$.next(agentDetailsActions.configurationVersionsReceived({ versions }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      expect(emitted).toEqual([agentDetailsActions.configurationVersionDetailRequested({ versionId: 'v2' })])
     })
   })
 

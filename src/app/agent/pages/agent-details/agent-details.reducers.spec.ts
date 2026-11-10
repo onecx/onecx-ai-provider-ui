@@ -521,6 +521,14 @@ describe('agentDetailsReducer', () => {
 
       expect(result.activatingConfigurationVersionId).toBeUndefined()
     })
+
+    it('should clear the in-progress id when the confirmation is cancelled', () => {
+      const state: AgentDetailsState = { ...initialState, activatingConfigurationVersionId: 'version-2' }
+
+      const result = agentDetailsReducer(state, agentDetailsActions.activateConfigurationVersionCancelled())
+
+      expect(result.activatingConfigurationVersionId).toBeUndefined()
+    })
   })
 
   describe('publishConfigurationVersionFailed', () => {

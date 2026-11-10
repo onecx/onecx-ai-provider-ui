@@ -385,7 +385,8 @@
       },
       "SUCCESS": "Configuration version published and activated.",
       "DUPLICATE_NAME": "A configuration version with this name already exists for this agent.",
-      "ERROR": "Could not publish and activate the configuration version."
+      "ERROR": "Could not publish and activate the configuration version.",
+      "CREATED_NOT_ACTIVATED": "The configuration version was created but could not be activated. Activate it from the list below."
     },
     "CONFIGURATION_VERSIONS": {
       "EMPTY": "No configuration versions have been published yet.",

@@ -5,7 +5,7 @@ import { concatLatestFrom } from '@ngrx/operators'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { Action, Store } from '@ngrx/store'
 import { PrimeIcons } from 'primeng/api'
-import { catchError, exhaustMap, filter, map, mergeMap, of, switchMap, tap } from 'rxjs'
+import { catchError, exhaustMap, filter, from, groupBy, map, mergeMap, of, switchMap, tap } from 'rxjs'
 
 import { DialogState, PortalDialogService } from '@onecx/angular-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
@@ -330,14 +330,21 @@ export class AgentDetailsEffects {
           .createAgentConfigurationVersion(agentId, { name } as CreateAgentConfigurationVersion)
           .pipe(
             switchMap((created: AgentConfigurationVersion) =>
-              this.agentService.activateAgentConfigurationVersion(agentId, created.id!)
+              this.agentService.activateAgentConfigurationVersion(agentId, created.id!).pipe(
+                map((version: AgentConfigurationVersion) => {
+                  this.messageService.success({
+                    summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
+                  })
+                  return agentDetailsActions.publishConfigurationVersionSucceeded({ version })
+                }),
+                catchError((error: unknown) => {
+                  this.messageService.error({
+                    summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.CREATED_NOT_ACTIVATED'
+                  })
+                  return of(agentDetailsActions.publishConfigurationVersionFailed({ error }))
+                })
+              )
             ),
-            map((version: AgentConfigurationVersion) => {
-              this.messageService.success({
-                summaryKey: 'AGENT_DETAILS.PUBLISH_CONFIGURATION.SUCCESS'
-              })
-              return agentDetailsActions.publishConfigurationVersionSucceeded({ version })
-            }),
             catchError((error: unknown) => {
               const errorCode = (error as { error?: { errorCode?: string } })?.error?.errorCode
               this.messageService.error({
@@ -371,6 +378,7 @@ export class AgentDetailsEffects {
     return this.actions$.pipe(
       ofType(
         agentDetailsActions.publishConfigurationVersionSucceeded,
+        agentDetailsActions.publishConfigurationVersionFailed,
         agentDetailsActions.activateConfigurationVersionSucceeded
       ),
       concatLatestFrom(() => this.store.select(selectRouteParam('id'))),
@@ -451,17 +459,37 @@ export class AgentDetailsEffects {
         this.store.select(selectRouteParam('id'))
       ]),
       filter(([action, details, id]) => !!id && !details[action.versionId]),
-      mergeMap(([action, , id]) =>
-        this.agentService.getAgentConfigurationVersion(id!, action.versionId).pipe(
-          map((configuration: AgentConfiguration) =>
-            agentDetailsActions.configurationVersionDetailReceived({
-              versionId: action.versionId,
-              configuration
-            })
-          ),
-          catchError((error) =>
-            of(agentDetailsActions.configurationVersionDetailLoadingFailed({ versionId: action.versionId, error }))
+      groupBy(([action]) => action.versionId),
+      mergeMap((versionRequests$) =>
+        versionRequests$.pipe(
+          exhaustMap(([action, , id]) =>
+            this.agentService.getAgentConfigurationVersion(id!, action.versionId).pipe(
+              map((configuration: AgentConfiguration) =>
+                agentDetailsActions.configurationVersionDetailReceived({
+                  versionId: action.versionId,
+                  configuration
+                })
+              ),
+              catchError((error) =>
+                of(agentDetailsActions.configurationVersionDetailLoadingFailed({ versionId: action.versionId, error }))
+              )
+            )
           )
+        )
+      )
+    )
+  })
+
+  prefetchDefaultConfigurationVersionDetails$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(agentDetailsActions.configurationVersionsReceived),
+      mergeMap(({ versions }) =>
+        // The compare view selects the two first versions by default.
+        from(
+          versions
+            .slice(0, 2)
+            .filter((version) => !!version.id)
+            .map((version) => agentDetailsActions.configurationVersionDetailRequested({ versionId: version.id! }))
         )
       )
     )
