@@ -95,7 +95,13 @@ describe('ProviderDetailsReducer', () => {
   })
 
   it('should set modelMutationInProgress on providerModelCreateClicked', () => {
-    const action = ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier: 'gpt-4' })
+    const action = ProviderDetailsActions.providerModelCreateClicked()
+    const state = ProviderDetailsReducer(initialState, action)
+    expect(state.modelMutationInProgress).toBe(true)
+  })
+
+  it('should set modelMutationInProgress on providerModelEditClicked', () => {
+    const action = ProviderDetailsActions.providerModelEditClicked({ model: { id: 'm1' } })
     const state = ProviderDetailsReducer(initialState, action)
     expect(state.modelMutationInProgress).toBe(true)
   })
@@ -116,6 +122,13 @@ describe('ProviderDetailsReducer', () => {
   it('should clear modelMutationInProgress on providerModelDeleteFailed', () => {
     const prevState: ProviderDetailsState = { ...initialState, modelMutationInProgress: true }
     const action = ProviderDetailsActions.providerModelDeleteFailed({ error: 'err' })
+    const state = ProviderDetailsReducer(prevState, action)
+    expect(state.modelMutationInProgress).toBe(false)
+  })
+
+  it('should clear modelMutationInProgress when model editing is cancelled', () => {
+    const prevState: ProviderDetailsState = { ...initialState, modelMutationInProgress: true }
+    const action = ProviderDetailsActions.providerModelUpdateCancelled()
     const state = ProviderDetailsReducer(prevState, action)
     expect(state.modelMutationInProgress).toBe(false)
   })

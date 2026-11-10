@@ -810,11 +810,14 @@
       "UPDATE_FAILED": "Provider konnte nicht aktualisiert werden.",
       "MODELS_LOADING_FAILED": "Modelle konnten nicht geladen werden.",
       "MODEL_CREATE_FAILED": "Modell konnte nicht erstellt werden.",
-      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden."
+      "MODEL_UPDATE_FAILED": "Modell konnte nicht aktualisiert werden.",
+      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden.",
+      "INVALID_MODEL_CONFIG_DETAIL": "Überprüfen Sie die Einstellungen für Modell-API und Reasoning-Aufwand."
     },
     "SUCCESS_MESSAGES": {
       "UPDATE_SUCCEEDED": "Provider wurde erfolgreich aktualisiert.",
       "MODEL_CREATE_SUCCEEDED": "Modell wurde erfolgreich erstellt.",
+      "MODEL_UPDATE_SUCCEEDED": "Modell wurde erfolgreich aktualisiert.",
       "MODEL_DELETE_SUCCEEDED": "Modell wurde erfolgreich gelöscht."
     },
     "GENERAL": {
@@ -829,9 +832,23 @@
       "MODELS": "Modelle"
     },
     "MODELS": {
-      "NEW_MODEL": "Neuer Modell-Identifikator",
       "CREATE": "Modell erstellen",
+      "CREATE_HEADER": "Modell erstellen",
+      "EDIT_HEADER": "Modell bearbeiten",
+      "SAVE": "Speichern",
+      "CANCEL": "Abbrechen",
+      "MODEL_IDENTIFIER": "Modell-Identifikator",
+      "IDENTIFIER_VALIDATION": "Geben Sie einen nicht leeren Modell-Identifikator mit höchstens 255 Zeichen ein, um Speichern zu aktivieren.",
+      "EDIT": "Modell bearbeiten",
       "DELETE": "Modell loeschen",
+      "API": "API",
+      "API_OPTIONS": {
+        "chat-completions": "Chat Completions",
+        "responses": "Responses"
+      },
+      "REASONING_EFFORT": "Reasoning-Aufwand (optional)",
+      "LEGACY_CONFIG_WARNING": "Die vorhandene Modellkonfiguration ist fehlerhaft oder nicht unterstützt. Sie wird nicht angewendet; beim Speichern wird sie durch unterstützte Einstellungen ersetzt.",
+      "CONFIGURATION_TOO_LONG": "Die serialisierte Modellkonfiguration überschreitet das Speicherlimit von 255 Zeichen.",
       "LOADING": "Modelle werden geladen...",
       "EMPTY": "Keine Modelle zugewiesen."
     },

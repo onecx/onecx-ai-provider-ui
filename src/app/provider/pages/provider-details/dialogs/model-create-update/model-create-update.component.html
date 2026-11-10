@@ -1,0 +1,64 @@
+<form [formGroup]="formGroup">
+  <div class="flex flex-column gap-4 mt-2">
+    <p-floatlabel variant="on" controlErrorAnchor>
+      <input
+        pInputText
+        id="model_identifier"
+        class="w-full pt-3 pb-2"
+        formControlName="modelIdentifier"
+        [attr.aria-describedby]="modelIdentifierInvalid ? 'model_identifier_validation' : null"
+      />
+      <label class="ocx-required-label" for="model_identifier">
+        {{ 'PROVIDER_DETAILS.MODELS.MODEL_IDENTIFIER' | translate }}
+      </label>
+    </p-floatlabel>
+    @if (modelIdentifierInvalid) {
+      <output id="model_identifier_validation" class="text-red-500" aria-live="polite">
+        {{ 'PROVIDER_DETAILS.MODELS.IDENTIFIER_VALIDATION' | translate }}
+      </output>
+    }
+
+    @if (isOpenAi) {
+      @if (hasLegacyModelConfigWarning) {
+        <output id="model_config_legacy_warning" class="text-orange-500" aria-live="polite">
+          {{ 'PROVIDER_DETAILS.MODELS.LEGACY_CONFIG_WARNING' | translate }}
+        </output>
+      }
+
+      <p-floatlabel variant="on">
+        <p-select
+          inputId="model_api"
+          formControlName="api"
+          [options]="apiOptions"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+          [appDescribedBy]="hasLegacyModelConfigWarning ? 'model_config_legacy_warning' : null"
+        >
+          <ng-template let-option pTemplate="item">{{ option.label | translate }}</ng-template>
+          <ng-template let-option pTemplate="selectedItem">{{ option.label | translate }}</ng-template>
+        </p-select>
+        <label for="model_api">{{ 'PROVIDER_DETAILS.MODELS.API' | translate }}</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on">
+        <input
+          pInputText
+          id="model_reasoning_effort"
+          class="w-full pt-3 pb-2"
+          formControlName="reasoningEffort"
+          [attr.aria-describedby]="reasoningEffortDescribedBy"
+        />
+        <label for="model_reasoning_effort">
+          {{ 'PROVIDER_DETAILS.MODELS.REASONING_EFFORT' | translate }}
+        </label>
+      </p-floatlabel>
+
+      @if (configurationTooLong) {
+        <p id="model_config_too_long" role="alert" class="text-red-500">
+          {{ 'PROVIDER_DETAILS.MODELS.CONFIGURATION_TOO_LONG' | translate }}
+        </p>
+      }
+    }
+  </div>
+</form>

@@ -23,6 +23,7 @@ import { selectProviderDetailsViewModel } from './provider-details.selectors'
 import { ProviderDetailsViewModel } from './provider-details.viewmodel'
 import { ProviderSearchActions } from '../provider-search/provider-search.actions'
 import { ProviderDetailsActions } from './provider-details.actions'
+import { Model } from 'src/app/shared/generated'
 
 describe('ProviderDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -137,6 +138,31 @@ describe('ProviderDetailsComponent', () => {
       expect(component).toBeTruthy()
     })
 
+    it('dispatches an action when creating a model in place', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.createModelInPlace()
+
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelCreateClicked())
+    })
+
+    it('does not dispatch an edit action for a model without an id', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.editModel({ name: 'model without id' } as Model)
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('dispatches an edit action for a model with an id', () => {
+      const model = { id: 'm1' } as Model
+      jest.spyOn(store, 'dispatch')
+
+      component.editModel(model)
+
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelEditClicked({ model }))
+    })
+
     it('should display correct breadcrumbs', () => {
       const breadcrumbService = component['breadcrumbService']
       jest.spyOn(breadcrumbService, 'setItems')
@@ -187,8 +213,7 @@ describe('ProviderDetailsComponent', () => {
         llmUrl: 'Test llmUrl',
         type: 'OPENAI',
         authMode: 'API_KEY',
-        apiKey: 'TestAPIKey',
-        newModelIdentifier: null
+        apiKey: 'TestAPIKey'
       })
     })
 
@@ -307,8 +332,7 @@ describe('ProviderDetailsComponent', () => {
         llmUrl: undefined,
         type: undefined,
         authMode: undefined,
-        apiKey: undefined,
-        newModelIdentifier: null
+        apiKey: undefined
       })
     })
   })
@@ -390,41 +414,28 @@ describe('ProviderDetailsComponent', () => {
     })
   })
 
-  describe('createModelInPlace', () => {
-    it('should not dispatch when the model identifier is not set', () => {
+  describe('model dialog actions', () => {
+    it('should dispatch the model-create action', () => {
       jest.spyOn(store, 'dispatch')
 
       component.createModelInPlace()
 
-      expect(store.dispatch).not.toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelCreateClicked())
     })
 
-    it('should not dispatch when the model identifier is blank', () => {
+    it('should dispatch the selected model for editing', () => {
       jest.spyOn(store, 'dispatch')
-      component.formGroup.get('newModelIdentifier')?.setValue('   ')
+      const model = { id: 'm1', modelIdentifier: 'gpt-4o' }
 
-      component.createModelInPlace()
+      component.editModel(model as any)
 
-      expect(store.dispatch).not.toHaveBeenCalled()
+      expect(store.dispatch).toHaveBeenCalledWith(ProviderDetailsActions.providerModelEditClicked({ model }))
     })
 
-    it('should dispatch providerModelCreateClicked with the trimmed name and reset the input', () => {
+    it('should not dispatch model editing when the id is missing', () => {
       jest.spyOn(store, 'dispatch')
-      component.formGroup.get('newModelIdentifier')?.setValue('  gpt-4  ')
 
-      component.createModelInPlace()
-
-      expect(store.dispatch).toHaveBeenCalledWith(
-        ProviderDetailsActions.providerModelCreateClicked({ modelIdentifier: 'gpt-4' })
-      )
-      expect(component.formGroup.get('newModelIdentifier')?.value).toBeNull()
-    })
-
-    it('should not dispatch or throw when the newModelIdentifier control is missing', () => {
-      jest.spyOn(store, 'dispatch')
-      component.formGroup.removeControl('newModelIdentifier')
-
-      expect(() => component.createModelInPlace()).not.toThrow()
+      component.editModel({ modelIdentifier: 'gpt-4o' } as any)
       expect(store.dispatch).not.toHaveBeenCalled()
     })
   })
