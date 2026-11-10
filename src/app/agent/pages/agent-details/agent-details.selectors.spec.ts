@@ -67,22 +67,22 @@ describe('AgentDetails selectors', () => {
   describe('selectAgentDetailsCoreState', () => {
     it('should combine core details state', () => {
       const details = { id: '1' }
-      expect(
-        selectAgentDetailsCoreState.projector(
-          details,
-          true,
-          false,
-          true,
-          false,
-          false,
-          [],
-          false,
-          undefined,
-          {},
-          [],
-          true
-        )
-      ).toEqual({
+      const detailsState = {
+        details,
+        detailsLoadingIndicator: true,
+        detailsLoaded: false,
+        editMode: true,
+        isSubmitting: false,
+        isPublishingConfigurationVersion: false
+      }
+      const versionsState = {
+        configurationVersions: [],
+        configurationVersionsLoadingIndicator: false,
+        activatingConfigurationVersionId: undefined,
+        configurationVersionDetails: {},
+        loadingVersionDetailIds: []
+      }
+      expect(selectAgentDetailsCoreState.projector(detailsState, versionsState, true)).toEqual({
         details,
         detailsLoadingIndicator: true,
         detailsLoaded: false,

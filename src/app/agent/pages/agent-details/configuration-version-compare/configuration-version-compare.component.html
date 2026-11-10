@@ -49,9 +49,9 @@
     <p-table [value]="visibleRows" [tableStyle]="{ 'min-width': '40rem' }" styleClass="p-datatable-sm" dataKey="path">
       <ng-template pTemplate="header">
         <tr>
-          <th>{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FIELD' | translate }}</th>
-          <th>{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FROM' | translate }}</th>
-          <th>{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.TO' | translate }}</th>
+          <th scope="col">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FIELD' | translate }}</th>
+          <th scope="col">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FROM' | translate }}</th>
+          <th scope="col">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.TO' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-row>

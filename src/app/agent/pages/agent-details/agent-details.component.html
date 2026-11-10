@@ -355,16 +355,18 @@
                       >
                         <ng-template pTemplate="header">
                           <tr>
-                            <th style="width: 3rem"></th>
-                            <th pSortableColumn="name">
+                            <th scope="col" style="width: 3rem"></th>
+                            <th scope="col" pSortableColumn="name">
                               {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.NAME' | translate }}
                               <p-sortIcon field="name" />
                             </th>
-                            <th pSortableColumn="active">
+                            <th scope="col" pSortableColumn="active">
                               {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.STATUS' | translate }}
                               <p-sortIcon field="active" />
                             </th>
-                            <th class="text-center">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIONS' | translate }}</th>
+                            <th scope="col" class="text-center">
+                              {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.ACTIONS' | translate }}
+                            </th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-version let-expanded="expanded">
@@ -726,25 +728,25 @@
                                               <table class="w-full text-sm mt-1">
                                                 <thead>
                                                   <tr class="text-500 text-left">
-                                                    <th>
+                                                    <th scope="col">
                                                       {{
                                                         'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.TOOL_NAME'
                                                           | translate
                                                       }}
                                                     </th>
-                                                    <th>
+                                                    <th scope="col">
                                                       {{
                                                         'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.PERMISSION'
                                                           | translate
                                                       }}
                                                     </th>
-                                                    <th>
+                                                    <th scope="col">
                                                       {{
                                                         'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.POLICY_SOURCE'
                                                           | translate
                                                       }}
                                                     </th>
-                                                    <th>
+                                                    <th scope="col">
                                                       {{
                                                         'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.DESCRIPTION'
                                                           | translate

@@ -67,14 +67,34 @@ function humanize(segment: string): string {
  * Resolves a flattened path (e.g. `skills[Search].instruction`) into a translatable field name and its item names.
  */
 export function describeField(path: string): Pick<ConfigurationVersionDiffRow, 'fieldKey' | 'fieldName' | 'items'> {
-  const items = [...path.matchAll(/\[([^\]]*)\]/g)].map((match) => match[1])
-  const segments = path.replace(/\[[^\]]*\]/g, '').split('.')
-  const leaf = segments[segments.length - 1]
+  const { base, items } = parseFieldPath(path)
+  const segments = base.split('.')
+  const leaf = segments.at(-1) ?? ''
   return {
     fieldKey: resolveFieldKey(segments[0], leaf),
     fieldName: humanize(leaf),
     items
   }
+}
+
+/** Splits `base[item]` paths into the base path and bracketed item names, without a backtracking regex. */
+function parseFieldPath(path: string): { base: string; items: string[] } {
+  const items: string[] = []
+  let base = ''
+  let item: string | undefined
+  for (const char of path) {
+    if (char === '[') {
+      item = ''
+    } else if (char === ']' && item !== undefined) {
+      items.push(item)
+      item = undefined
+    } else if (item === undefined) {
+      base += char
+    } else {
+      item += char
+    }
+  }
+  return { base, items }
 }
 
 function itemLabel(item: unknown): string | undefined {
@@ -108,7 +128,7 @@ function collectValues(value: unknown, path: string, out: Map<string, string>): 
     }
     return
   }
-  out.set(path, String(value))
+  out.set(path, typeof value === 'string' ? value : JSON.stringify(value))
 }
 
 export function flattenConfiguration(configuration?: AgentConfiguration): Map<string, string> {

@@ -421,6 +421,8 @@ describe('AgentDetailsComponent', () => {
       jest.spyOn(store, 'dispatch')
 
       component.onRowExpand({ data: { name: 'v2.0' } as AgentConfigurationVersion })
+
+      expect(store.dispatch).not.toHaveBeenCalled()
     })
   })
 
