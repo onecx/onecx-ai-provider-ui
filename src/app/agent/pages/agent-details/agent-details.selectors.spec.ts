@@ -1,6 +1,8 @@
 import {
   selectAgentDetailsCoreState,
   selectAgentDetailsViewModel,
+  selectConfigurationVersionsState,
+  selectDetailsCoreState,
   selectGroupsState,
   selectModelsState,
   selectProvidersState,
@@ -60,6 +62,35 @@ describe('AgentDetails selectors', () => {
         groups,
         groupsLoadingIndicator: true,
         groupsLoaded: false
+      })
+    })
+  })
+
+  describe('selectDetailsCoreState', () => {
+    it('should map the details projector inputs', () => {
+      const details = { id: '1' }
+      expect(selectDetailsCoreState.projector(details as never, true, false, true, false, true)).toEqual({
+        details,
+        detailsLoadingIndicator: true,
+        detailsLoaded: false,
+        editMode: true,
+        isSubmitting: false,
+        isPublishingConfigurationVersion: true
+      })
+    })
+  })
+
+  describe('selectConfigurationVersionsState', () => {
+    it('should map the configuration versions projector inputs', () => {
+      const versions = [{ id: 'v1' }]
+      expect(
+        selectConfigurationVersionsState.projector(versions as never, true, 'v1', { v1: {} } as never, ['v2'])
+      ).toEqual({
+        configurationVersions: versions,
+        configurationVersionsLoadingIndicator: true,
+        activatingConfigurationVersionId: 'v1',
+        configurationVersionDetails: { v1: {} },
+        loadingVersionDetailIds: ['v2']
       })
     })
   })

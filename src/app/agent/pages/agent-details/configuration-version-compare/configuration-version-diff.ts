@@ -69,7 +69,8 @@ function humanize(segment: string): string {
 export function describeField(path: string): Pick<ConfigurationVersionDiffRow, 'fieldKey' | 'fieldName' | 'items'> {
   const { base, items } = parseFieldPath(path)
   const segments = base.split('.')
-  const leaf = segments.at(-1) ?? ''
+  // `split` always returns at least one segment, so the last element is defined.
+  const leaf = segments.at(-1) as string
   return {
     fieldKey: resolveFieldKey(segments[0], leaf),
     fieldName: humanize(leaf),
