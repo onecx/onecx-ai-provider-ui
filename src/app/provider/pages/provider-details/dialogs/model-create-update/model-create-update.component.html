@@ -33,6 +33,7 @@
           optionLabel="label"
           optionValue="value"
           class="w-full"
+          appendTo="body"
           [appDescribedBy]="hasLegacyModelConfigWarning ? 'model_config_legacy_warning' : null"
         >
           <ng-template let-option pTemplate="item">{{ option.label | translate }}</ng-template>

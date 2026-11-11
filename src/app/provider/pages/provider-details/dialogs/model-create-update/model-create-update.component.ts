@@ -39,7 +39,7 @@ export class ModelCreateUpdateComponent
   ]
   readonly formGroup: FormGroup
   readonly primaryButtonEnabled = new EventEmitter<boolean>()
-  dialogResult: Model | undefined
+  dialogResult: Model | undefined = undefined
   hasLegacyModelConfigWarning = false
 
   constructor() {
