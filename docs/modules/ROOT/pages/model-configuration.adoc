@@ -5,6 +5,8 @@ Provider details let administrators create and edit model identifiers. For OpenA
 * **API**: Chat Completions (the default) or Responses.
 * **Reasoning effort**: an optional free-text value sent as configured by the runtime.
 
+The API options open outside the dialog's scrollable content so both choices remain accessible. Choose *Save* to submit the model settings, or *Cancel* to leave the model unchanged.
+
 The UI stores these supported settings in the existing model configuration field. It omits the default Chat Completions value and blank reasoning effort, so the default configuration is `{}`. The dialog does not expose a JSON editor or accept arbitrary configuration keys.
 
 The dialog reads existing configuration with standard JSON parsing and validates the supported fields. Saving serializes the form values into a new JSON object. The service enforces strict validation, including rejecting duplicate keys in API requests.

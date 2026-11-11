@@ -1,9 +1,109 @@
+import { EventEmitter } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { DialogContentComponent, DialogState, PortalDialogServiceData } from '@onecx/angular-accelerator'
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog'
 import { TranslateTestingModule } from 'ngx-translate-testing'
 import { Model, Provider, ProviderType } from 'src/app/shared/generated'
 import { ModelCreateUpdateComponent } from './model-create-update.component'
 
 describe('ModelCreateUpdateComponent', () => {
+  describe('inside the portal dialog', () => {
+    let buttonClicked: EventEmitter<DialogState<unknown>>
+    let dialogRef: DynamicDialogRef
+
+    beforeAll(() => {
+      // jsdom does not implement the scrolling API used when PrimeNG opens a select.
+      HTMLElement.prototype.scrollIntoView = jest.fn()
+    })
+
+    afterAll(() => {
+      Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView')
+    })
+
+    beforeEach(async () => {
+      buttonClicked = new EventEmitter<DialogState<unknown>>()
+      dialogRef = new DynamicDialogRef()
+      const portalDialogServiceData: PortalDialogServiceData = {
+        buttonClicked$: buttonClicked,
+        primaryButtonEnabled$: new EventEmitter<boolean>(),
+        secondaryButtonEnabled$: new EventEmitter<boolean>(),
+        customButtonEnabled$: new EventEmitter<{ id: string; enabled: boolean }>()
+      }
+      await TestBed.configureTestingModule({
+        declarations: [DialogContentComponent],
+        imports: [
+          ModelCreateUpdateComponent,
+          NoopAnimationsModule,
+          TranslateTestingModule.withTranslations({
+            en: {
+              PROVIDER_DETAILS: {
+                MODELS: {
+                  API_OPTIONS: { 'chat-completions': 'Chat Completions', responses: 'Responses' }
+                }
+              }
+            }
+          })
+        ],
+        providers: [
+          { provide: DynamicDialogRef, useValue: dialogRef },
+          {
+            provide: DynamicDialogConfig,
+            useValue: {
+              data: {
+                component: ModelCreateUpdateComponent,
+                componentData: {
+                  vm: {
+                    model: { id: 'm1', modelIdentifier: 'gpt-4' },
+                    provider: { type: ProviderType.Openai }
+                  }
+                },
+                portalDialogServiceData
+              }
+            }
+          }
+        ]
+      }).compileComponents()
+    })
+
+    it('returns the edited model when the portal Save button is clicked', () => {
+      const fixture = TestBed.createComponent(DialogContentComponent)
+      fixture.detectChanges()
+      const closed = jest.spyOn(dialogRef, 'close')
+      const element: HTMLElement = fixture.nativeElement
+      const identifier = element.querySelector<HTMLInputElement>('#model_identifier')!
+      identifier.value = 'gpt-4.1'
+      identifier.dispatchEvent(new Event('input'))
+
+      buttonClicked.emit({ button: 'primary', result: undefined })
+
+      expect(closed).toHaveBeenCalledWith({
+        button: 'primary',
+        result: {
+          id: 'm1',
+          name: 'gpt-4.1',
+          modelIdentifier: 'gpt-4.1',
+          modelConfig: '{}'
+        }
+      })
+    })
+
+    it('opens the API options outside the scrollable dialog content', async () => {
+      const fixture = TestBed.createComponent(DialogContentComponent)
+      fixture.detectChanges()
+      const element: HTMLElement = fixture.nativeElement
+      element.querySelector<HTMLElement>('[role="combobox"]')!.click()
+      fixture.detectChanges()
+      await fixture.whenStable()
+
+      const options = document.body.querySelector('[role="listbox"]')
+      expect(options).not.toBeNull()
+      expect(options?.textContent).toContain('Chat Completions')
+      expect(options?.textContent).toContain('Responses')
+      expect(element.querySelector('[role="listbox"]')).toBeNull()
+    })
+  })
+
   const createComponent = (model: Model = {}, providerType = ProviderType.Openai) => {
     const component = new ModelCreateUpdateComponent()
     component.vm = {
