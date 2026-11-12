@@ -431,7 +431,6 @@
         "AGENT_NAME": "Agent Name",
         "AGENT_ID": "Agent ID",
         "TENANT_ID": "Tenant ID",
-        "PRINCIPAL": "Principal",
         "DESCRIPTION": "Description",
         "PROVIDER_TYPE": "Provider Type",
         "LLM_URL": "LLM URL",

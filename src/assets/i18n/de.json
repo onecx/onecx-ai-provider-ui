@@ -430,7 +430,6 @@
         "AGENT_NAME": "Agent-Name",
         "AGENT_ID": "Agent-ID",
         "TENANT_ID": "Mandanten-ID",
-        "PRINCIPAL": "Principal",
         "DESCRIPTION": "Beschreibung",
         "PROVIDER_TYPE": "Provider-Typ",
         "LLM_URL": "LLM-URL",

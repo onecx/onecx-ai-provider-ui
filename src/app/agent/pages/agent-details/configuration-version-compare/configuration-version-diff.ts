@@ -28,7 +28,6 @@ const LEAF_KEYS = new Map<string, string>(
   [
     ['schemaVersion', 'SCHEMA_VERSION'],
     ['tenantId', 'TENANT_ID'],
-    ['principal', 'PRINCIPAL'],
     ['description', 'DESCRIPTION'],
     ['type', 'PROVIDER_TYPE'],
     ['llmUrl', 'LLM_URL'],
