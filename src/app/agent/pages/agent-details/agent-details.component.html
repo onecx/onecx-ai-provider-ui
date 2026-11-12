@@ -395,12 +395,13 @@
                                 />
                               }
                             </td>
-                            <td class="text-center">
+                            <td class="text-center ocx-actions-cell">
                               @if (!version.active) {
                                 <button
                                   *ocxIfPermission="'AGENT#EDIT'"
                                   pButton
                                   type="button"
+                                  class="ocx-activate-button"
                                   icon="pi pi-check"
                                   [text]="true"
                                   [loading]="vm.activatingConfigurationVersionId === version.id"

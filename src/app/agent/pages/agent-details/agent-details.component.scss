@@ -5,3 +5,21 @@
 :host ::ng-deep .ocx-card {
   padding: 0px;
 }
+
+.ocx-actions-cell {
+  white-space: nowrap;
+}
+
+.ocx-activate-button {
+  white-space: nowrap;
+  min-width: max-content;
+}
+
+.grid > div {
+  min-width: 0;
+}
+
+.grid .font-medium {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
