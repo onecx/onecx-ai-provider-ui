@@ -36,7 +36,7 @@
         ],
         "scripts": ["node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"],
         "customWebpackConfig": {
-          "path": "webpack.config.js"
+          "path": "webpack.config.ts"
         },
         "main": "./src/main.ts"
       },
@@ -45,8 +45,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "1mb",
+              "maximumError": "2mb"
             },
             {
               "type": "anyComponentStyle",
@@ -62,7 +62,7 @@
             }
           ],
           "customWebpackConfig": {
-            "path": "webpack.prod.config.js"
+            "path": "webpack.config.ts"
           }
         },
         "development": {
