@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
