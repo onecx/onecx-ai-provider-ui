@@ -1,4 +1,13 @@
-import { Agent, AgentGroup, Model, Provider, Scaffold, Tool } from 'src/app/shared/generated'
+import {
+  Agent,
+  AgentConfiguration,
+  AgentConfigurationVersion,
+  AgentGroup,
+  Model,
+  Provider,
+  Scaffold,
+  Tool
+} from 'src/app/shared/generated'
 
 export interface AgentDetailsViewModel {
   details: Agent | undefined
@@ -18,8 +27,14 @@ export interface AgentDetailsViewModel {
   groups: AgentGroup[]
   groupsLoadingIndicator: boolean
   groupsLoaded: boolean
+  configurationVersions: AgentConfigurationVersion[]
+  configurationVersionsLoadingIndicator: boolean
+  activatingConfigurationVersionId: string | undefined
+  configurationVersionDetails: Record<string, AgentConfiguration>
+  loadingVersionDetailIds: string[]
   backNavigationPossible: boolean
   detailsLoaded: boolean
   editMode: boolean
   isSubmitting: boolean
+  isPublishingConfigurationVersion: boolean
 }

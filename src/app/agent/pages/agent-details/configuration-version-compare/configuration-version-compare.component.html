@@ -1,0 +1,76 @@
+<div class="flex flex-column gap-3 p-2">
+  <div class="flex flex-wrap align-items-end gap-4">
+    <div class="flex flex-column gap-1">
+      <label class="text-sm font-medium" for="compare-left">{{
+        'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FROM' | translate
+      }}</label>
+      <p-select
+        inputId="compare-left"
+        [options]="options"
+        [(ngModel)]="leftId"
+        (onChange)="onSelectionChange()"
+        [placeholder]="'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.SELECT_VERSION' | translate"
+        styleClass="w-full"
+        [style]="{ width: '16rem' }"
+      />
+    </div>
+    <div class="flex flex-column gap-1">
+      <label class="text-sm font-medium" for="compare-right">{{
+        'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.TO' | translate
+      }}</label>
+      <p-select
+        inputId="compare-right"
+        [options]="options"
+        [(ngModel)]="rightId"
+        (onChange)="onSelectionChange()"
+        [placeholder]="'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.SELECT_VERSION' | translate"
+        styleClass="w-full"
+        [style]="{ width: '16rem' }"
+      />
+    </div>
+  </div>
+
+  @if (!leftId || !rightId) {
+    <div class="text-sm text-500">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.PICK_TWO' | translate }}</div>
+  } @else if (!details[leftId] || !details[rightId]) {
+    <div class="text-sm text-500">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.LOADING' | translate }}</div>
+  } @else {
+    <div class="flex flex-wrap align-items-center gap-4">
+      <div class="flex align-items-center gap-2">
+        <p-checkbox [(ngModel)]="showOnlyChanged" [binary]="true" inputId="compare-only-changed" />
+        <label for="compare-only-changed" class="text-sm">{{
+          'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.ONLY_CHANGED' | translate
+        }}</label>
+      </div>
+      <div class="text-sm">
+        {{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.CHANGED_COUNT' | translate: { count: changedCount } }}
+      </div>
+    </div>
+    <p-table [value]="visibleRows" [tableStyle]="{ 'min-width': '40rem' }" styleClass="p-datatable-sm" dataKey="path">
+      <ng-template pTemplate="header">
+        <tr>
+          <th scope="col">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FIELD' | translate }}</th>
+          <th scope="col">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.FROM' | translate }}</th>
+          <th scope="col">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.TO' | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr [style.background-color]="row.changed ? 'var(--surface-100, #fefce8)' : null">
+          <td class="text-sm" [title]="row.path">
+            @for (item of row.items; track $index) {
+              <span class="text-500">{{ item }} · </span>
+            }
+            {{ row.fieldKey ? (row.fieldKey | translate) : row.fieldName }}
+          </td>
+          <td class="text-sm" style="word-break: break-all">{{ row.left ?? '-' }}</td>
+          <td class="text-sm" style="word-break: break-all">{{ row.right ?? '-' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3">{{ 'AGENT_DETAILS.CONFIGURATION_VERSIONS.COMPARE.NO_DIFFERENCES' | translate }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</div>

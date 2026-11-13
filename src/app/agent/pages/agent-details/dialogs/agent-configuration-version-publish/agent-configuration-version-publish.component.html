@@ -1,0 +1,20 @@
+<form [formGroup]="formGroup" class="flex flex-column gap-2 mt-2">
+  <p-floatlabel variant="on">
+    <input
+      pInputText
+      type="text"
+      id="agent_configuration_version_name"
+      class="w-full"
+      formControlName="name"
+      maxlength="255"
+      required
+      aria-required="true"
+    />
+    <label class="ocx-required-label" for="agent_configuration_version_name">
+      {{ 'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.NAME' | translate }}
+    </label>
+  </p-floatlabel>
+  @if (nameControl.invalid && nameControl.touched) {
+    <small role="alert">{{ 'AGENT_DETAILS.PUBLISH_CONFIGURATION.FORM.NAME_INVALID' | translate }}</small>
+  }
+</form>

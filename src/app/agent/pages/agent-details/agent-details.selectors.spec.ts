@@ -1,6 +1,8 @@
 import {
   selectAgentDetailsCoreState,
   selectAgentDetailsViewModel,
+  selectConfigurationVersionsState,
+  selectDetailsCoreState,
   selectGroupsState,
   selectModelsState,
   selectProvidersState,
@@ -64,15 +66,65 @@ describe('AgentDetails selectors', () => {
     })
   })
 
-  describe('selectAgentDetailsCoreState', () => {
-    it('should combine core details state', () => {
+  describe('selectDetailsCoreState', () => {
+    it('should map the details projector inputs', () => {
       const details = { id: '1' }
-      expect(selectAgentDetailsCoreState.projector(details, true, false, true, false, true)).toEqual({
+      expect(selectDetailsCoreState.projector(details as never, true, false, true, false, true)).toEqual({
         details,
         detailsLoadingIndicator: true,
         detailsLoaded: false,
         editMode: true,
         isSubmitting: false,
+        isPublishingConfigurationVersion: true
+      })
+    })
+  })
+
+  describe('selectConfigurationVersionsState', () => {
+    it('should map the configuration versions projector inputs', () => {
+      const versions = [{ id: 'v1' }]
+      expect(
+        selectConfigurationVersionsState.projector(versions as never, true, 'v1', { v1: {} } as never, ['v2'])
+      ).toEqual({
+        configurationVersions: versions,
+        configurationVersionsLoadingIndicator: true,
+        activatingConfigurationVersionId: 'v1',
+        configurationVersionDetails: { v1: {} },
+        loadingVersionDetailIds: ['v2']
+      })
+    })
+  })
+
+  describe('selectAgentDetailsCoreState', () => {
+    it('should combine core details state', () => {
+      const details = { id: '1' }
+      const detailsState = {
+        details,
+        detailsLoadingIndicator: true,
+        detailsLoaded: false,
+        editMode: true,
+        isSubmitting: false,
+        isPublishingConfigurationVersion: false
+      }
+      const versionsState = {
+        configurationVersions: [],
+        configurationVersionsLoadingIndicator: false,
+        activatingConfigurationVersionId: undefined,
+        configurationVersionDetails: {},
+        loadingVersionDetailIds: []
+      }
+      expect(selectAgentDetailsCoreState.projector(detailsState, versionsState, true)).toEqual({
+        details,
+        detailsLoadingIndicator: true,
+        detailsLoaded: false,
+        editMode: true,
+        isSubmitting: false,
+        isPublishingConfigurationVersion: false,
+        configurationVersions: [],
+        configurationVersionsLoadingIndicator: false,
+        activatingConfigurationVersionId: undefined,
+        configurationVersionDetails: {},
+        loadingVersionDetailIds: [],
         backNavigationPossible: true
       })
     })
@@ -97,6 +149,12 @@ describe('AgentDetails selectors', () => {
         detailsLoaded,
         editMode,
         isSubmitting,
+        isPublishingConfigurationVersion: false,
+        configurationVersions: [],
+        configurationVersionsLoadingIndicator: false,
+        activatingConfigurationVersionId: undefined,
+        configurationVersionDetails: {},
+        loadingVersionDetailIds: [],
         backNavigationPossible
       }
       expect(
