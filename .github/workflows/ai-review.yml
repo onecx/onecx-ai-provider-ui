@@ -1,0 +1,59 @@
+name: AI Review Dispatch
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: read
+
+jobs:
+  dispatch:
+    if: >-
+      github.event.pull_request != null &&
+      !github.event.pull_request.draft &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo != null &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) &&
+      github.event.sender.login == github.actor &&
+      github.event.sender.type != 'Bot' &&
+      github.event.pull_request.user.type != 'Bot' &&
+      !endsWith(github.actor, '[bot]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          token: ${{ github.token }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Load dispatch token
+        id: vault
+        uses: hashicorp/vault-action@v4
+        with:
+          url: https://vault.dev.one-cx.org
+          method: jwt
+          role: github-onecx-role
+          jwtGithubAudience: https://github.com
+          exportEnv: false
+          exportToken: false
+          secrets: |
+            secret/data/users/${{ github.actor }}/tokens github_token_onecx | GH_TOKEN_ONECX
+
+      - name: Request review
+        env:
+          AI_REVIEW_DISPATCH_REPOSITORY: ${{ secrets.AI_REVIEW_DISPATCH_REPOSITORY }}
+          GH_TOKEN: ${{ steps.vault.outputs.GH_TOKEN_ONECX }}
+        run: node .github/scripts/ai-review-dispatch.mjs
