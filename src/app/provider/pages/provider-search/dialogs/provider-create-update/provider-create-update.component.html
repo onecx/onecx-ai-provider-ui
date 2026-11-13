@@ -2,7 +2,7 @@
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
     <div [title]="'PROVIDER_CREATE_UPDATE.FORM.NAME' | translate">
       <p-floatlabel variant="on" controlErrorAnchor>
-        <input pInputText type="text" id="provider_detail_form_name" class="w-full pt-3 pb-2" formControlName="name" />
+        <input pInputText type="text" id="provider_detail_form_name" class="w-full" formControlName="name" />
         <label class="ocx-required-label" for="provider_detail_form_name">
           {{ 'PROVIDER_CREATE_UPDATE.FORM.NAME' | translate }}</label
         >
@@ -14,7 +14,7 @@
           pInputText
           type="text"
           id="provider_detail_form_description"
-          class="w-full pt-3 pb-2"
+          class="w-full"
           formControlName="description"
           [attr.aria-label]="'PROVIDER_CREATE_UPDATE.FORM.DESCRIPTION' | translate"
         />
@@ -29,7 +29,7 @@
           pInputText
           type="text"
           id="provider_detail_form_modelName"
-          class="w-full pt-3 pb-2"
+          class="w-full"
           formControlName="modelName"
           [attr.aria-label]="'PROVIDER_CREATE_UPDATE.FORM.MODELNAME' | translate"
         />
@@ -44,7 +44,7 @@
           pInputText
           type="text"
           id="provider_detail_form_llmUrl"
-          class="w-full pt-3 pb-2"
+          class="w-full"
           formControlName="llmUrl"
           [attr.aria-label]="'PROVIDER_CREATE_UPDATE.FORM.LLMURL' | translate"
         />
@@ -59,7 +59,7 @@
           pInputText
           type="text"
           id="provider_detail_form_apiKey"
-          class="w-full pt-3 pb-2"
+          class="w-full"
           formControlName="apiKey"
           [attr.aria-label]="'PROVIDER_CREATE_UPDATE.FORM.APIKEY' | translate"
         />
