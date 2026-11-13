@@ -2,7 +2,7 @@
   <div class="flex flex-wrap flex-column gap-4 justify-content-between mt-2">
     <div [title]="'AGENT_CREATE_UPDATE.FORM.NAME' | translate">
       <p-floatlabel variant="on" controlErrorAnchor>
-        <input pInputText type="text" id="agent_detail_form_name" class="w-full pt-3 pb-2" formControlName="name" />
+        <input pInputText type="text" id="agent_detail_form_name" class="w-full" formControlName="name" />
         <label class="ocx-required-label" for="agent_detail_form_name">
           {{ 'AGENT_CREATE_UPDATE.FORM.NAME' | translate }}</label
         >
@@ -15,7 +15,7 @@
           pInputText
           type="text"
           id="agent_detail_form_description"
-          class="w-full pt-3 pb-2"
+          class="w-full"
           formControlName="description"
           [attr.aria-label]="'AGENT_CREATE_UPDATE.FORM.DESCRIPTION' | translate"
         />

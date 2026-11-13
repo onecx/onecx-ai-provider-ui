@@ -65,6 +65,7 @@ export const ProviderDetailsReducer = createReducer(
   })),
   on(
     ProviderDetailsActions.providerModelCreateClicked,
+    ProviderDetailsActions.providerModelEditClicked,
     ProviderDetailsActions.providerModelDeleteClicked,
     (state: ProviderDetailsState): ProviderDetailsState => ({
       ...state,
@@ -73,9 +74,13 @@ export const ProviderDetailsReducer = createReducer(
   ),
   on(
     ProviderDetailsActions.providerModelCreateSucceeded,
+    ProviderDetailsActions.providerModelCreateCancelled,
     ProviderDetailsActions.providerModelDeleteSucceeded,
     ProviderDetailsActions.providerModelCreateFailed,
     ProviderDetailsActions.providerModelDeleteFailed,
+    ProviderDetailsActions.providerModelUpdateSucceeded,
+    ProviderDetailsActions.providerModelUpdateCancelled,
+    ProviderDetailsActions.providerModelUpdateFailed,
     (state: ProviderDetailsState): ProviderDetailsState => ({
       ...state,
       modelMutationInProgress: false

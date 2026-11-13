@@ -218,6 +218,28 @@ describe('MCPServerDetailsComponent', () => {
     expect(globalThis.history.back).toHaveBeenCalledTimes(1)
   })
 
+  it('should dispatch when the edit, cancel, and save header callbacks are invoked', async () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      editMode: true
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const actions = await firstValueFrom(component.headerActions$)
+    actions.find((action) => action.labelKey === 'MCPSERVER_DETAILS.GENERAL.EDIT')?.actionCallback?.()
+    actions.find((action) => action.labelKey === 'MCPSERVER_DETAILS.GENERAL.CANCEL')?.actionCallback?.()
+    const details = component.formGroup.value
+    actions.find((action) => action.labelKey === 'MCPSERVER_DETAILS.GENERAL.SAVE')?.actionCallback?.()
+
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.editButtonClicked())
+    expect(store.dispatch).toHaveBeenCalledWith(
+      MCPServerDetailsActions.cancelButtonClicked({ dirty: component.formGroup.dirty })
+    )
+    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+  })
+
   it('should display item details in page header', async () => {
     const labels = [
       { label: 'HELLO_DETAILS.FORM.ID', labelPipe: TranslatePipe, value: 'test id' },

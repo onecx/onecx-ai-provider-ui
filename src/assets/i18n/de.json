@@ -297,7 +297,8 @@
       "EDIT": "Bearbeiten",
       "DELETE": "Löschen",
       "CANCEL": "Abbrechen",
-      "SAVE": "Speichern"
+      "SAVE": "Speichern",
+      "PUBLISH_CONFIGURATION": "Konfiguration veröffentlichen"
     },
     "FORM": {
       "ID": "ID",
@@ -323,7 +324,8 @@
     "TABS": {
       "GENERAL": "Allgemein",
       "ASSIGNMENTS": "Zuweisungen",
-      "TOOL_RULES": "Werkzeugregeln"
+      "TOOL_RULES": "Werkzeugregeln",
+      "CONFIGURATION": "Konfiguration"
     },
     "TOOL_RULES": {
       "SELECT_TOOL": "MCP-Werkzeug auswählen",
@@ -371,6 +373,82 @@
       "CANCEL": "Abbrechen",
       "SUCCESS": "Agent erfolgreich gelöscht",
       "ERROR": "Konnte Agent nicht löschen"
+    },
+    "PUBLISH_CONFIGURATION": {
+      "HEADER": "Konfiguration veröffentlichen",
+      "FORM": {
+        "NAME": "Konfigurationsname",
+        "NAME_INVALID": "Geben Sie einen nicht leeren Namen mit höchstens 255 Zeichen ein.",
+        "PUBLISH": "Veröffentlichen",
+        "CANCEL": "Abbrechen"
+      },
+      "SUCCESS": "Konfigurationsversion veröffentlicht und aktiviert.",
+      "DUPLICATE_NAME": "Für diesen Agenten existiert bereits eine Konfigurationsversion mit diesem Namen.",
+      "ERROR": "Die Konfigurationsversion konnte nicht veröffentlicht und aktiviert werden.",
+      "CREATED_NOT_ACTIVATED": "Die Konfigurationsversion wurde erstellt, konnte aber nicht aktiviert werden. Aktivieren Sie sie in der Liste unten."
+    },
+    "CONFIGURATION_VERSIONS": {
+      "EMPTY": "Es wurden noch keine Konfigurationsversionen veröffentlicht.",
+      "NAME": "Name",
+      "STATUS": "Status",
+      "ACTIONS": "Aktionen",
+      "ACTIVE": "Aktiv",
+      "INACTIVE": "Inaktiv",
+      "ACTIVATE": "Aktivieren",
+      "ACTIVATE_SUCCESS": "Konfigurationsversion aktiviert.",
+      "ACTIVATE_ERROR": "Konfigurationsversion konnte nicht aktiviert werden.",
+      "ACTIVATE_ERROR_DEPENDENCIES": "Konfigurationsabhängigkeiten fehlen oder sind inkompatibel.",
+      "ACTIVATE_CONFIRM_HEADER": "Konfigurationsversion aktivieren",
+      "ACTIVATE_CONFIRM_MESSAGE": "Durch das Aktivieren dieser Version wird die aktuell aktive Version deaktiviert. Es kann nur eine Version gleichzeitig aktiv sein. Fortfahren?",
+      "CANCEL": "Abbrechen",
+      "TOGGLE_DETAILS": "Konfigurationsdetails ein-/ausklappen",
+      "COMPARE": {
+        "FROM": "Von Version",
+        "TO": "Zu Version",
+        "SELECT_VERSION": "Version wählen",
+        "ONLY_CHANGED": "Nur Änderungen anzeigen",
+        "PICK_TWO": "Wähle zwei Versionen zum Vergleich.",
+        "LOADING": "Versionsdetails werden geladen…",
+        "CHANGED_COUNT": "{{ count }} Feld(er) unterscheiden sich",
+        "FIELD": "Feld",
+        "NO_DIFFERENCES": "Keine Unterschiede gefunden"
+      },
+      "DETAILS": {
+        "SCHEMA_VERSION": "Schema-Version",
+        "PROVIDER": "Provider",
+        "MODEL": "Modell",
+        "SCAFFOLD": "Scaffold",
+        "VOICE_ENABLED": "Sprache aktiviert",
+        "LANGUAGE": "Sprache",
+        "SKILLS": "Skills",
+        "MCP_SERVERS": "MCP-Server",
+        "SYSTEM_PROMPT": "System-Prompt",
+        "YES": "Ja",
+        "NO": "Nein",
+        "NOT_AVAILABLE": "Konfigurationsdetails sind nicht verfügbar.",
+        "AGENT": "Agent",
+        "AGENT_NAME": "Agent-Name",
+        "AGENT_ID": "Agent-ID",
+        "TENANT_ID": "Mandanten-ID",
+        "DESCRIPTION": "Beschreibung",
+        "PROVIDER_TYPE": "Provider-Typ",
+        "LLM_URL": "LLM-URL",
+        "AUTH_MODE": "Auth-Modus",
+        "CREDENTIAL_REF": "Credential-Referenz",
+        "MODEL_IDENTIFIER": "Modell-Identifier",
+        "COMMUNICATION_MODE": "Kommunikationsmodus",
+        "MODEL_CONFIG": "Modellkonfiguration",
+        "SOURCE": "Quelle",
+        "POSITION": "Position",
+        "INSTRUCTION": "Anweisung",
+        "URL": "URL",
+        "UNLISTED_TOOL_PERMISSION": "Berechtigung für nicht gelistete Tools",
+        "UNLISTED_TOOL_PERMISSION_SOURCE": "Quelle der Berechtigung für nicht gelistete Tools",
+        "TOOL_RULES": "Tool-Regeln",
+        "TOOL_NAME": "Tool",
+        "PERMISSION": "Berechtigung",
+        "POLICY_SOURCE": "Policy-Quelle"
+      }
     }
   },
   "AGENT_SEARCH": {
@@ -810,11 +888,14 @@
       "UPDATE_FAILED": "Provider konnte nicht aktualisiert werden.",
       "MODELS_LOADING_FAILED": "Modelle konnten nicht geladen werden.",
       "MODEL_CREATE_FAILED": "Modell konnte nicht erstellt werden.",
-      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden."
+      "MODEL_UPDATE_FAILED": "Modell konnte nicht aktualisiert werden.",
+      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden.",
+      "INVALID_MODEL_CONFIG_DETAIL": "Überprüfen Sie die Einstellungen für Modell-API und Reasoning-Aufwand."
     },
     "SUCCESS_MESSAGES": {
       "UPDATE_SUCCEEDED": "Provider wurde erfolgreich aktualisiert.",
       "MODEL_CREATE_SUCCEEDED": "Modell wurde erfolgreich erstellt.",
+      "MODEL_UPDATE_SUCCEEDED": "Modell wurde erfolgreich aktualisiert.",
       "MODEL_DELETE_SUCCEEDED": "Modell wurde erfolgreich gelöscht."
     },
     "GENERAL": {
@@ -829,9 +910,23 @@
       "MODELS": "Modelle"
     },
     "MODELS": {
-      "NEW_MODEL": "Neuer Modell-Identifikator",
       "CREATE": "Modell erstellen",
+      "CREATE_HEADER": "Modell erstellen",
+      "EDIT_HEADER": "Modell bearbeiten",
+      "SAVE": "Speichern",
+      "CANCEL": "Abbrechen",
+      "MODEL_IDENTIFIER": "Modell-Identifikator",
+      "IDENTIFIER_VALIDATION": "Geben Sie einen nicht leeren Modell-Identifikator mit höchstens 255 Zeichen ein, um Speichern zu aktivieren.",
+      "EDIT": "Modell bearbeiten",
       "DELETE": "Modell loeschen",
+      "API": "API",
+      "API_OPTIONS": {
+        "chat-completions": "Chat Completions",
+        "responses": "Responses"
+      },
+      "REASONING_EFFORT": "Reasoning-Aufwand (optional)",
+      "LEGACY_CONFIG_WARNING": "Die vorhandene Modellkonfiguration ist fehlerhaft oder nicht unterstützt. Sie wird nicht angewendet; beim Speichern wird sie durch unterstützte Einstellungen ersetzt.",
+      "CONFIGURATION_TOO_LONG": "Die serialisierte Modellkonfiguration überschreitet das Speicherlimit von 255 Zeichen.",
       "LOADING": "Modelle werden geladen...",
       "EMPTY": "Keine Modelle zugewiesen."
     },

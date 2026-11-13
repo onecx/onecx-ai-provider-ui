@@ -31,7 +31,7 @@
                     pInputText
                     type="text"
                     id="Provider_detail_name"
-                    class="w-full pt-3 pb-2 text-responsive"
+                    class="w-full text-responsive"
                     formControlName="name"
                   />
                   <label class="ocx-required-label" for="Provider_detail_name">
@@ -44,7 +44,7 @@
                     pInputText
                     type="text"
                     id="Provider_detail_description"
-                    class="w-full pt-3 pb-2 text-responsive"
+                    class="w-full text-responsive"
                     formControlName="description"
                   />
                   <label class="ocx-required-label" for="Provider_detail_description">
@@ -69,7 +69,7 @@
                     pInputText
                     type="text"
                     id="Provider_detail_llmUrl"
-                    class="w-full pt-3 pb-2 text-responsive"
+                    class="w-full text-responsive"
                     formControlName="llmUrl"
                   />
                   <label class="ocx-required-label" for="Provider_detail_llmUrl">
@@ -85,7 +85,7 @@
                       [toggleMask]="true"
                       [feedback]="false"
                       styleClass="w-full"
-                      inputStyleClass="w-full pt-3 pb-2 text-responsive"
+                      inputStyleClass="w-full text-responsive"
                     ></p-password>
                     <label for="Provider_detail_apiKey">{{ 'PROVIDER_DETAILS.FORM.APIKEY' | translate }}</label>
                   </p-floatlabel>
@@ -107,24 +107,10 @@
 
             <p-tabpanel value="1">
               <div class="flex flex-column gap-3 mt-3">
-                <div class="flex flex-column md:flex-row md:align-items-end gap-2">
-                  <div class="flex flex-column w-full md:flex-1">
-                    <label for="Provider_detail_newModelIdentifier" class="mb-1">
-                      {{ 'PROVIDER_DETAILS.MODELS.NEW_MODEL' | translate }}
-                    </label>
-                    <input
-                      pInputText
-                      type="text"
-                      id="Provider_detail_newModelIdentifier"
-                      class="w-full"
-                      formControlName="newModelIdentifier"
-                      [placeholder]="'PROVIDER_DETAILS.MODELS.NEW_MODEL' | translate"
-                    />
-                  </div>
+                <div class="flex justify-content-end">
                   <button
                     pButton
                     type="button"
-                    class="w-full md:w-auto flex-shrink-0"
                     icon="pi pi-plus"
                     [disabled]="!vm.editMode || vm.modelMutationInProgress"
                     (click)="createModelInPlace()"
@@ -144,18 +130,31 @@
                         class="flex align-items-center justify-content-between gap-2 border-1 surface-border border-round px-3 py-2"
                       >
                         <span>{{ model.modelIdentifier || model.name }}</span>
-                        <button
-                          pButton
-                          type="button"
-                          icon="pi pi-trash"
-                          severity="danger"
-                          [text]="true"
-                          [attr.aria-label]="'PROVIDER_DETAILS.MODELS.DELETE' | translate"
-                          [disabled]="!vm.editMode || vm.modelMutationInProgress"
-                          (click)="deleteModel(model)"
-                        >
-                          <span class="hidden">{{ 'PROVIDER_DETAILS.MODELS.DELETE' | translate }}</span>
-                        </button>
+                        <div class="flex align-items-center">
+                          <button
+                            pButton
+                            type="button"
+                            icon="pi pi-pencil"
+                            [text]="true"
+                            [attr.aria-label]="'PROVIDER_DETAILS.MODELS.EDIT' | translate"
+                            [disabled]="!vm.editMode || vm.modelMutationInProgress"
+                            (click)="editModel(model)"
+                          >
+                            <span class="hidden">{{ 'PROVIDER_DETAILS.MODELS.EDIT' | translate }}</span>
+                          </button>
+                          <button
+                            pButton
+                            type="button"
+                            icon="pi pi-trash"
+                            severity="danger"
+                            [text]="true"
+                            [attr.aria-label]="'PROVIDER_DETAILS.MODELS.DELETE' | translate"
+                            [disabled]="!vm.editMode || vm.modelMutationInProgress"
+                            (click)="deleteModel(model)"
+                          >
+                            <span class="hidden">{{ 'PROVIDER_DETAILS.MODELS.DELETE' | translate }}</span>
+                          </button>
+                        </div>
                       </div>
                     }
                   </div>

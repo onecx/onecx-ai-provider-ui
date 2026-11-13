@@ -29,7 +29,7 @@ import {
   TranslationConnectionService
 } from '@onecx/angular-utils'
 
-import { AgentFilterKeyEnum, AgentGroupService, AgentStatus } from 'src/app/shared/generated'
+import { AgentFilterKeyEnum, AgentConfigurationVersion, AgentGroupService, AgentStatus } from 'src/app/shared/generated'
 import { agentDetailsActions } from './agent-details.actions'
 import { AgentDetailsComponent } from './agent-details.component'
 import { AgentDetailsHarness } from './agent-details.harness'
@@ -114,7 +114,13 @@ describe('AgentDetailsComponent', () => {
     detailsLoaded: true,
     backNavigationPossible: true,
     editMode: true,
-    isSubmitting: false
+    isSubmitting: false,
+    isPublishingConfigurationVersion: false,
+    configurationVersions: [],
+    configurationVersionsLoadingIndicator: false,
+    activatingConfigurationVersionId: undefined,
+    configurationVersionDetails: {},
+    loadingVersionDetailIds: []
   }
 
   beforeEach(async () => {
@@ -237,6 +243,53 @@ describe('AgentDetailsComponent', () => {
     expect(store.dispatch).toHaveBeenCalledWith(agentDetailsActions.editButtonClicked())
   })
 
+  it('should show the publish action only outside edit mode with its dedicated permission', async () => {
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+
+    const actions = await firstValueFrom(component.headerActions$)
+    const publishAction = actions.find((action) => action.labelKey === 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION')
+
+    expect(publishAction).toEqual(
+      expect.objectContaining({
+        permission: 'AGENT#EDIT',
+        conditional: true,
+        showCondition: true,
+        disabled: false
+      })
+    )
+
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: true,
+      isPublishingConfigurationVersion: true
+    })
+    store.refreshState()
+    const editModeActions = await firstValueFrom(component.headerActions$)
+    const hiddenPublishAction = editModeActions.find(
+      (action) => action.labelKey === 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION'
+    )
+    expect(hiddenPublishAction?.showCondition).toBe(false)
+    expect(hiddenPublishAction?.disabled).toBe(true)
+  })
+
+  it('should dispatch publishConfigurationVersionButtonClicked on publish action click', async () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: false
+    })
+    store.refreshState()
+
+    const actions = await firstValueFrom(component.headerActions$)
+    actions.find((action) => action.labelKey === 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION')?.actionCallback?.()
+
+    expect(store.dispatch).toHaveBeenCalledWith(agentDetailsActions.publishConfigurationVersionButtonClicked())
+  })
+
   it('should dispatch cancelButtonClicked action on edit button click', async () => {
     jest.spyOn(store, 'dispatch')
     const actions = await firstValueFrom(component.headerActions$)
@@ -266,7 +319,7 @@ describe('AgentDetailsComponent', () => {
       tools: [],
       groups: [],
       newGroupName: null,
-      voiceEnabled: false,
+      voiceEnabled: null,
       languageCode: null,
       filters: []
     }
@@ -298,11 +351,112 @@ describe('AgentDetailsComponent', () => {
           tools: [],
           groups: [],
           filter: undefined,
-          voiceEnabled: false,
+          voiceEnabled: undefined,
           languageCode: undefined
         }
       })
     )
+  })
+
+  it('should include a selected voice language in the save payload', () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectAgentDetailsViewModel, {
+      ...baseAgentDetailsViewModel,
+      editMode: true,
+      details: { id: '123' }
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    component.formGroup.patchValue({ voiceEnabled: true, languageCode: 'en' })
+
+    component.save()
+
+    const saveAction = (store.dispatch as jest.Mock).mock.calls[0][0] as ReturnType<
+      typeof agentDetailsActions.saveButtonClicked
+    >
+    expect(saveAction.details.voiceEnabled).toBe(true)
+    expect(saveAction.details.languageCode).toBe('en')
+  })
+
+  describe('configuration version details', () => {
+    const inactiveVersion = { id: 'version-1', name: 'v1.0', active: false } as AgentConfigurationVersion
+
+    const findActivateButton = (): HTMLButtonElement | undefined => {
+      fixture.nativeElement.querySelector('p-tab[value="3"]')?.dispatchEvent(new Event('click'))
+      fixture.detectChanges()
+      return Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button')).find(
+        (button) => button.textContent?.trim() === 'Activate'
+      )
+    }
+
+    it('should show the Activate button for an inactive version when the user can edit agents', () => {
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        configurationVersions: [inactiveVersion]
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      expect(findActivateButton()).toBeDefined()
+    })
+
+    it('should hide the Activate button when the user cannot edit agents', () => {
+      TestBed.inject(UserServiceMock).permissionsTopic$.publish(['AGENT#VIEW'])
+      store.overrideSelector(selectAgentDetailsViewModel, {
+        ...baseAgentDetailsViewModel,
+        configurationVersions: [inactiveVersion]
+      })
+      store.refreshState()
+      fixture.detectChanges()
+
+      expect(findActivateButton()).toBeUndefined()
+    })
+
+    it('should dispatch activateConfigurationVersionClicked when activating a version', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.activateConfigurationVersion('version-1')
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-1' })
+      )
+    })
+
+    it('should request details when a version is expanded and its details are not loaded', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onVersionExpand('version-1', false)
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' })
+      )
+    })
+
+    it('should not request details when a version is expanded and its details are already loaded', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onVersionExpand('version-1', true)
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
+
+    it('should request details for the expanded row when it has an ID', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onRowExpand({ data: { id: 'version-2', name: 'v2.0', active: false } })
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-2' })
+      )
+    })
+
+    it('should not request details for an expanded row without an ID', () => {
+      jest.spyOn(store, 'dispatch')
+
+      component.onRowExpand({ data: { name: 'v2.0' } as AgentConfigurationVersion })
+
+      expect(store.dispatch).not.toHaveBeenCalled()
+    })
   })
 
   it('should dispatch deleteButtonClicked action on delete button click', async () => {

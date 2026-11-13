@@ -1,6 +1,15 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
 
-import { Agent, AgentGroup, Model, Provider, Scaffold, Tool } from 'src/app/shared/generated'
+import {
+  Agent,
+  AgentConfiguration,
+  AgentConfigurationVersion,
+  AgentGroup,
+  Model,
+  Provider,
+  Scaffold,
+  Tool
+} from 'src/app/shared/generated'
 
 export const agentDetailsActions = createActionGroup({
   source: 'AgentDetails',
@@ -32,10 +41,25 @@ export const agentDetailsActions = createActionGroup({
     'Cancel edit back clicked': emptyProps(),
     'Cancel edit confirm clicked': emptyProps(),
     'Cancel edit not dirty': emptyProps(),
+    'Publish configuration version cancelled': emptyProps(),
     'Edit button clicked': emptyProps(),
     'Save button clicked': props<{ details: Agent }>(),
     'Cancel button clicked': props<{ dirty: boolean }>(),
     'Delete button clicked': emptyProps(),
+    'Publish configuration version button clicked': emptyProps(),
+    'Publish configuration version submitted': props<{ agentId: string; name: string }>(),
+    'Publish configuration version succeeded': props<{ version: AgentConfigurationVersion }>(),
+    'Publish configuration version failed': props<{ error: unknown }>(),
+    'Configuration versions received': props<{ versions: AgentConfigurationVersion[] }>(),
+    'Configuration versions loading failed': props<{ error: unknown }>(),
+    'Activate configuration version clicked': props<{ versionId: string }>(),
+    'Activate configuration version succeeded': props<{ version: AgentConfigurationVersion }>(),
+    'Activate configuration version failed': props<{ error: unknown }>(),
+    'Activate configuration version confirmed': props<{ versionId: string }>(),
+    'Activate configuration version cancelled': emptyProps(),
+    'Configuration version detail requested': props<{ versionId: string }>(),
+    'Configuration version detail received': props<{ versionId: string; configuration: AgentConfiguration }>(),
+    'Configuration version detail loading failed': props<{ versionId: string; error: unknown }>(),
     'Navigate back button clicked': emptyProps(),
     'Back navigation started': emptyProps(),
     'Back navigation failed': emptyProps(),

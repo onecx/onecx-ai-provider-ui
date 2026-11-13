@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
@@ -8,12 +9,38 @@ import { catchError, map, of, switchMap, tap } from 'rxjs'
 
 import { filterForNavigatedTo } from '@onecx/ngrx-accelerator'
 import { PortalMessageService } from '@onecx/angular-integration-interface'
+import { DialogState, PortalDialogService } from '@onecx/angular-accelerator'
 
 import { selectRouteParam } from 'src/app/shared/selectors/router.selectors'
-import { ModelService, ProviderService, UpdateProviderRequest } from 'src/app/shared/generated'
+import {
+  Model,
+  ModelService,
+  ProviderService,
+  UpdateModelRequest,
+  UpdateProviderRequest
+} from 'src/app/shared/generated'
 import { ProviderDetailsActions } from './provider-details.actions'
 import { ProviderDetailsComponent } from './provider-details.component'
 import { ProviderDetailsSelectors } from './provider-details.selectors'
+import { ModelCreateUpdateComponent } from './dialogs/model-create-update/model-create-update.component'
+
+function getInvalidModelConfigDetail(error: unknown): string | undefined {
+  if (!(error instanceof HttpErrorResponse) || !isRecord(error.error)) {
+    return undefined
+  }
+  const { errorCode, detail } = error.error
+  return errorCode === 'INVALID_MODEL_CONFIG' && typeof detail === 'string' && detail.trim()
+    ? 'PROVIDER_DETAILS.ERROR_MESSAGES.INVALID_MODEL_CONFIG_DETAIL'
+    : undefined
+}
+
+function getActionError(action: Action): unknown {
+  return 'error' in action ? action.error : undefined
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
 
 @Injectable()
 export class ProviderDetailsEffects {
@@ -23,7 +50,8 @@ export class ProviderDetailsEffects {
     private readonly modelService: ModelService,
     private readonly router: Router,
     private readonly store: Store,
-    private readonly messageService: PortalMessageService
+    private readonly messageService: PortalMessageService,
+    private readonly portalDialogService: PortalDialogService
   ) {}
 
   navigatedToDetailsPage$ = createEffect(() => {
@@ -152,30 +180,80 @@ export class ProviderDetailsEffects {
     return this.actions$.pipe(
       ofType(ProviderDetailsActions.providerModelCreateClicked),
       concatLatestFrom(() => this.store.select(ProviderDetailsSelectors.selectDetails)),
-      switchMap(([{ modelIdentifier }, details]) => {
+      switchMap(([, details]) => {
         if (!details?.id) {
-          return of(
-            ProviderDetailsActions.providerModelCreateFailed({
-              error: 'Missing provider id'
-            })
-          )
+          return of(ProviderDetailsActions.providerModelCreateFailed({ error: 'Missing provider id' }))
         }
-
-        return this.modelService
-          .createModel({
-            name: modelIdentifier,
-            modelIdentifier,
-            provider: details
-          })
+        return this.portalDialogService
+          .openDialog<Model | undefined>(
+            'PROVIDER_DETAILS.MODELS.CREATE_HEADER',
+            {
+              type: ModelCreateUpdateComponent,
+              inputs: { vm: { model: {}, provider: details } }
+            },
+            'PROVIDER_DETAILS.MODELS.SAVE',
+            'PROVIDER_DETAILS.MODELS.CANCEL',
+            { baseZIndex: 100 }
+          )
           .pipe(
-            map(() => ProviderDetailsActions.providerModelCreateSucceeded()),
-            catchError((error) =>
-              of(
-                ProviderDetailsActions.providerModelCreateFailed({
-                  error
-                })
-              )
-            )
+            switchMap((dialogResult: DialogState<Model | undefined> | undefined) => {
+              if (!dialogResult || dialogResult.button === 'secondary') {
+                return of(ProviderDetailsActions.providerModelCreateCancelled())
+              }
+              if (!dialogResult.result) {
+                return of(ProviderDetailsActions.providerModelCreateFailed({ error: 'Missing model dialog result' }))
+              }
+              return this.modelService
+                .createModel({ ...dialogResult.result, provider: details })
+                .pipe(map(() => ProviderDetailsActions.providerModelCreateSucceeded()))
+            }),
+            catchError((error) => of(ProviderDetailsActions.providerModelCreateFailed({ error })))
+          )
+      })
+    )
+  })
+
+  updateProviderModel$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ProviderDetailsActions.providerModelEditClicked),
+      concatLatestFrom(() => this.store.select(ProviderDetailsSelectors.selectDetails)),
+      switchMap(([{ model }, details]) => {
+        const modelId = model.id
+        if (!modelId) {
+          return of(ProviderDetailsActions.providerModelUpdateFailed({ error: 'Missing model id' }))
+        }
+        return this.portalDialogService
+          .openDialog<Model | undefined>(
+            'PROVIDER_DETAILS.MODELS.EDIT_HEADER',
+            {
+              type: ModelCreateUpdateComponent,
+              inputs: { vm: { model, provider: details } }
+            },
+            'PROVIDER_DETAILS.MODELS.SAVE',
+            'PROVIDER_DETAILS.MODELS.CANCEL',
+            { baseZIndex: 100 }
+          )
+          .pipe(
+            switchMap((dialogResult: DialogState<Model | undefined> | undefined) => {
+              if (!dialogResult || dialogResult.button === 'secondary') {
+                return of(ProviderDetailsActions.providerModelUpdateCancelled())
+              }
+              if (!dialogResult.result) {
+                return of(ProviderDetailsActions.providerModelUpdateFailed({ error: 'Missing model dialog result' }))
+              }
+              const modelUpdate: UpdateModelRequest = {
+                modificationCount: model.modificationCount ?? 0,
+                name: dialogResult.result.name,
+                modelIdentifier: dialogResult.result.modelIdentifier,
+                modelConfig: dialogResult.result.modelConfig ?? model.modelConfig,
+                provider: model.provider ?? details,
+                communicationMode: model.communicationMode
+              }
+              return this.modelService
+                .updateModelById(modelId, modelUpdate)
+                .pipe(map(() => ProviderDetailsActions.providerModelUpdateSucceeded()))
+            }),
+            catchError((error) => of(ProviderDetailsActions.providerModelUpdateFailed({ error })))
           )
       })
     )
@@ -201,7 +279,11 @@ export class ProviderDetailsEffects {
 
   refreshModelsAfterMutation$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ProviderDetailsActions.providerModelCreateSucceeded, ProviderDetailsActions.providerModelDeleteSucceeded),
+      ofType(
+        ProviderDetailsActions.providerModelCreateSucceeded,
+        ProviderDetailsActions.providerModelUpdateSucceeded,
+        ProviderDetailsActions.providerModelDeleteSucceeded
+      ),
       concatLatestFrom(() => this.store.select(ProviderDetailsSelectors.selectDetails)),
       map(([, details]) =>
         ProviderDetailsActions.providerModelsLoadRequested({
@@ -220,6 +302,9 @@ export class ProviderDetailsEffects {
           }
           if (action.type === ProviderDetailsActions.providerModelCreateSucceeded.type) {
             this.messageService.success({ summaryKey: 'PROVIDER_DETAILS.SUCCESS_MESSAGES.MODEL_CREATE_SUCCEEDED' })
+          }
+          if (action.type === ProviderDetailsActions.providerModelUpdateSucceeded.type) {
+            this.messageService.success({ summaryKey: 'PROVIDER_DETAILS.SUCCESS_MESSAGES.MODEL_UPDATE_SUCCEEDED' })
           }
           if (action.type === ProviderDetailsActions.providerModelDeleteSucceeded.type) {
             this.messageService.success({ summaryKey: 'PROVIDER_DETAILS.SUCCESS_MESSAGES.MODEL_DELETE_SUCCEEDED' })
@@ -248,6 +333,10 @@ export class ProviderDetailsEffects {
       key: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_CREATE_FAILED'
     },
     {
+      action: ProviderDetailsActions.providerModelUpdateFailed,
+      key: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_UPDATE_FAILED'
+    },
+    {
       action: ProviderDetailsActions.providerModelDeleteFailed,
       key: 'PROVIDER_DETAILS.ERROR_MESSAGES.MODEL_DELETE_FAILED'
     }
@@ -259,7 +348,15 @@ export class ProviderDetailsEffects {
         tap((action) => {
           const e = this.errorMessages.find((e) => e.action.type === action.type)
           if (e) {
-            this.messageService.error({ summaryKey: e.key })
+            const detailKey =
+              action.type === ProviderDetailsActions.providerModelCreateFailed.type ||
+              action.type === ProviderDetailsActions.providerModelUpdateFailed.type
+                ? getInvalidModelConfigDetail(getActionError(action))
+                : undefined
+            this.messageService.error({
+              summaryKey: e.key,
+              ...(detailKey ? { detailKey } : {})
+            })
           }
         })
       )

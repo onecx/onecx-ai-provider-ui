@@ -142,12 +142,13 @@ export class ScaffoldSearchEffects {
         if (!dialogResult.result) {
           throw new Error('DialogResult was not set as expected!')
         }
-        if (!dialogResult.result.id || dialogResult.result.modificationCount == undefined) {
+        const itemToEditId = dialogResult.result.id
+        const modificationCount = dialogResult.result.modificationCount
+        if (!itemToEditId || modificationCount == undefined) {
           throw new Error('Item id or modificationCount was not set as expected!')
         }
-        const itemToEditId = dialogResult.result.id
         const itemToEdit: UpdateScaffoldRequest = {
-          modificationCount: dialogResult.result.modificationCount ?? 0,
+          modificationCount,
           name: dialogResult.result.name,
           systemPrompt: dialogResult.result.systemPrompt,
           sourceProduct: dialogResult.result.sourceProduct,

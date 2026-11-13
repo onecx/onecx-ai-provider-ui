@@ -14,6 +14,9 @@ import { MultiSelectModule } from 'primeng/multiselect'
 import { TabsModule } from 'primeng/tabs'
 import { SelectModule } from 'primeng/select'
 import { TextareaModule } from 'primeng/textarea'
+import { TableModule } from 'primeng/table'
+import { TagModule } from 'primeng/tag'
+import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { Observable, map } from 'rxjs'
 
 import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
@@ -22,6 +25,7 @@ import { PortalPageComponent } from '@onecx/angular-utils'
 
 import {
   Agent,
+  AgentConfigurationVersion,
   AgentFilter,
   AgentFilterKeyEnum,
   AgentGroup,
@@ -34,6 +38,7 @@ import {
 import { agentDetailsActions } from './agent-details.actions'
 import { selectAgentDetailsViewModel } from './agent-details.selectors'
 import { AgentDetailsViewModel } from './agent-details.viewmodel'
+import { AgentConfigurationVersionCompareComponent } from './configuration-version-compare/configuration-version-compare.component'
 import { AgentToolRulesComponent } from './tool-rules/tool-rules.component'
 
 @Component({
@@ -55,7 +60,11 @@ import { AgentToolRulesComponent } from './tool-rules/tool-rules.component'
     AngularAcceleratorModule,
     PortalPageComponent,
     LetDirective,
-    AgentToolRulesComponent
+    AgentToolRulesComponent,
+    AgentConfigurationVersionCompareComponent,
+    TableModule,
+    TagModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './agent-details.component.html',
   styleUrls: ['./agent-details.component.scss']
@@ -126,6 +135,19 @@ export class AgentDetailsComponent implements OnInit {
           showCondition: !vm.editMode,
           actionCallback: () => {
             this.edit()
+          }
+        },
+        {
+          titleKey: 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION',
+          labelKey: 'AGENT_DETAILS.GENERAL.PUBLISH_CONFIGURATION',
+          permission: 'AGENT#EDIT',
+          show: 'always',
+          icon: PrimeIcons.SAVE,
+          conditional: true,
+          showCondition: !vm.editMode,
+          disabled: vm.isPublishingConfigurationVersion,
+          actionCallback: () => {
+            this.store.dispatch(agentDetailsActions.publishConfigurationVersionButtonClicked())
           }
         },
         {
@@ -290,6 +312,22 @@ export class AgentDetailsComponent implements OnInit {
 
   delete() {
     this.store.dispatch(agentDetailsActions.deleteButtonClicked())
+  }
+
+  activateConfigurationVersion(versionId: string) {
+    this.store.dispatch(agentDetailsActions.activateConfigurationVersionClicked({ versionId }))
+  }
+
+  onVersionExpand(versionId: string, alreadyLoaded: boolean) {
+    if (!alreadyLoaded) {
+      this.store.dispatch(agentDetailsActions.configurationVersionDetailRequested({ versionId }))
+    }
+  }
+
+  onRowExpand(event: { data: AgentConfigurationVersion }) {
+    if (event.data.id) {
+      this.store.dispatch(agentDetailsActions.configurationVersionDetailRequested({ versionId: event.data.id }))
+    }
   }
 
   get filtersFormArray(): FormArray {

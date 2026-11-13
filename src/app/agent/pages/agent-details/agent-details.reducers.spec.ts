@@ -33,7 +33,13 @@ describe('agentDetailsReducer', () => {
         groupsLoadingIndicator: true,
         groupsLoaded: false,
         editMode: false,
-        isSubmitting: false
+        isSubmitting: false,
+        isPublishingConfigurationVersion: false,
+        configurationVersions: [],
+        configurationVersionsLoadingIndicator: false,
+        activatingConfigurationVersionId: undefined,
+        configurationVersionDetails: {},
+        loadingVersionDetailIds: []
       })
     })
 
@@ -277,7 +283,11 @@ describe('agentDetailsReducer', () => {
       const action = agentDetailsActions.navigatedToDetailsPage({ id: '1' })
       const nextState = agentDetailsReducer(intermediateState, action)
 
-      expect(nextState).toEqual({ ...initialState, detailsLoadingIndicator: true })
+      expect(nextState).toEqual({
+        ...initialState,
+        detailsLoadingIndicator: true,
+        configurationVersionsLoadingIndicator: true
+      })
     })
   })
 
@@ -348,6 +358,186 @@ describe('agentDetailsReducer', () => {
       const nextState = agentDetailsReducer(intermediateState, action)
 
       expect(nextState).toEqual({ ...initialState, isSubmitting: false })
+    })
+  })
+
+  describe('publishConfigurationVersionSubmitted', () => {
+    it('should set isPublishingConfigurationVersion to true', () => {
+      const action = agentDetailsActions.publishConfigurationVersionSubmitted({
+        agentId: 'agent-1',
+        name: 'Release 1'
+      })
+
+      expect(agentDetailsReducer(initialState, action)).toEqual({
+        ...initialState,
+        isPublishingConfigurationVersion: true
+      })
+    })
+  })
+
+  describe('publishConfigurationVersionSucceeded', () => {
+    it('should reset isPublishingConfigurationVersion and append the new version', () => {
+      const action = agentDetailsActions.publishConfigurationVersionSucceeded({
+        version: { id: 'version-1', name: 'Release 1', active: true }
+      })
+
+      expect(agentDetailsReducer({ ...initialState, isPublishingConfigurationVersion: true }, action)).toEqual({
+        ...initialState,
+        isPublishingConfigurationVersion: false,
+        configurationVersions: [{ id: 'version-1', name: 'Release 1', active: true }]
+      })
+    })
+
+    it('should deactivate the previous active version only when the new version is active', () => {
+      const intermediateState: AgentDetailsState = {
+        ...initialState,
+        configurationVersions: [{ id: 'version-1', name: 'Release 1', active: true }]
+      }
+
+      const inactiveAction = agentDetailsActions.publishConfigurationVersionSucceeded({
+        version: { id: 'version-2', name: 'Release 2', active: false }
+      })
+      expect(agentDetailsReducer(intermediateState, inactiveAction).configurationVersions).toEqual([
+        { id: 'version-1', name: 'Release 1', active: true },
+        { id: 'version-2', name: 'Release 2', active: false }
+      ])
+
+      const activeAction = agentDetailsActions.publishConfigurationVersionSucceeded({
+        version: { id: 'version-2', name: 'Release 2', active: true }
+      })
+      expect(agentDetailsReducer(intermediateState, activeAction).configurationVersions).toEqual([
+        { id: 'version-1', name: 'Release 1', active: false },
+        { id: 'version-2', name: 'Release 2', active: true }
+      ])
+    })
+  })
+
+  describe('configurationVersionDetailRequested', () => {
+    it('should mark a version without cached details as loading', () => {
+      const action = agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' })
+
+      expect(agentDetailsReducer(initialState, action).loadingVersionDetailIds).toEqual(['version-1'])
+    })
+
+    it('should not mark a version with cached details as loading', () => {
+      const state: AgentDetailsState = {
+        ...initialState,
+        configurationVersionDetails: { 'version-1': { schemaVersion: '1' } as never }
+      }
+      const action = agentDetailsActions.configurationVersionDetailRequested({ versionId: 'version-1' })
+
+      expect(agentDetailsReducer(state, action).loadingVersionDetailIds).toEqual([])
+    })
+  })
+
+  describe('configurationVersionDetailReceived', () => {
+    it('should cache the configuration and clear the loading flag', () => {
+      const configuration = { schemaVersion: '1' } as never
+      const state: AgentDetailsState = { ...initialState, loadingVersionDetailIds: ['version-1', 'version-2'] }
+      const action = agentDetailsActions.configurationVersionDetailReceived({ versionId: 'version-1', configuration })
+
+      const result = agentDetailsReducer(state, action)
+
+      expect(result.configurationVersionDetails).toEqual({ 'version-1': configuration })
+      expect(result.loadingVersionDetailIds).toEqual(['version-2'])
+    })
+  })
+
+  describe('configurationVersionDetailLoadingFailed', () => {
+    it('should clear the loading flag without caching details', () => {
+      const state: AgentDetailsState = { ...initialState, loadingVersionDetailIds: ['version-1'] }
+      const action = agentDetailsActions.configurationVersionDetailLoadingFailed({
+        versionId: 'version-1',
+        error: 'boom'
+      })
+
+      const result = agentDetailsReducer(state, action)
+
+      expect(result.loadingVersionDetailIds).toEqual([])
+      expect(result.configurationVersionDetails).toEqual({})
+    })
+  })
+
+  describe('configurationVersionsReceived', () => {
+    it('should store the versions and stop the loading indicator', () => {
+      const state: AgentDetailsState = { ...initialState, configurationVersionsLoadingIndicator: true }
+      const versions = [{ id: 'version-1', name: 'v1.0', active: true }]
+
+      const result = agentDetailsReducer(state, agentDetailsActions.configurationVersionsReceived({ versions }))
+
+      expect(result.configurationVersions).toEqual(versions)
+      expect(result.configurationVersionsLoadingIndicator).toBe(false)
+    })
+  })
+
+  describe('configurationVersionsLoadingFailed', () => {
+    it('should clear the versions and stop the loading indicator', () => {
+      const state: AgentDetailsState = {
+        ...initialState,
+        configurationVersions: [{ id: 'version-1', name: 'v1.0', active: false }],
+        configurationVersionsLoadingIndicator: true
+      }
+
+      const result = agentDetailsReducer(state, agentDetailsActions.configurationVersionsLoadingFailed({ error: 'x' }))
+
+      expect(result.configurationVersions).toEqual([])
+      expect(result.configurationVersionsLoadingIndicator).toBe(false)
+    })
+  })
+
+  describe('activateConfigurationVersion', () => {
+    it('should mark the version as being activated when clicked', () => {
+      const action = agentDetailsActions.activateConfigurationVersionClicked({ versionId: 'version-2' })
+
+      expect(agentDetailsReducer(initialState, action).activatingConfigurationVersionId).toBe('version-2')
+    })
+
+    it('should make only the activated version active and clear the in-progress id on success', () => {
+      const state: AgentDetailsState = {
+        ...initialState,
+        activatingConfigurationVersionId: 'version-2',
+        configurationVersions: [
+          { id: 'version-1', name: 'v1.0', active: true },
+          { id: 'version-2', name: 'v2.0', active: false }
+        ]
+      }
+      const action = agentDetailsActions.activateConfigurationVersionSucceeded({
+        version: { id: 'version-2', name: 'v2.0', active: true }
+      })
+
+      const result = agentDetailsReducer(state, action)
+
+      expect(result.activatingConfigurationVersionId).toBeUndefined()
+      expect(result.configurationVersions).toEqual([
+        { id: 'version-1', name: 'v1.0', active: false },
+        { id: 'version-2', name: 'v2.0', active: true }
+      ])
+    })
+
+    it('should clear the in-progress id on failure', () => {
+      const state: AgentDetailsState = { ...initialState, activatingConfigurationVersionId: 'version-2' }
+
+      const result = agentDetailsReducer(state, agentDetailsActions.activateConfigurationVersionFailed({ error: 'x' }))
+
+      expect(result.activatingConfigurationVersionId).toBeUndefined()
+    })
+
+    it('should clear the in-progress id when the confirmation is cancelled', () => {
+      const state: AgentDetailsState = { ...initialState, activatingConfigurationVersionId: 'version-2' }
+
+      const result = agentDetailsReducer(state, agentDetailsActions.activateConfigurationVersionCancelled())
+
+      expect(result.activatingConfigurationVersionId).toBeUndefined()
+    })
+  })
+
+  describe('publishConfigurationVersionFailed', () => {
+    it('should reset isPublishingConfigurationVersion', () => {
+      const action = agentDetailsActions.publishConfigurationVersionFailed({ error: 'publish failed' })
+
+      expect(agentDetailsReducer({ ...initialState, isPublishingConfigurationVersion: true }, action)).toEqual(
+        initialState
+      )
     })
   })
 

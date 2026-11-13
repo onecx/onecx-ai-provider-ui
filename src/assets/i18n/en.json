@@ -298,7 +298,8 @@
       "EDIT": "Edit",
       "DELETE": "Delete",
       "CANCEL": "Cancel",
-      "SAVE": "Save"
+      "SAVE": "Save",
+      "PUBLISH_CONFIGURATION": "Publish configuration"
     },
     "FORM": {
       "ID": "ID",
@@ -324,7 +325,8 @@
     "TABS": {
       "GENERAL": "General",
       "ASSIGNMENTS": "Assignments",
-      "TOOL_RULES": "Tool Rules"
+      "TOOL_RULES": "Tool Rules",
+      "CONFIGURATION": "Configuration"
     },
     "TOOL_RULES": {
       "SELECT_TOOL": "Select MCP Tool",
@@ -372,6 +374,82 @@
       "CANCEL": "Cancel",
       "SUCCESS": "Agent deleted successfully",
       "ERROR": "Could not delete Agent"
+    },
+    "PUBLISH_CONFIGURATION": {
+      "HEADER": "Publish configuration",
+      "FORM": {
+        "NAME": "Configuration name",
+        "NAME_INVALID": "Enter a non-empty name of up to 255 characters.",
+        "PUBLISH": "Publish",
+        "CANCEL": "Cancel"
+      },
+      "SUCCESS": "Configuration version published and activated.",
+      "DUPLICATE_NAME": "A configuration version with this name already exists for this agent.",
+      "ERROR": "Could not publish and activate the configuration version.",
+      "CREATED_NOT_ACTIVATED": "The configuration version was created but could not be activated. Activate it from the list below."
+    },
+    "CONFIGURATION_VERSIONS": {
+      "EMPTY": "No configuration versions have been published yet.",
+      "NAME": "Name",
+      "STATUS": "Status",
+      "ACTIONS": "Actions",
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "ACTIVATE": "Activate",
+      "ACTIVATE_SUCCESS": "Configuration version activated.",
+      "ACTIVATE_ERROR": "Could not activate the configuration version.",
+      "ACTIVATE_ERROR_DEPENDENCIES": "Configuration dependencies are missing or incompatible.",
+      "ACTIVATE_CONFIRM_HEADER": "Activate Configuration Version",
+      "ACTIVATE_CONFIRM_MESSAGE": "Activating this version will deactivate the currently active version. Only one version can be active at a time. Continue?",
+      "CANCEL": "Cancel",
+      "TOGGLE_DETAILS": "Toggle configuration details",
+      "COMPARE": {
+        "FROM": "From version",
+        "TO": "To version",
+        "SELECT_VERSION": "Select version",
+        "ONLY_CHANGED": "Show only changes",
+        "PICK_TWO": "Select two versions to compare.",
+        "LOADING": "Loading version details…",
+        "CHANGED_COUNT": "{{ count }} field(s) differ",
+        "FIELD": "Field",
+        "NO_DIFFERENCES": "No differences found"
+      },
+      "DETAILS": {
+        "SCHEMA_VERSION": "Schema Version",
+        "PROVIDER": "Provider",
+        "MODEL": "Model",
+        "SCAFFOLD": "Scaffold",
+        "VOICE_ENABLED": "Voice Enabled",
+        "LANGUAGE": "Language",
+        "SKILLS": "Skills",
+        "MCP_SERVERS": "MCP Servers",
+        "SYSTEM_PROMPT": "System Prompt",
+        "YES": "Yes",
+        "NO": "No",
+        "NOT_AVAILABLE": "Configuration details are not available.",
+        "AGENT": "Agent",
+        "AGENT_NAME": "Agent Name",
+        "AGENT_ID": "Agent ID",
+        "TENANT_ID": "Tenant ID",
+        "DESCRIPTION": "Description",
+        "PROVIDER_TYPE": "Provider Type",
+        "LLM_URL": "LLM URL",
+        "AUTH_MODE": "Auth Mode",
+        "CREDENTIAL_REF": "Credential Reference",
+        "MODEL_IDENTIFIER": "Model Identifier",
+        "COMMUNICATION_MODE": "Communication Mode",
+        "MODEL_CONFIG": "Model Config",
+        "SOURCE": "Source",
+        "POSITION": "Position",
+        "INSTRUCTION": "Instruction",
+        "URL": "URL",
+        "UNLISTED_TOOL_PERMISSION": "Unlisted Tool Permission",
+        "UNLISTED_TOOL_PERMISSION_SOURCE": "Unlisted Tool Permission Source",
+        "TOOL_RULES": "Tool Rules",
+        "TOOL_NAME": "Tool",
+        "PERMISSION": "Permission",
+        "POLICY_SOURCE": "Policy Source"
+      }
     }
   },
   "AGENT_SEARCH": {
@@ -823,11 +901,14 @@
       "UPDATE_FAILED": "Updating provider failed.",
       "MODELS_LOADING_FAILED": "Loading models failed.",
       "MODEL_CREATE_FAILED": "Creating model failed.",
-      "MODEL_DELETE_FAILED": "Deleting model failed."
+      "MODEL_UPDATE_FAILED": "Updating model failed.",
+      "MODEL_DELETE_FAILED": "Deleting model failed.",
+      "INVALID_MODEL_CONFIG_DETAIL": "Check the model API and reasoning effort settings."
     },
     "SUCCESS_MESSAGES": {
       "UPDATE_SUCCEEDED": "Provider updated successfully.",
       "MODEL_CREATE_SUCCEEDED": "Model created successfully.",
+      "MODEL_UPDATE_SUCCEEDED": "Model updated successfully.",
       "MODEL_DELETE_SUCCEEDED": "Model deleted successfully."
     },
     "GENERAL": {
@@ -842,9 +923,23 @@
       "MODELS": "Models"
     },
     "MODELS": {
-      "NEW_MODEL": "New model identifier",
       "CREATE": "Create model",
+      "CREATE_HEADER": "Create model",
+      "EDIT_HEADER": "Edit model",
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "MODEL_IDENTIFIER": "Model identifier",
+      "IDENTIFIER_VALIDATION": "Enter a non-blank model identifier up to 255 characters to enable Save.",
+      "EDIT": "Edit model",
       "DELETE": "Delete model",
+      "API": "API",
+      "API_OPTIONS": {
+        "chat-completions": "Chat Completions",
+        "responses": "Responses"
+      },
+      "REASONING_EFFORT": "Reasoning effort (optional)",
+      "LEGACY_CONFIG_WARNING": "The existing model configuration is malformed or unsupported. It is not applied; saving will replace it with supported settings.",
+      "CONFIGURATION_TOO_LONG": "The serialized model configuration exceeds the 255-character storage limit.",
       "LOADING": "Loading models...",
       "EMPTY": "No models assigned."
     },

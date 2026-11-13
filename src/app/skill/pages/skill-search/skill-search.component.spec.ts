@@ -197,6 +197,13 @@ describe('SkillSearchComponent', () => {
     expect(showHideChartActionItem).not.toBeNull()
   })
 
+  it('should dispatch createSkillButtonClicked when the create header action is invoked', async () => {
+    const actions = await firstValueFrom(component.headerActions$)
+    actions.find((action) => action.labelKey === 'SKILL_CREATE_UPDATE.ACTION.CREATE')?.actionCallback?.()
+
+    expect(store.dispatch).toHaveBeenCalledWith(skillSearchActions.createSkillButtonClicked())
+  })
+
   it('should display hide chart action if chart is visible', async () => {
     store.overrideSelector(selectSkillSearchViewModel, { ...baseSkillSearchViewModel, chartVisible: true })
     store.refreshState()

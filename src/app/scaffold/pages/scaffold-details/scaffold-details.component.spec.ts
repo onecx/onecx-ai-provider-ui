@@ -245,12 +245,26 @@ describe('ScaffoldDetailsComponent', () => {
 
     component.formGroup.setValue(scaffoldForm)
     component.formGroup.markAsDirty()
-    component.save()
+    const actions = await firstValueFrom(component.headerActions$)
+    actions.find((action) => action.labelKey === 'SCAFFOLD_DETAILS.GENERAL.SAVE')?.actionCallback?.()
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(
       scaffoldDetailsActions.saveButtonClicked({ details: { ...scaffold, ...scaffoldForm } })
     )
+  })
+
+  it('should display a translated source label when the scaffold has a source', async () => {
+    store.overrideSelector(selectScaffoldDetailsViewModel, {
+      ...baseScaffoldDetailsViewModel,
+      details: { id: '123', source: 'TENANT' } as never
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const details = await firstValueFrom(component.objectDetails$)
+
+    expect(details.find((item) => item.label === 'SCAFFOLD_DETAILS.FORM.SOURCE')?.value).toBe('SCAFFOLD_SOURCE.TENANT')
   })
 
   it('should not dispatch saveButtonClicked when the form has no changes', () => {
