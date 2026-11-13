@@ -65,26 +65,58 @@ export const selectGroupsState = createSelector(
   })
 )
 
-export const selectAgentDetailsCoreState = createSelector(
+export const selectDetailsCoreState = createSelector(
   agentDetailsSelectors.selectDetails,
   agentDetailsSelectors.selectDetailsLoadingIndicator,
   agentDetailsSelectors.selectDetailsLoaded,
   agentDetailsSelectors.selectEditMode,
   agentDetailsSelectors.selectIsSubmitting,
-  selectBackNavigationPossible,
+  agentDetailsSelectors.selectIsPublishingConfigurationVersion,
   (
     details: Agent | undefined,
     detailsLoadingIndicator,
     detailsLoaded,
     editMode,
     isSubmitting,
-    backNavigationPossible
+    isPublishingConfigurationVersion
   ) => ({
     details,
     detailsLoadingIndicator,
     detailsLoaded,
     editMode,
     isSubmitting,
+    isPublishingConfigurationVersion
+  })
+)
+
+export const selectConfigurationVersionsState = createSelector(
+  agentDetailsSelectors.selectConfigurationVersions,
+  agentDetailsSelectors.selectConfigurationVersionsLoadingIndicator,
+  agentDetailsSelectors.selectActivatingConfigurationVersionId,
+  agentDetailsSelectors.selectConfigurationVersionDetails,
+  agentDetailsSelectors.selectLoadingVersionDetailIds,
+  (
+    configurationVersions,
+    configurationVersionsLoadingIndicator,
+    activatingConfigurationVersionId,
+    configurationVersionDetails,
+    loadingVersionDetailIds
+  ) => ({
+    configurationVersions,
+    configurationVersionsLoadingIndicator,
+    activatingConfigurationVersionId,
+    configurationVersionDetails,
+    loadingVersionDetailIds
+  })
+)
+
+export const selectAgentDetailsCoreState = createSelector(
+  selectDetailsCoreState,
+  selectConfigurationVersionsState,
+  selectBackNavigationPossible,
+  (detailsState, versionsState, backNavigationPossible) => ({
+    ...detailsState,
+    ...versionsState,
     backNavigationPossible
   })
 )
