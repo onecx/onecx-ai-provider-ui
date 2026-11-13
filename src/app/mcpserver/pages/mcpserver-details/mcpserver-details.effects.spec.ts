@@ -3,7 +3,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, EventType, Router } from '@angu
 import { provideMockActions } from '@ngrx/effects/testing'
 import { routerNavigatedAction } from '@ngrx/router-store'
 import { MockStore, provideMockStore } from '@ngrx/store/testing'
-import { MonoTypeOperatorFunction, ReplaySubject, map, of, throwError } from 'rxjs'
+import { MonoTypeOperatorFunction, ReplaySubject, firstValueFrom, map, of, throwError } from 'rxjs'
 
 import { PortalMessageServiceMock, providePortalMessageServiceMock } from '@onecx/angular-integration-interface/mocks'
 import { DialogState, PortalDialogService } from '@onecx/angular-accelerator'
@@ -384,6 +384,23 @@ describe('MCPServerDetailsEffects', () => {
         expect(router.navigate).toHaveBeenCalledWith(['/some/path'])
         done()
       })
+    })
+
+    it('should log an error when navigation after delete fails', async () => {
+      const mockUrl = '/mcpserver/details/123'
+      const error = new Error('navigate failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockUrl))
+      const mockUrlTree = { queryParams: { foo: 'bar' }, fragment: 'section', toString: () => mockUrl }
+      ;(router.parseUrl as jest.Mock).mockReturnValueOnce(mockUrlTree)
+      ;(router.navigate as jest.Mock).mockReturnValueOnce(Promise.reject(error))
+
+      actions$.next(MCPServerDetailsActions.deleteMCPServerSucceeded())
+      await firstValueFrom(effects.deleteMCPServerSucceeded$)
+
+      expect(router.navigate).toHaveBeenCalledWith(['/mcpserver'])
+      expect(consoleSpy).toHaveBeenCalledWith(error)
+      consoleSpy.mockRestore()
     })
   })
 

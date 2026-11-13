@@ -321,8 +321,10 @@ describe('ScaffoldSearchComponent', () => {
     fixture.detectChanges()
     await fixture.whenStable()
     const pageContent = fixture.nativeElement.textContent
-    expect(pageContent).toContain('Scaffold Search')
-    expect(pageContent).toContain('Searching and displaying of Scaffolds')
+    expect(pageContent).toContain('Scaffold (Agent Template) Search')
+    expect(pageContent).toContain(
+      'Search and manage reusable templates used as the baseline configuration for new agents'
+    )
   })
 
   it('should display translated empty message when no search results', async () => {

@@ -107,11 +107,13 @@ describe('SkillSearchEffects', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
+    ;(router.navigate as jest.Mock).mockResolvedValue(true)
     ;(router.parseUrl as jest.Mock).mockImplementation((url: string) => ({
       toString: () => (url ? url.split('?')[0].split('#')[0] : '/search'),
       queryParams: {},
       fragment: null
     }))
+    ;(exportDataService.exportCsv as jest.Mock).mockResolvedValue(undefined)
   })
 
   describe('syncParamsToUrl$', () => {
@@ -139,6 +141,23 @@ describe('SkillSearchEffects', () => {
       effects.syncParamsToUrl$.pipe(take(1)).subscribe(() => {
         expect(navigateSpy).not.toHaveBeenCalled()
         done()
+      })
+
+      actions$.next(skillSearchActions.searchButtonClicked({ searchCriteria: mockCriteria }))
+    })
+
+    it('should log an error when URL sync navigation rejects', (done) => {
+      const error = new Error('navigate failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      route.queryParams = of({ different: 'yes' })
+      ;(router.navigate as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      effects.syncParamsToUrl$.pipe(take(1)).subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
       })
 
       actions$.next(skillSearchActions.searchButtonClicked({ searchCriteria: mockCriteria }))
@@ -300,6 +319,34 @@ describe('SkillSearchEffects', () => {
       actions$.next(skillSearchActions.exportButtonClicked())
     })
 
+    it('should log an error when exportCsv rejects', (done) => {
+      const error = new Error('export failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      const mockColumns: DataTableColumn[] = [
+        {
+          columnType: ColumnType.STRING,
+          id: 'name',
+          nameKey: 'SKILL_SEARCH.RESULTS.CHANGE_ME'
+        }
+      ]
+      const mockViewModel = {
+        resultComponentState: { displayedColumns: mockColumns },
+        results: [{ id: '1', name: 'Context 1' }]
+      }
+      store.overrideSelector(selectSkillSearchViewModel, mockViewModel as unknown as SkillSearchViewModel)
+      ;(exportDataService.exportCsv as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      effects.exportData$.pipe(take(1)).subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
+      })
+
+      actions$.next(skillSearchActions.exportButtonClicked())
+    })
+
     it('should handle export with empty results', (done) => {
       const mockColumns: DataTableColumn[] = [
         {
@@ -359,6 +406,23 @@ describe('SkillSearchEffects', () => {
         expect(router.parseUrl).toHaveBeenCalledWith('')
         expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
         done()
+      })
+
+      actions$.next(skillSearchActions.detailsButtonClicked({ id: testId }))
+    })
+
+    it('should log an error when details navigation rejects', (done) => {
+      const testId = 'test-456'
+      const error = new Error('details navigation failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      ;(router.navigate as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
       })
 
       actions$.next(skillSearchActions.detailsButtonClicked({ id: testId }))

@@ -20,4 +20,4 @@ bootstrapRemoteComponent(OneCXAiConnectorComponent, 'ocx-ai-connector-component'
   provideHttpClient(withInterceptorsFromDi()),
   importProvidersFrom(AngularAuthModule),
   apiConfigurationProvider
-])
+]).catch((err) => console.error(err))

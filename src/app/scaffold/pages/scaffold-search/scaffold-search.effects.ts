@@ -66,12 +66,14 @@ export class ScaffoldSearchEffects {
             const params = {
               ...criteria
             }
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: params,
-              replaceUrl: true,
-              onSameUrlNavigation: 'ignore'
-            })
+            this.router
+              .navigate([], {
+                relativeTo: this.route,
+                queryParams: params,
+                replaceUrl: true,
+                onSameUrlNavigation: 'ignore'
+              })
+              .catch((err) => console.error(err))
           }
         })
       )
@@ -88,7 +90,7 @@ export class ScaffoldSearchEffects {
           const urlTree = this.router.parseUrl(currentUrl)
           urlTree.queryParams = {}
           urlTree.fragment = null
-          this.router.navigate([urlTree.toString(), 'details', action.id])
+          this.router.navigate([urlTree.toString(), 'details', action.id]).catch((err) => console.error(err))
         })
       )
     },
@@ -278,11 +280,9 @@ export class ScaffoldSearchEffects {
         ofType(scaffoldSearchActions.exportButtonClicked),
         concatLatestFrom(() => this.store.select(selectScaffoldSearchViewModel)),
         map(([, viewModel]) => {
-          this.exportDataService.exportCsv(
-            viewModel.resultComponentState?.displayedColumns ?? [],
-            viewModel.results,
-            'export_scaffold.csv'
-          )
+          this.exportDataService
+            .exportCsv(viewModel.resultComponentState?.displayedColumns ?? [], viewModel.results, 'export_scaffold.csv')
+            .catch((err) => console.error(err))
         })
       )
     },

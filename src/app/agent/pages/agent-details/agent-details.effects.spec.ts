@@ -538,6 +538,23 @@ describe('AgentDetailsEffects', () => {
       expect(mockUrlTree.fragment).toBeNull()
       expect(router.navigate).toHaveBeenCalledWith(['/agents'])
     })
+
+    it('should log an error when navigation after delete fails', async () => {
+      const mockUrl = '/agents/details/123'
+      const error = new Error('navigate failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      jest.spyOn(store, 'select').mockReturnValueOnce(of(mockUrl))
+      const mockUrlTree = { queryParams: { foo: 'bar' }, fragment: 'section', toString: () => mockUrl }
+      ;(router.parseUrl as jest.Mock).mockReturnValueOnce(mockUrlTree)
+      ;(router.navigate as jest.Mock).mockReturnValueOnce(Promise.reject(error))
+
+      actions$.next(agentDetailsActions.deleteAgentSucceeded())
+      await firstValueFrom(effects.deleteAgentSucceeded$)
+
+      expect(router.navigate).toHaveBeenCalledWith(['/agents'])
+      expect(consoleSpy).toHaveBeenCalledWith(error)
+      consoleSpy.mockRestore()
+    })
   })
 
   describe('displayError$', () => {

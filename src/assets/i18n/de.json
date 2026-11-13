@@ -28,8 +28,8 @@
   },
   "SCAFFOLD_DETAILS": {
     "CHANGE_ME": "ACTION D3: Adjust translation keys for details header",
-    "HEADER": "Scaffold Details",
-    "SUB_HEADER": "Anzeigen von Scaffold Details",
+    "HEADER": "Scaffold (Agentenvorlage) Details",
+    "SUB_HEADER": "Basiskonfigurationsvorlage, die beim Erstellen oder Aktualisieren von Agenten verwendet wird",
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "BREADCRUMB": "Details",
     "ARIA_LABEL": "Seitenkopf mit Details",
@@ -64,7 +64,7 @@
     },
     "UPDATE": {
       "CHANGE_ME": "ACTION D3: Adjust translation keys for update dialog",
-      "HEADER": "Scaffold ändern",
+      "HEADER": "Scaffold (Agentenvorlage) ändern",
       "SUCCESS": "Speichern erfolgreich",
       "ERROR": "Speichern fehlgeschlagen",
       "FORM": {
@@ -74,7 +74,7 @@
     },
     "DELETE": {
       "CHANGE_ME": "ACTION D3: Adjust translation keys for delete confirmation dialog",
-      "HEADER": "Scaffold löschen",
+      "HEADER": "Scaffold (Agentenvorlage) löschen",
       "MESSAGE": "Bitte bestätigen Sie, dass Sie Scaffold löschen möchten.",
       "CONFIRM": "Bestätigen",
       "CANCEL": "Abbrechen",
@@ -83,8 +83,8 @@
     }
   },
   "SCAFFOLD_SEARCH": {
-    "HEADER": "Suche",
-    "SUB_HEADER": "Suchen und Anzeigen von ...",
+    "HEADER": "Scaffold (Agentenvorlage) Suche",
+    "SUB_HEADER": "Verwalten Sie wiederverwendbare Vorlagen, die die Basiskonfiguration neuer Agenten festlegen",
     "HELP_ARTICLE_ID": "Hilfeartikel",
     "EMPTY_RESULTS": "Keine Ergebnisse.",
     "BREADCRUMB": "Suche",
@@ -139,7 +139,7 @@
       "CREATE": "Erstellen"
     },
     "CREATE": {
-      "HEADER": "Neues Scaffold erstellen",
+      "HEADER": "Neues Scaffold (Agentenvorlage) erstellen",
       "SUCCESS": "Erstellung erfolgreich",
       "ERROR": "Erstellung fehlgeschlagen",
       "FORM": {
@@ -148,7 +148,7 @@
       }
     },
     "UPDATE": {
-      "HEADER": "Scaffold bearbeiten",
+      "HEADER": "Scaffold (Agentenvorlage) bearbeiten",
       "SUCCESS": "Aktualisierung erfolgreich",
       "ERROR": "Aktualisierung fehlgeschlagen",
       "FORM": {
@@ -492,9 +492,9 @@
         "DESCRIPTION": "Verwalten Sie Agent-Definitionen, Versionen und den Betriebsstatus."
       },
       "SCAFFOLD": {
-        "TITLE": "Scaffold",
+        "TITLE": "Scaffold (Agentenvorlage)",
         "SUBTITLE": "Prompt-Grundlage",
-        "DESCRIPTION": "Steuern Sie wiederverwendbare Scaffold-Vorlagen und Basis-Systemprompts."
+        "DESCRIPTION": "Steuern Sie wiederverwendbare Vorlagen, die den Basis-Systemprompt und die Skills neuer Agenten festlegen."
       },
       "SKILL": {
         "TITLE": "Skill",
@@ -810,11 +810,14 @@
       "UPDATE_FAILED": "Provider konnte nicht aktualisiert werden.",
       "MODELS_LOADING_FAILED": "Modelle konnten nicht geladen werden.",
       "MODEL_CREATE_FAILED": "Modell konnte nicht erstellt werden.",
-      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden."
+      "MODEL_UPDATE_FAILED": "Modell konnte nicht aktualisiert werden.",
+      "MODEL_DELETE_FAILED": "Modell konnte nicht gelöscht werden.",
+      "INVALID_MODEL_CONFIG_DETAIL": "Überprüfen Sie die Einstellungen für Modell-API und Reasoning-Aufwand."
     },
     "SUCCESS_MESSAGES": {
       "UPDATE_SUCCEEDED": "Provider wurde erfolgreich aktualisiert.",
       "MODEL_CREATE_SUCCEEDED": "Modell wurde erfolgreich erstellt.",
+      "MODEL_UPDATE_SUCCEEDED": "Modell wurde erfolgreich aktualisiert.",
       "MODEL_DELETE_SUCCEEDED": "Modell wurde erfolgreich gelöscht."
     },
     "GENERAL": {
@@ -829,9 +832,23 @@
       "MODELS": "Modelle"
     },
     "MODELS": {
-      "NEW_MODEL": "Neuer Modell-Identifikator",
       "CREATE": "Modell erstellen",
+      "CREATE_HEADER": "Modell erstellen",
+      "EDIT_HEADER": "Modell bearbeiten",
+      "SAVE": "Speichern",
+      "CANCEL": "Abbrechen",
+      "MODEL_IDENTIFIER": "Modell-Identifikator",
+      "IDENTIFIER_VALIDATION": "Geben Sie einen nicht leeren Modell-Identifikator mit höchstens 255 Zeichen ein, um Speichern zu aktivieren.",
+      "EDIT": "Modell bearbeiten",
       "DELETE": "Modell loeschen",
+      "API": "API",
+      "API_OPTIONS": {
+        "chat-completions": "Chat Completions",
+        "responses": "Responses"
+      },
+      "REASONING_EFFORT": "Reasoning-Aufwand (optional)",
+      "LEGACY_CONFIG_WARNING": "Die vorhandene Modellkonfiguration ist fehlerhaft oder nicht unterstützt. Sie wird nicht angewendet; beim Speichern wird sie durch unterstützte Einstellungen ersetzt.",
+      "CONFIGURATION_TOO_LONG": "Die serialisierte Modellkonfiguration überschreitet das Speicherlimit von 255 Zeichen.",
       "LOADING": "Modelle werden geladen...",
       "EMPTY": "Keine Modelle zugewiesen."
     },
@@ -899,5 +916,9 @@
     "DRAFT": "Entwurf",
     "LIVE": "Live",
     "DEPRECATED": "Veraltet"
+  },
+  "SCAFFOLD_SOURCE": {
+    "TENANT": "Manuell erstellt",
+    "GLOBAL": "Importiert"
   }
 }

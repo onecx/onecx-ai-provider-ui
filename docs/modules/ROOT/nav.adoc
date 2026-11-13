@@ -2,3 +2,4 @@
 
 xref:voice-configuration.adoc[]
 xref:tool-policy.adoc[]
+xref:model-configuration.adoc[]

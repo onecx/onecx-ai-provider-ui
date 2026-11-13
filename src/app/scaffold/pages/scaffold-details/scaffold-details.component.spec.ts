@@ -176,8 +176,10 @@ describe('ScaffoldDetailsComponent', () => {
 
   it('should display translated headers', async () => {
     const pageHeader = await scaffoldDetails.getHeader()
-    expect(await pageHeader.getHeaderText()).toEqual('Scaffold Details')
-    expect(await pageHeader.getSubheaderText()).toEqual('Display of Scaffold Details')
+    expect(await pageHeader.getHeaderText()).toEqual('Scaffold (Agent Template) Details')
+    expect(await pageHeader.getSubheaderText()).toEqual(
+      'Baseline configuration template applied when creating or updating agents'
+    )
   })
 
   it('should have 4 inline actions', async () => {

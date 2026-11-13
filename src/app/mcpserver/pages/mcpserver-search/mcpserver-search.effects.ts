@@ -45,12 +45,14 @@ export class MCPServerSearchEffects {
               // FUTURE IMPROVEMENT: Move to docs to explain how to only put the date part in the URL in case you have date and not datetime
               //exampleDate: criteria.exampleDate?.toISOString()?.slice(0, 10)
             }
-            this.router.navigate([], {
-              relativeTo: this.route,
-              queryParams: params,
-              replaceUrl: true,
-              onSameUrlNavigation: 'ignore'
-            })
+            this.router
+              .navigate([], {
+                relativeTo: this.route,
+                queryParams: params,
+                replaceUrl: true,
+                onSameUrlNavigation: 'ignore'
+              })
+              .catch((err) => console.error(err))
           }
         })
       )
@@ -67,7 +69,7 @@ export class MCPServerSearchEffects {
           const urlTree = this.router.parseUrl(currentUrl)
           urlTree.queryParams = {}
           urlTree.fragment = null
-          this.router.navigate([urlTree.toString(), 'details', action.id])
+          this.router.navigate([urlTree.toString(), 'details', action.id]).catch((err) => console.error(err))
         })
       )
     },
@@ -248,11 +250,9 @@ export class MCPServerSearchEffects {
         ofType(MCPServerSearchActions.exportButtonClicked),
         concatLatestFrom(() => this.store.select(selectMCPServerSearchViewModel)),
         map(([, viewModel]) => {
-          this.exportDataService.exportCsv(
-            viewModel.resultComponentState?.displayedColumns ?? [],
-            viewModel.results,
-            'MCPServer.csv'
-          )
+          this.exportDataService
+            .exportCsv(viewModel.resultComponentState?.displayedColumns ?? [], viewModel.results, 'MCPServer.csv')
+            .catch((err) => console.error(err))
         })
       )
     },

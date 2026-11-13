@@ -141,6 +141,21 @@ describe('MCPServerDetailsComponent', () => {
     expect(component).toBeTruthy()
   })
 
+  it('should log an error when hasPermission rejects', async () => {
+    const error = new Error('permission check failed')
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const userServiceMock = TestBed.inject(UserService)
+    jest.spyOn(userServiceMock, 'hasPermission').mockReturnValue(Promise.reject(error))
+
+    const rejectingFixture = TestBed.createComponent(MCPServerDetailsComponent)
+    rejectingFixture.detectChanges()
+
+    await Promise.resolve()
+
+    expect(consoleSpy).toHaveBeenCalledWith(error)
+    consoleSpy.mockRestore()
+  })
+
   it('should display correct breadcrumbs', () => {
     const breadcrumbService = component['breadcrumbService']
     jest.spyOn(breadcrumbService, 'setItems')

@@ -30,6 +30,11 @@ describe('ScaffoldSearch selectors', () => {
           { id: 'keep-me', name: 'C' }
         ] as never[],
         expected: [{ imagePath: '', id: 'keep-me', name: 'C' }]
+      },
+      {
+        desc: 'should map source to a SCAFFOLD_SOURCE translation key',
+        input: [{ id: '1', name: 'A', source: 'TENANT' }] as never[],
+        expected: [{ imagePath: '', id: '1', name: 'A', source: 'SCAFFOLD_SOURCE.TENANT' }]
       }
     ]
 

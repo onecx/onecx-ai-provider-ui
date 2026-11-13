@@ -111,11 +111,13 @@ describe('ProviderSearchEffects', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
+    ;(router.navigate as jest.Mock).mockResolvedValue(true)
     ;(router.parseUrl as jest.Mock).mockImplementation((url: string) => ({
       toString: () => (url ? url.split('?')[0].split('#')[0] : '/search'),
       queryParams: {},
       fragment: null
     }))
+    ;(exportDataService.exportCsv as jest.Mock).mockResolvedValue(undefined)
   })
 
   describe('syncParamsToUrl$', () => {
@@ -148,6 +150,23 @@ describe('ProviderSearchEffects', () => {
       actions$.next(ProviderSearchActions.searchButtonClicked({ searchCriteria: mockCriteria }))
     })
 
+    it('should log an error when URL sync navigation rejects', (done) => {
+      const error = new Error('navigate failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      route.queryParams = of({ different: 'yes' })
+      ;(router.navigate as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      effects.syncParamsToUrl$.pipe(take(1)).subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
+      })
+
+      actions$.next(ProviderSearchActions.searchButtonClicked({ searchCriteria: mockCriteria }))
+    })
+
     it('should navigate when resetButtonClicked action is triggered', (done) => {
       const navigateSpy = jest.spyOn(router, 'navigate')
       route.queryParams = of({ something: 'else' })
@@ -171,6 +190,25 @@ describe('ProviderSearchEffects', () => {
       effects.detailsButtonClicked$.pipe(take(1)).subscribe(() => {
         expect(navigateSpy).toHaveBeenCalledWith(['/search', 'details', testId])
         done()
+      })
+
+      actions$.next(ProviderSearchActions.detailsButtonClicked({ id: testId }))
+    })
+
+    it('should log an error when details navigation rejects', (done) => {
+      const testId = 'test-456'
+      const error = new Error('details navigation failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      ;(router.navigate as jest.Mock).mockReturnValue(Promise.reject(error))
+      store.overrideSelector(selectUrl, '/search')
+      store.refreshState()
+
+      effects.detailsButtonClicked$.pipe(take(1)).subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
       })
 
       actions$.next(ProviderSearchActions.detailsButtonClicked({ id: testId }))
@@ -322,6 +360,34 @@ describe('ProviderSearchEffects', () => {
       effects.exportData$.pipe(take(1)).subscribe(() => {
         expect(exportDataService.exportCsv).toHaveBeenCalledWith(mockColumns, mockResults, 'Provider.csv')
         done()
+      })
+
+      actions$.next(ProviderSearchActions.exportButtonClicked())
+    })
+
+    it('should log an error when exportCsv rejects', (done) => {
+      const error = new Error('export failed')
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+      const mockColumns: DataTableColumn[] = [
+        {
+          columnType: ColumnType.STRING,
+          id: 'name',
+          nameKey: 'PROVIDER_SEARCH.COLUMNS.NAME'
+        }
+      ]
+      const mockViewModel = {
+        displayedColumns: mockColumns,
+        results: [{ id: '1', name: 'Provider 1' }]
+      }
+      store.overrideSelector(selectProviderSearchViewModel, mockViewModel as unknown as ProviderSearchViewModel)
+      ;(exportDataService.exportCsv as jest.Mock).mockReturnValue(Promise.reject(error))
+
+      effects.exportData$.pipe(take(1)).subscribe(() => {
+        Promise.resolve().then(() => {
+          expect(consoleSpy).toHaveBeenCalledWith(error)
+          consoleSpy.mockRestore()
+          done()
+        })
       })
 
       actions$.next(ProviderSearchActions.exportButtonClicked())

@@ -57,7 +57,8 @@ export class ScaffoldDetailsComponent implements OnInit {
         {
           label: 'SCAFFOLD_DETAILS.FORM.SOURCE',
           labelPipe: TranslatePipe,
-          value: vm.details?.source
+          value: vm.details?.source ? `SCAFFOLD_SOURCE.${vm.details.source}` : undefined,
+          valuePipe: TranslatePipe
         },
         {
           label: 'SCAFFOLD_DETAILS.FORM.SOURCE_PRODUCT',
