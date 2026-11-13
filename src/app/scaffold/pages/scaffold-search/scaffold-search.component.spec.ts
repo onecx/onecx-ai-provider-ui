@@ -58,8 +58,8 @@ describe('ScaffoldSearchComponent', () => {
     listeners.forEach((l) =>
       (l as (event: { data: unknown; stopImmediatePropagation: () => void; stopPropagation: () => void }) => void)({
         data: m,
-        stopImmediatePropagation: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-        stopPropagation: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
+        stopImmediatePropagation: () => undefined,
+        stopPropagation: () => undefined
       })
     )
   }
@@ -477,7 +477,6 @@ describe('ScaffoldSearchComponent', () => {
     cases.forEach(({ method, action, payload }) => {
       it(`should dispatch ${action.type} when ${method} is called`, () => {
         jest.spyOn(store, 'dispatch')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ;(component as any)[method](payload)
 
         expect(store.dispatch).toHaveBeenCalledWith(action(payload))

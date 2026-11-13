@@ -68,8 +68,8 @@ describe('AgentDetailsComponent', () => {
     listeners.forEach((l) =>
       (l as (event: { data: unknown; stopImmediatePropagation: () => void; stopPropagation: () => void }) => void)({
         data: m,
-        stopImmediatePropagation: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-        stopPropagation: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
+        stopImmediatePropagation: () => undefined,
+        stopPropagation: () => undefined
       })
     )
   }
@@ -798,7 +798,7 @@ describe('AgentDetailsComponent', () => {
 
     it('should block saving voice without a language and report an error', () => {
       jest.spyOn(store, 'dispatch')
-      const messageError = jest.spyOn(component['messageService'], 'error').mockImplementation(() => {})
+      const messageError = jest.spyOn(component['messageService'], 'error').mockImplementation(() => undefined)
       component.formGroup.patchValue({ voiceEnabled: true, languageCode: null })
 
       component.save()
@@ -811,7 +811,7 @@ describe('AgentDetailsComponent', () => {
 
     it('should allow saving when voice is disabled and no language is set', () => {
       jest.spyOn(store, 'dispatch')
-      const messageError = jest.spyOn(component['messageService'], 'error').mockImplementation(() => {})
+      const messageError = jest.spyOn(component['messageService'], 'error').mockImplementation(() => undefined)
       component.formGroup.patchValue({ voiceEnabled: false, languageCode: null })
 
       component.save()

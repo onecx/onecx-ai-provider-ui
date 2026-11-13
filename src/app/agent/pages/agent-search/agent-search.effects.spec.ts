@@ -384,8 +384,7 @@ describe('AgentSearchEffects', () => {
       const testId = 'test-123'
       const navigateSpy = router
         ? jest.spyOn(router, 'navigate')
-        : // eslint-disable-next-line @typescript-eslint/no-empty-function
-          { mock: { calls: [] }, toHaveBeenCalledWith: () => {} }
+        : { mock: { calls: [] }, toHaveBeenCalledWith: () => undefined }
 
       effects.navigateToOrderDetailsPage$.pipe(take(1)).subscribe(() => {
         if (router) {
