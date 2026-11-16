@@ -1916,6 +1916,9 @@ components:
           $ref: '#/components/schemas/ExecutionPolicy'
         authMode:
           $ref: '#/components/schemas/AuthMode'
+        external:
+          type: boolean
+          description: True when the MCP server is outside OneCX; such servers have no OneCX permission coverage
     CreateToolRequest:
       type: object
       properties:
@@ -1933,6 +1936,8 @@ components:
           $ref: '#/components/schemas/ExecutionPolicy'
         authMode:
           $ref: '#/components/schemas/AuthMode'
+        external:
+          type: boolean
     UpdateToolRequest:
       type: object
       required:
@@ -1955,6 +1960,8 @@ components:
           $ref: '#/components/schemas/ExecutionPolicy'
         authMode:
           $ref: '#/components/schemas/AuthMode'
+        external:
+          type: boolean
     ToolSearchCriteria:
       type: object
       properties:

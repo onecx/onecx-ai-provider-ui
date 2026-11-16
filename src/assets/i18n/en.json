@@ -609,7 +609,7 @@
     "DENY": "Deny",
     "ALWAYS_ASK": "Always Ask",
     "ORPHANED": "Orphaned",
-    "NO_REQUIRED_PERMISSION": "None",
+    "NO_REQUIRED_PERMISSION": "Not gated",
     "ORPHANED_TOOLTIP": "This tool is no longer exposed by the MCP server",
     "EMPTY": "No tools discovered",
     "DISCOVERY_ERROR": "Tool discovery failed. Check the MCP server connection.",
@@ -624,7 +624,7 @@
       "DESCRIPTION": "Description",
       "ANNOTATIONS": "Annotations",
       "AUTO_DANGER_LEVEL": "Auto Danger Level",
-      "REQUIRED_PERMISSION": "Required Permission",
+      "REQUIRED_PERMISSION": "Required OneCX Permission",
       "ALLOWED": "Permission",
       "DANGER_LEVEL": "Danger Level",
       "ACTIONS": "Actions"
@@ -665,7 +665,8 @@
       "DESCRIPTION": "Description",
       "APIKEY": "API Key",
       "AUTH_MODE": "Authentication mode",
-      "EXECUTION_POLICY": "Execution policy"
+      "EXECUTION_POLICY": "Execution policy",
+      "EXTERNAL": "External MCP server (outside OneCX)"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",

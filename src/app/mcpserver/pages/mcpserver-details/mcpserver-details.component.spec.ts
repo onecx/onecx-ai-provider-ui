@@ -291,7 +291,7 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-    const details = baseMCPServerDetailsViewModel.details ?? createBaseDetails()
+    const details = { ...(baseMCPServerDetailsViewModel.details ?? createBaseDetails()), external: false }
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
   })
@@ -322,7 +322,9 @@ describe('MCPServerDetailsComponent', () => {
     fixture.detectChanges()
 
     component.save()
-    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+    expect(store.dispatch).toHaveBeenCalledWith(
+      MCPServerDetailsActions.saveButtonClicked({ details: { ...details, external: false } })
+    )
   })
 
   it('should not offer the deprecated allow execution policy', () => {
@@ -332,6 +334,24 @@ describe('MCPServerDetailsComponent', () => {
       ExecutionPolicy.NeverAsk
     ])
     expect(component.executionPolicyOptions).not.toContain(ExecutionPolicy.Allow)
+  })
+
+  it('should load the external flag and default it to false for existing servers', () => {
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details: { ...createBaseDetails(), external: true }
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    expect(component.formGroup.get('external')?.value).toBe(true)
+
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details: createBaseDetails()
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    expect(component.formGroup.get('external')?.value).toBe(false)
   })
 
   it('cancel clicked should dispatch cancel action', () => {

@@ -7,6 +7,7 @@ import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
 import { map, Observable } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
 import { FloatLabelModule } from 'primeng/floatlabel'
+import { CheckboxModule } from 'primeng/checkbox'
 import { InputTextModule } from 'primeng/inputtext'
 import { PasswordModule } from 'primeng/password'
 import { SelectModule } from 'primeng/select'
@@ -27,6 +28,7 @@ import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
     AngularAcceleratorModule,
     LetDirective,
     FloatLabelModule,
+    CheckboxModule,
     InputTextModule,
     PasswordModule,
     SelectModule,
@@ -140,7 +142,8 @@ export class MCPServerDetailsComponent implements OnInit {
       description: new FormControl(null, [Validators.required, Validators.maxLength(1024)]),
       url: new FormControl(null, [Validators.required, Validators.maxLength(2048)]),
       authMode: new FormControl<AuthMode | null>(null),
-      executionPolicy: new FormControl<ExecutionPolicy | null>(null)
+      executionPolicy: new FormControl<ExecutionPolicy | null>(null),
+      external: new FormControl<boolean>(false, { nonNullable: true })
     })
     this.formGroup.disable()
 
@@ -152,7 +155,8 @@ export class MCPServerDetailsComponent implements OnInit {
           description: vm.details?.description,
           url: vm.details?.url,
           authMode: vm.details?.authMode,
-          executionPolicy: vm.details?.executionPolicy
+          executionPolicy: vm.details?.executionPolicy,
+          external: vm.details?.external ?? false
         })
         this.formGroup.markAsPristine()
       }

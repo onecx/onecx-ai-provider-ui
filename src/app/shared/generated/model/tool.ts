@@ -27,6 +27,10 @@ export interface Tool {
     apiKey?: string;
     executionPolicy?: ExecutionPolicy;
     authMode?: AuthMode;
+    /**
+     * true if the tool is an MCP server outside OneCX (no OneCX permission metadata)
+     */
+    external?: boolean;
 }
 export enum ToolSourceEnum {
     Tenant = 'TENANT',

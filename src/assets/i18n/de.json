@@ -608,7 +608,7 @@
     "DENY": "Blockieren",
     "ALWAYS_ASK": "Immer nachfragen",
     "ORPHANED": "Verwaist",
-    "NO_REQUIRED_PERMISSION": "Keine",
+    "NO_REQUIRED_PERMISSION": "Nicht geschützt",
     "ORPHANED_TOOLTIP": "Dieses Tool wird vom MCP-Server nicht mehr bereitgestellt",
     "EMPTY": "Keine Tools gefunden",
     "DISCOVERY_ERROR": "Tool-Erkennung fehlgeschlagen. Bitte MCP-Server-Verbindung prüfen.",
@@ -623,7 +623,7 @@
       "DESCRIPTION": "Beschreibung",
       "ANNOTATIONS": "Annotationen",
       "AUTO_DANGER_LEVEL": "Autom. Gefahrenstufe",
-      "REQUIRED_PERMISSION": "Erforderliche Berechtigung",
+      "REQUIRED_PERMISSION": "Erforderliche OneCX-Berechtigung",
       "ALLOWED": "Berechtigung",
       "DANGER_LEVEL": "Gefahrenstufe",
       "ACTIONS": "Aktionen"
@@ -664,7 +664,8 @@
       "DESCRIPTION": "Beschreibung",
       "APIKEY": "API-Schlüssel",
       "AUTH_MODE": "Authentifizierungsmodus",
-      "EXECUTION_POLICY": "Ausführungsrichtlinie"
+      "EXECUTION_POLICY": "Ausführungsrichtlinie",
+      "EXTERNAL": "Externer MCP-Server (außerhalb von OneCX)"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",
