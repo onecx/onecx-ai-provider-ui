@@ -19,6 +19,7 @@ export interface DiscoveredToolInfo {
     autoDangerLevel?: DangerLevel;
     existingRule?: AgentMcpToolRule;
     orphaned?: boolean;
+    requiredPermission?: string;
 }
 
 

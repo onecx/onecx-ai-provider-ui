@@ -27,6 +27,7 @@ interface AgentToolRuleRow {
   allowed: ToolPermission
   existingRule?: AgentMcpToolRule
   orphaned: boolean
+  requiredPermission?: string
   dirty: boolean
   saving: boolean
 }
@@ -96,6 +97,7 @@ export class AgentToolRulesComponent implements OnChanges {
             allowed: tool.existingRule?.allowed ?? ToolPermission.Deny,
             existingRule: tool.existingRule,
             orphaned: tool.orphaned ?? false,
+            requiredPermission: tool.requiredPermission,
             dirty: false,
             saving: false
           }))

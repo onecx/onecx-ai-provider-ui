@@ -82,7 +82,8 @@ describe('AgentToolRulesComponent', () => {
           annotations: { readOnlyHint: true },
           autoDangerLevel: DangerLevel.Safe,
           existingRule: { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow },
-          orphaned: false
+          orphaned: false,
+          requiredPermission: 'onecx:search#mcp-read'
         },
         {
           name: 'delete_all',
@@ -104,11 +105,13 @@ describe('AgentToolRulesComponent', () => {
         allowed: ToolPermission.Allow,
         existingRule: { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow },
         orphaned: false,
+        requiredPermission: 'onecx:search#mcp-read',
         dirty: false,
         saving: false
       })
       expect(component.rows[1].allowed).toBe(ToolPermission.Deny)
       expect(component.rows[1].orphaned).toBe(true)
+      expect(component.rows[1].requiredPermission).toBeUndefined()
       expect(component.discoveryError).toBe(false)
     })
 

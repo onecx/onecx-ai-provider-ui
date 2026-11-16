@@ -60,6 +60,7 @@
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.NAME' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.DESCRIPTION' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.ANNOTATIONS' | translate }}</th>
+        <th scope="col">{{ 'TOOL_RULES.COLUMNS.REQUIRED_PERMISSION' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.AUTO_DANGER_LEVEL' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.ALLOWED' | translate }}</th>
         <th scope="col">{{ 'TOOL_RULES.COLUMNS.ACTIONS' | translate }}</th>
@@ -90,6 +91,13 @@
         <td>
           @for (badge of annotationBadges(row); track badge) {
             <p-tag severity="info" class="mr-1" [value]="badge | translate"></p-tag>
+          }
+        </td>
+        <td>
+          @if (row.requiredPermission) {
+            <code>{{ row.requiredPermission }}</code>
+          } @else {
+            <span class="text-color-secondary">{{ 'TOOL_RULES.NO_REQUIRED_PERMISSION' | translate }}</span>
           }
         </td>
         <td>
@@ -141,7 +149,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="7">{{ 'TOOL_RULES.EMPTY' | translate }}</td>
+        <td colspan="8">{{ 'TOOL_RULES.EMPTY' | translate }}</td>
       </tr>
     </ng-template>
   </p-table>

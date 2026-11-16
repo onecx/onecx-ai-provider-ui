@@ -609,6 +609,7 @@
     "DENY": "Deny",
     "ALWAYS_ASK": "Always Ask",
     "ORPHANED": "Orphaned",
+    "NO_REQUIRED_PERMISSION": "None",
     "ORPHANED_TOOLTIP": "This tool is no longer exposed by the MCP server",
     "EMPTY": "No tools discovered",
     "DISCOVERY_ERROR": "Tool discovery failed. Check the MCP server connection.",
@@ -623,6 +624,7 @@
       "DESCRIPTION": "Description",
       "ANNOTATIONS": "Annotations",
       "AUTO_DANGER_LEVEL": "Auto Danger Level",
+      "REQUIRED_PERMISSION": "Required Permission",
       "ALLOWED": "Permission",
       "DANGER_LEVEL": "Danger Level",
       "ACTIONS": "Actions"

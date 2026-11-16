@@ -608,6 +608,7 @@
     "DENY": "Blockieren",
     "ALWAYS_ASK": "Immer nachfragen",
     "ORPHANED": "Verwaist",
+    "NO_REQUIRED_PERMISSION": "Keine",
     "ORPHANED_TOOLTIP": "Dieses Tool wird vom MCP-Server nicht mehr bereitgestellt",
     "EMPTY": "Keine Tools gefunden",
     "DISCOVERY_ERROR": "Tool-Erkennung fehlgeschlagen. Bitte MCP-Server-Verbindung prüfen.",
@@ -622,6 +623,7 @@
       "DESCRIPTION": "Beschreibung",
       "ANNOTATIONS": "Annotationen",
       "AUTO_DANGER_LEVEL": "Autom. Gefahrenstufe",
+      "REQUIRED_PERMISSION": "Erforderliche Berechtigung",
       "ALLOWED": "Berechtigung",
       "DANGER_LEVEL": "Gefahrenstufe",
       "ACTIONS": "Aktionen"
