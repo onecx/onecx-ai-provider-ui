@@ -428,6 +428,7 @@
         "NO": "No",
         "NOT_AVAILABLE": "Configuration details are not available.",
         "AGENT": "Agent",
+        "ADDITIONAL_PROMPT": "Additional Prompt",
         "AGENT_NAME": "Agent Name",
         "AGENT_ID": "Agent ID",
         "TENANT_ID": "Tenant ID",
