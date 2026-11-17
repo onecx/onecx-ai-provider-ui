@@ -666,7 +666,11 @@
       "APIKEY": "API Key",
       "AUTH_MODE": "Authentication mode",
       "EXECUTION_POLICY": "Execution policy",
-      "EXTERNAL": "External MCP server (outside OneCX)"
+      "TYPE": "Server type",
+      "TYPE_INTERNAL": "Internal (OneCX)",
+      "TYPE_EXTERNAL": "External (outside OneCX)",
+      "PRODUCT_NAME": "Product name",
+      "APP_ID": "App ID"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",

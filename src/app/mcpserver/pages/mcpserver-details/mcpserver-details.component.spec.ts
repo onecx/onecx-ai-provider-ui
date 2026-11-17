@@ -27,6 +27,9 @@ import { initialState } from './mcpserver-details.reducers'
 import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
 import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
 
+// The form submits null for empty product/app fields so the backend clears them.
+const emptyCoordinates = { productName: null, appId: null } as unknown as { productName?: string; appId?: string }
+
 describe('MCPServerDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
   const origPostMessage = window.postMessage
@@ -293,7 +296,9 @@ describe('MCPServerDetailsComponent', () => {
     fixture.detectChanges()
     const details = { ...(baseMCPServerDetailsViewModel.details ?? createBaseDetails()), external: false }
     component.save()
-    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+    expect(store.dispatch).toHaveBeenCalledWith(
+      MCPServerDetailsActions.saveButtonClicked({ details: { ...details, ...emptyCoordinates } })
+    )
   })
 
   it('should load and save authentication and execution settings', () => {
@@ -323,8 +328,40 @@ describe('MCPServerDetailsComponent', () => {
 
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(
-      MCPServerDetailsActions.saveButtonClicked({ details: { ...details, external: false } })
+      MCPServerDetailsActions.saveButtonClicked({
+        details: { ...details, external: false, ...emptyCoordinates }
+      })
     )
+  })
+
+  it('should require product and app for internal servers and clear them for external ones', () => {
+    const details = { ...createBaseDetails(), external: false, productName: 'onecx-crm', appId: 'crm-app' }
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details,
+      editMode: true
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const productName = component.formGroup.get('productName')
+    const appId = component.formGroup.get('appId')
+    expect(productName?.value).toBe('onecx-crm')
+    expect(appId?.value).toBe('crm-app')
+
+    appId?.setValue(null)
+    expect(appId?.valid).toBe(false)
+
+    component.formGroup.get('external')?.setValue(true)
+    expect(productName?.value).toBeNull()
+    expect(appId?.value).toBeNull()
+    expect(appId?.valid).toBe(true)
   })
 
   it('should not offer the deprecated allow execution policy', () => {

@@ -19,6 +19,9 @@ export interface DiscoveredToolInfo {
     autoDangerLevel?: DangerLevel;
     existingRule?: AgentMcpToolRule;
     orphaned?: boolean;
+    /**
+     * OneCX permission the user needs to be allowed to call this tool, as published by the MCP server
+     */
     requiredPermission?: string;
 }
 

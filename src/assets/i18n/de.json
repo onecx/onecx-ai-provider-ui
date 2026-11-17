@@ -665,7 +665,12 @@
       "APIKEY": "API-Schlüssel",
       "AUTH_MODE": "Authentifizierungsmodus",
       "EXECUTION_POLICY": "Ausführungsrichtlinie",
-      "EXTERNAL": "Externer MCP-Server (außerhalb von OneCX)"
+      "EXECUTION_POLICY": "Ausführungsrichtlinie",
+      "TYPE": "Servertyp",
+      "TYPE_INTERNAL": "Intern (OneCX)",
+      "TYPE_EXTERNAL": "Extern (außerhalb von OneCX)",
+      "PRODUCT_NAME": "Produktname",
+      "APP_ID": "App-ID"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",

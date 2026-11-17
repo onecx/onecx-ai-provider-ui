@@ -1,13 +1,14 @@
 import { AsyncPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { LetDirective } from '@ngrx/component'
 import { Store } from '@ngrx/store'
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core'
-import { map, Observable } from 'rxjs'
+import { catchError, map, Observable, of } from 'rxjs'
 import { PrimeIcons } from 'primeng/api'
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete'
 import { FloatLabelModule } from 'primeng/floatlabel'
-import { CheckboxModule } from 'primeng/checkbox'
 import { InputTextModule } from 'primeng/inputtext'
 import { PasswordModule } from 'primeng/password'
 import { SelectModule } from 'primeng/select'
@@ -15,7 +16,7 @@ import { SelectModule } from 'primeng/select'
 import { Action, AngularAcceleratorModule, BreadcrumbService, ObjectDetailItem } from '@onecx/angular-accelerator'
 import { PortalPageComponent } from '@onecx/angular-utils'
 import { UserService } from '@onecx/angular-integration-interface'
-import { AuthMode, ExecutionPolicy } from 'src/app/shared/generated'
+import { ApplicationInfo, ApplicationService, AuthMode, ExecutionPolicy } from 'src/app/shared/generated'
 
 import { MCPServerDetailsActions } from './mcpserver-details.actions'
 import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
@@ -28,7 +29,7 @@ import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
     AngularAcceleratorModule,
     LetDirective,
     FloatLabelModule,
-    CheckboxModule,
+    AutoCompleteModule,
     InputTextModule,
     PasswordModule,
     SelectModule,
@@ -129,12 +130,22 @@ export class MCPServerDetailsComponent implements OnInit {
   public formGroup: FormGroup
   readonly authModeOptions = Object.values(AuthMode)
   readonly executionPolicyOptions = Object.values(ExecutionPolicy).filter((policy) => policy !== ExecutionPolicy.Allow)
+  readonly serverTypeOptions = [
+    { labelKey: 'MCPSERVER_DETAILS.FORM.TYPE_INTERNAL', value: false },
+    { labelKey: 'MCPSERVER_DETAILS.FORM.TYPE_EXTERNAL', value: true }
+  ]
   hasAPIKeyPermission = false
+  applications: ApplicationInfo[] = []
+  products: string[] = []
+  productSuggestions: string[] = []
+  appSuggestions: string[] = []
 
   constructor(
     private readonly store: Store,
     private readonly breadcrumbService: BreadcrumbService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly applicationService: ApplicationService,
+    private readonly destroyRef: DestroyRef
   ) {
     this.formGroup = new FormGroup({
       apiKey: new FormControl(null, [Validators.maxLength(255)]),
@@ -143,9 +154,27 @@ export class MCPServerDetailsComponent implements OnInit {
       url: new FormControl(null, [Validators.required, Validators.maxLength(2048)]),
       authMode: new FormControl<AuthMode | null>(null),
       executionPolicy: new FormControl<ExecutionPolicy | null>(null),
-      external: new FormControl<boolean>(false, { nonNullable: true })
+      external: new FormControl<boolean>(false, { nonNullable: true }),
+      productName: new FormControl<string | null>(null, [Validators.maxLength(255)]),
+      appId: new FormControl<string | null>(null, [Validators.maxLength(255)])
     })
     this.formGroup.disable()
+
+    this.formGroup
+      .get('external')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((external) => this.onServerTypeChanged(external))
+
+    this.applicationService
+      .getApplications()
+      .pipe(
+        catchError(() => of([] as ApplicationInfo[])),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((applications) => {
+        this.applications = applications
+        this.products = [...new Set(applications.map((app) => app.productName).filter(Boolean))] as string[]
+      })
 
     this.viewModel$.subscribe((vm) => {
       if (!vm.editMode) {
@@ -156,7 +185,9 @@ export class MCPServerDetailsComponent implements OnInit {
           url: vm.details?.url,
           authMode: vm.details?.authMode,
           executionPolicy: vm.details?.executionPolicy,
-          external: vm.details?.external ?? false
+          external: vm.details?.external ?? false,
+          productName: vm.details?.productName ?? null,
+          appId: vm.details?.appId ?? null
         })
         this.formGroup.markAsPristine()
       }
@@ -186,6 +217,40 @@ export class MCPServerDetailsComponent implements OnInit {
 
   edit() {
     this.store.dispatch(MCPServerDetailsActions.editButtonClicked())
+  }
+
+  searchProducts(event: AutoCompleteCompleteEvent) {
+    this.productSuggestions = this.matching(this.products, event.query)
+  }
+
+  searchApps(event: AutoCompleteCompleteEvent) {
+    const productName = this.formGroup.get('productName')?.value
+    const appIds = this.applications
+      .filter((app) => !productName || app.productName === productName)
+      .map((app) => app.appId)
+      .filter((appId): appId is string => !!appId)
+    this.appSuggestions = this.matching([...new Set(appIds)], event.query)
+  }
+
+  private matching(values: string[], query: string): string[] {
+    const normalized = (query ?? '').toLowerCase()
+    return values.filter((value) => value.toLowerCase().includes(normalized))
+  }
+
+  private onServerTypeChanged(external: boolean) {
+    const productName = this.formGroup.get('productName')
+    const appId = this.formGroup.get('appId')
+    if (external) {
+      productName?.setValue(null, { emitEvent: false })
+      appId?.setValue(null, { emitEvent: false })
+      productName?.clearValidators()
+      appId?.clearValidators()
+    } else {
+      productName?.setValidators([Validators.required, Validators.maxLength(255)])
+      appId?.setValidators([Validators.required, Validators.maxLength(255)])
+    }
+    productName?.updateValueAndValidity({ emitEvent: false })
+    appId?.updateValueAndValidity({ emitEvent: false })
   }
 
   cancel() {
