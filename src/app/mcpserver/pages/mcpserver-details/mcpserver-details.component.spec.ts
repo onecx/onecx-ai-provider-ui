@@ -27,8 +27,14 @@ import { initialState } from './mcpserver-details.reducers'
 import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
 import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
 
-// The form submits null for empty product/app fields so the backend clears them.
-const emptyCoordinates = { productName: null, appId: null } as unknown as { productName?: string; appId?: string }
+// Required fields for an internal server; saving is blocked without them.
+const validServer = {
+  name: 'srv',
+  description: 'desc',
+  url: 'https://example.com',
+  productName: 'onecx-crm',
+  appId: 'crm-app'
+}
 
 describe('MCPServerDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -232,6 +238,7 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
+    component.formGroup.patchValue(validServer)
 
     const actions = await firstValueFrom(component.headerActions$)
     actions.find((action) => action.labelKey === 'MCPSERVER_DETAILS.GENERAL.EDIT')?.actionCallback?.()
@@ -295,9 +302,25 @@ describe('MCPServerDetailsComponent', () => {
     store.refreshState()
     fixture.detectChanges()
     const details = { ...(baseMCPServerDetailsViewModel.details ?? createBaseDetails()), external: false }
+    component.formGroup.patchValue(validServer)
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(
-      MCPServerDetailsActions.saveButtonClicked({ details: { ...details, ...emptyCoordinates } })
+      MCPServerDetailsActions.saveButtonClicked({ details: { ...details, ...validServer } })
+    )
+  })
+
+  it('save clicked should not dispatch when an internal server lacks product or app', () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      editMode: true
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    component.formGroup.patchValue({ ...validServer, productName: null, appId: null })
+    component.save()
+    expect(store.dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: MCPServerDetailsActions.saveButtonClicked.type })
     )
   })
 
@@ -326,10 +349,11 @@ describe('MCPServerDetailsComponent', () => {
     store.refreshState()
     fixture.detectChanges()
 
+    component.formGroup.patchValue(validServer)
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(
       MCPServerDetailsActions.saveButtonClicked({
-        details: { ...details, external: false, ...emptyCoordinates }
+        details: { ...details, external: false, ...validServer }
       })
     )
   })

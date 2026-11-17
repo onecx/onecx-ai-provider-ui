@@ -189,6 +189,7 @@ export class MCPServerDetailsComponent implements OnInit {
           productName: vm.details?.productName ?? null,
           appId: vm.details?.appId ?? null
         })
+        this.onServerTypeChanged(this.formGroup.controls['external'].value)
         this.formGroup.markAsPristine()
       }
 
@@ -258,6 +259,10 @@ export class MCPServerDetailsComponent implements OnInit {
   }
 
   save() {
+    if (this.formGroup.invalid) {
+      this.formGroup.markAllAsTouched()
+      return
+    }
     this.store.dispatch(
       MCPServerDetailsActions.saveButtonClicked({
         details: this.formGroup.value
