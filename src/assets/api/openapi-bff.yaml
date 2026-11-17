@@ -1759,6 +1759,8 @@ components:
           type: string
         description:
           type: string
+        additionalPrompt:
+          type: string
     VoiceSettings:
       type: object
       properties:

@@ -13,5 +13,6 @@ export interface AgentConfigurationAgent {
     id?: string;
     name?: string;
     description?: string;
+    additionalPrompt?: string;
 }
 

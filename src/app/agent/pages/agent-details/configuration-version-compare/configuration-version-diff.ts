@@ -39,6 +39,7 @@ const LEAF_KEYS = new Map<string, string>(
     ['voiceEnabled', 'VOICE_ENABLED'],
     ['languageCode', 'LANGUAGE'],
     ['systemPrompt', 'SYSTEM_PROMPT'],
+    ['additionalPrompt', 'ADDITIONAL_PROMPT'],
     ['source', 'SOURCE'],
     ['position', 'POSITION'],
     ['instruction', 'INSTRUCTION'],

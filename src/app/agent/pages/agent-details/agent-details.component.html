@@ -498,6 +498,20 @@
                                         {{ vm.configurationVersionDetails[version.id!].agent?.description ?? '-' }}
                                       </div>
                                     </div>
+                                    @if (vm.configurationVersionDetails[version.id!].agent?.additionalPrompt) {
+                                      <div class="col-12">
+                                        <div class="text-500 text-sm mb-1">
+                                          {{
+                                            'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.ADDITIONAL_PROMPT' | translate
+                                          }}
+                                        </div>
+                                        <pre
+                                          class="m-0 text-sm white-space-pre-wrap border-1 surface-border p-3 border-round"
+                                          >{{
+                                            vm.configurationVersionDetails[version.id!].agent!.additionalPrompt
+                                          }}</pre>
+                                      </div>
+                                    }
                                   </div>
 
                                   <div class="grid">
