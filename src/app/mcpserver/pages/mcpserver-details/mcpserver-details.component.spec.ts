@@ -483,19 +483,21 @@ describe('MCPServerDetailsComponent', () => {
         { productName: 'onecx-portal', appId: 'portal', name: 'Portal' },
         { productName: undefined, appId: 'orphan', name: 'Orphan' }
       ]
-      httpMock.match((req) => req.url.endsWith('/applications')).forEach((req) => {
-        expect(req.request.method).toBe('GET')
-        req.flush(applications)
-      })
+      httpMock
+        .match((req) => req.url.endsWith('/applications'))
+        .forEach((req) => {
+          expect(req.request.method).toBe('GET')
+          req.flush(applications)
+        })
 
       expect(component.applications).toEqual(applications)
       expect(component.products).toEqual(['onecx-crm', 'onecx-portal'])
     })
 
     it('should fall back to empty lists when loading applications fails', () => {
-      httpMock.match((req) => req.url.endsWith('/applications')).forEach((req) =>
-        req.flush('boom', { status: 500, statusText: 'Server Error' })
-      )
+      httpMock
+        .match((req) => req.url.endsWith('/applications'))
+        .forEach((req) => req.flush('boom', { status: 500, statusText: 'Server Error' }))
 
       expect(component.applications).toEqual([])
       expect(component.products).toEqual([])
