@@ -1,7 +1,7 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute } from '@angular/router'
@@ -467,5 +467,81 @@ describe('MCPServerDetailsComponent', () => {
     jest.spyOn(store, 'dispatch')
     component.toggleApiKeyVisibility()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.apiKeyVisibilityToggled())
+  })
+
+  describe('application loading', () => {
+    let httpMock: HttpTestingController
+
+    beforeEach(() => {
+      httpMock = TestBed.inject(HttpTestingController)
+    })
+
+    it('should load applications and build the deduplicated product list', () => {
+      const applications = [
+        { productName: 'onecx-crm', appId: 'crm-app', name: 'CRM' },
+        { productName: 'onecx-crm', appId: 'crm-admin', name: 'CRM Admin' },
+        { productName: 'onecx-portal', appId: 'portal', name: 'Portal' },
+        { productName: undefined, appId: 'orphan', name: 'Orphan' }
+      ]
+      httpMock.match((req) => req.url.endsWith('/applications')).forEach((req) => {
+        expect(req.request.method).toBe('GET')
+        req.flush(applications)
+      })
+
+      expect(component.applications).toEqual(applications)
+      expect(component.products).toEqual(['onecx-crm', 'onecx-portal'])
+    })
+
+    it('should fall back to empty lists when loading applications fails', () => {
+      httpMock.match((req) => req.url.endsWith('/applications')).forEach((req) =>
+        req.flush('boom', { status: 500, statusText: 'Server Error' })
+      )
+
+      expect(component.applications).toEqual([])
+      expect(component.products).toEqual([])
+    })
+  })
+
+  describe('product and app autocomplete', () => {
+    it('searchProducts filters products by the query', () => {
+      component.products = ['onecx-crm', 'onecx-portal', 'other-product']
+
+      component.searchProducts({ query: 'onecx' } as any)
+
+      expect(component.productSuggestions).toEqual(['onecx-crm', 'onecx-portal'])
+    })
+
+    it('searchProducts falls back to an empty query when query is nullish', () => {
+      component.products = ['onecx-crm', 'other-product']
+
+      component.searchProducts({ query: undefined } as any)
+
+      expect(component.productSuggestions).toEqual(['onecx-crm', 'other-product'])
+    })
+
+    it('searchApps filters all app ids by the query when no product is selected', () => {
+      component.applications = [
+        { productName: 'onecx-crm', appId: 'crm-app' },
+        { productName: 'onecx-portal', appId: 'portal' },
+        { productName: 'onecx-portal', appId: undefined }
+      ]
+
+      component.searchApps({ query: 'crm' } as any)
+
+      expect(component.appSuggestions).toEqual(['crm-app'])
+    })
+
+    it('searchApps restricts app ids to the selected product', () => {
+      component.applications = [
+        { productName: 'onecx-crm', appId: 'crm-app' },
+        { productName: 'onecx-crm', appId: 'crm-admin' },
+        { productName: 'onecx-portal', appId: 'portal' }
+      ]
+      component.formGroup.get('productName')?.setValue('onecx-crm')
+
+      component.searchApps({ query: '' } as any)
+
+      expect(component.appSuggestions).toEqual(['crm-app', 'crm-admin'])
+    })
   })
 })
