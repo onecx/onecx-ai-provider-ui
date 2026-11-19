@@ -301,7 +301,7 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-    const details = { ...(baseMCPServerDetailsViewModel.details ?? createBaseDetails()), external: false }
+    const details = { ...(baseMCPServerDetailsViewModel.details ?? createBaseDetails()), external: true }
     component.formGroup.patchValue(validServer)
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(
@@ -317,7 +317,7 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-    component.formGroup.patchValue({ ...validServer, productName: null, appId: null })
+    component.formGroup.patchValue({ ...validServer, external: false, productName: null, appId: null })
     component.save()
     expect(store.dispatch).not.toHaveBeenCalledWith(
       expect.objectContaining({ type: MCPServerDetailsActions.saveButtonClicked.type })
@@ -353,7 +353,7 @@ describe('MCPServerDetailsComponent', () => {
     component.save()
     expect(store.dispatch).toHaveBeenCalledWith(
       MCPServerDetailsActions.saveButtonClicked({
-        details: { ...details, external: false, ...validServer }
+        details: { ...details, external: true, ...validServer }
       })
     )
   })
@@ -397,7 +397,7 @@ describe('MCPServerDetailsComponent', () => {
     expect(component.executionPolicyOptions).not.toContain(ExecutionPolicy.Allow)
   })
 
-  it('should load the external flag and default it to false for existing servers', () => {
+  it('should load the external flag and default it to true for existing servers without the flag', () => {
     store.overrideSelector(selectMCPServerDetailsViewModel, {
       ...baseMCPServerDetailsViewModel,
       details: { ...createBaseDetails(), external: true }
@@ -412,7 +412,7 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-    expect(component.formGroup.get('external')?.value).toBe(false)
+    expect(component.formGroup.get('external')?.value).toBe(true)
   })
 
   it('cancel clicked should dispatch cancel action', () => {

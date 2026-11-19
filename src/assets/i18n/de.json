@@ -666,7 +666,6 @@
       "APIKEY": "API-Schlüssel",
       "AUTH_MODE": "Authentifizierungsmodus",
       "EXECUTION_POLICY": "Ausführungsrichtlinie",
-      "EXECUTION_POLICY": "Ausführungsrichtlinie",
       "TYPE": "Servertyp",
       "TYPE_INTERNAL": "Intern (OneCX)",
       "TYPE_EXTERNAL": "Extern (außerhalb von OneCX)",

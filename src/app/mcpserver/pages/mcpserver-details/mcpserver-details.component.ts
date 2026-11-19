@@ -185,7 +185,7 @@ export class MCPServerDetailsComponent implements OnInit {
           url: vm.details?.url,
           authMode: vm.details?.authMode,
           executionPolicy: vm.details?.executionPolicy,
-          external: vm.details?.external ?? false,
+          external: vm.details?.external ?? true,
           productName: vm.details?.productName ?? null,
           appId: vm.details?.appId ?? null
         })
@@ -252,6 +252,11 @@ export class MCPServerDetailsComponent implements OnInit {
     }
     productName?.updateValueAndValidity({ emitEvent: false })
     appId?.updateValueAndValidity({ emitEvent: false })
+  }
+
+  onProductSelected() {
+    // Clear appId when product is selected from the dropdown so a stale product/app pair cannot be saved
+    this.formGroup.get('appId')?.setValue(null)
   }
 
   cancel() {

@@ -133,6 +133,7 @@
                     formControlName="productName"
                     [suggestions]="productSuggestions"
                     (completeMethod)="searchProducts($event)"
+                    (onSelect)="onProductSelected()"
                     [dropdown]="true"
                     [forceSelection]="false"
                     styleClass="w-full"
