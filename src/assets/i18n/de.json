@@ -427,6 +427,7 @@
         "NO": "Nein",
         "NOT_AVAILABLE": "Konfigurationsdetails sind nicht verfügbar.",
         "AGENT": "Agent",
+        "ADDITIONAL_PROMPT": "Zusätzlicher Prompt",
         "AGENT_NAME": "Agent-Name",
         "AGENT_ID": "Agent-ID",
         "TENANT_ID": "Mandanten-ID",

@@ -53,6 +53,17 @@ describe('diffConfigurationVersions', () => {
     })
   })
 
+  it('marks a changed additional prompt on the agent', () => {
+    const left = { agent: { name: 'Agent', additionalPrompt: 'v1' } } as unknown as AgentConfiguration
+    const right = { agent: { name: 'Agent', additionalPrompt: 'v2' } } as unknown as AgentConfiguration
+    expect(diffConfigurationVersions(left, right).find((r) => r.path === 'agent.additionalPrompt')).toMatchObject({
+      fieldKey: 'AGENT_DETAILS.CONFIGURATION_VERSIONS.DETAILS.ADDITIONAL_PROMPT',
+      left: 'v1',
+      right: 'v2',
+      changed: true
+    })
+  })
+
   it('matches array items by name', () => {
     const right = {
       ...base,
