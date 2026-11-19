@@ -613,6 +613,15 @@
     "ORPHANED_TOOLTIP": "Dieses Tool wird vom MCP-Server nicht mehr bereitgestellt",
     "EMPTY": "Keine Tools gefunden",
     "DISCOVERY_ERROR": "Tool-Erkennung fehlgeschlagen. Bitte MCP-Server-Verbindung prüfen.",
+    "CONFIRM_DELETE_MESSAGE": "Möchten Sie diese Tool-Regel wirklich löschen?",
+    "CONFIRM_DELETE_HEADER": "Löschen bestätigen",
+    "CONFIRM_DELETE_ACCEPT": "Ja",
+    "CONFIRM_DELETE_REJECT": "Nein",
+    "ERROR": {
+      "SAVE": "Speichern der Tool-Regel fehlgeschlagen.",
+      "BULK": "Massenänderung der Berechtigung fehlgeschlagen.",
+      "DELETE": "Löschen der Tool-Regel fehlgeschlagen."
+    },
     "BULK": {
       "SELECTED": "{{count}} Tools ausgewählt",
       "PERMISSION": "Berechtigung festlegen",

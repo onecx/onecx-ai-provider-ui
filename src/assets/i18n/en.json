@@ -614,6 +614,15 @@
     "ORPHANED_TOOLTIP": "This tool is no longer exposed by the MCP server",
     "EMPTY": "No tools discovered",
     "DISCOVERY_ERROR": "Tool discovery failed. Check the MCP server connection.",
+    "CONFIRM_DELETE_MESSAGE": "Are you sure you want to delete this tool rule?",
+    "CONFIRM_DELETE_HEADER": "Confirm Deletion",
+    "CONFIRM_DELETE_ACCEPT": "Yes",
+    "CONFIRM_DELETE_REJECT": "No",
+    "ERROR": {
+      "SAVE": "Failed to save the tool rule.",
+      "BULK": "Failed to apply the bulk permission change.",
+      "DELETE": "Failed to delete the tool rule."
+    },
     "BULK": {
       "SELECTED": "{{count}} tools selected",
       "PERMISSION": "Set permission",
