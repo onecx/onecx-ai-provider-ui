@@ -609,9 +609,19 @@
     "DENY": "Blockieren",
     "ALWAYS_ASK": "Immer nachfragen",
     "ORPHANED": "Verwaist",
+    "NO_REQUIRED_PERMISSION": "Keine Berechtigung erforderlich",
     "ORPHANED_TOOLTIP": "Dieses Tool wird vom MCP-Server nicht mehr bereitgestellt",
     "EMPTY": "Keine Tools gefunden",
     "DISCOVERY_ERROR": "Tool-Erkennung fehlgeschlagen. Bitte MCP-Server-Verbindung prüfen.",
+    "CONFIRM_DELETE_MESSAGE": "Möchten Sie diese Tool-Regel wirklich löschen?",
+    "CONFIRM_DELETE_HEADER": "Löschen bestätigen",
+    "CONFIRM_DELETE_ACCEPT": "Ja",
+    "CONFIRM_DELETE_REJECT": "Nein",
+    "ERROR": {
+      "SAVE": "Speichern der Tool-Regel fehlgeschlagen.",
+      "BULK": "Massenänderung der Berechtigung fehlgeschlagen.",
+      "DELETE": "Löschen der Tool-Regel fehlgeschlagen."
+    },
     "BULK": {
       "SELECTED": "{{count}} Tools ausgewählt",
       "PERMISSION": "Berechtigung festlegen",
@@ -623,6 +633,7 @@
       "DESCRIPTION": "Beschreibung",
       "ANNOTATIONS": "Annotationen",
       "AUTO_DANGER_LEVEL": "Autom. Gefahrenstufe",
+      "REQUIRED_PERMISSION": "Erforderliche OneCX-Berechtigung",
       "ALLOWED": "Berechtigung",
       "DANGER_LEVEL": "Gefahrenstufe",
       "ACTIONS": "Aktionen"
@@ -663,7 +674,12 @@
       "DESCRIPTION": "Beschreibung",
       "APIKEY": "API-Schlüssel",
       "AUTH_MODE": "Authentifizierungsmodus",
-      "EXECUTION_POLICY": "Ausführungsrichtlinie"
+      "EXECUTION_POLICY": "Ausführungsrichtlinie",
+      "TYPE": "Servertyp",
+      "TYPE_INTERNAL": "Intern (OneCX)",
+      "TYPE_EXTERNAL": "Extern (außerhalb von OneCX)",
+      "PRODUCT_NAME": "Produktname",
+      "APP_ID": "App-ID"
     },
     "CANCEL": {
       "HEADER": "Abbruch bestätigen",

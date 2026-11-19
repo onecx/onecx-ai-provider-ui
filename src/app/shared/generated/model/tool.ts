@@ -27,6 +27,18 @@ export interface Tool {
     apiKey?: string;
     executionPolicy?: ExecutionPolicy;
     authMode?: AuthMode;
+    /**
+     * True when the MCP server is outside OneCX; such servers have no OneCX permission coverage
+     */
+    external?: boolean;
+    /**
+     * OneCX product that holds the permissions of an internal MCP server; required when external is false
+     */
+    productName?: string;
+    /**
+     * OneCX application id that holds the permissions of an internal MCP server; required when external is false
+     */
+    appId?: string;
 }
 export enum ToolSourceEnum {
     Tenant = 'TENANT',

@@ -1,7 +1,7 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { ActivatedRoute } from '@angular/router'
@@ -26,6 +26,15 @@ import { MCPServerDetailsHarness } from './mcpserver-details.harness'
 import { initialState } from './mcpserver-details.reducers'
 import { selectMCPServerDetailsViewModel } from './mcpserver-details.selectors'
 import { MCPServerDetailsViewModel } from './mcpserver-details.viewmodel'
+
+// Required fields for an internal server; saving is blocked without them.
+const validServer = {
+  name: 'srv',
+  description: 'desc',
+  url: 'https://example.com',
+  productName: 'onecx-crm',
+  appId: 'crm-app'
+}
 
 describe('MCPServerDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
@@ -229,6 +238,7 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
+    component.formGroup.patchValue(validServer)
 
     const actions = await firstValueFrom(component.headerActions$)
     actions.find((action) => action.labelKey === 'MCPSERVER_DETAILS.GENERAL.EDIT')?.actionCallback?.()
@@ -291,9 +301,27 @@ describe('MCPServerDetailsComponent', () => {
     })
     store.refreshState()
     fixture.detectChanges()
-    const details = baseMCPServerDetailsViewModel.details ?? createBaseDetails()
+    const details = { ...(baseMCPServerDetailsViewModel.details ?? createBaseDetails()), external: true }
+    component.formGroup.patchValue(validServer)
     component.save()
-    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+    expect(store.dispatch).toHaveBeenCalledWith(
+      MCPServerDetailsActions.saveButtonClicked({ details: { ...details, ...validServer } })
+    )
+  })
+
+  it('save clicked should not dispatch when an internal server lacks product or app', () => {
+    jest.spyOn(store, 'dispatch')
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      editMode: true
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    component.formGroup.patchValue({ ...validServer, external: false, productName: null, appId: null })
+    component.save()
+    expect(store.dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: MCPServerDetailsActions.saveButtonClicked.type })
+    )
   })
 
   it('should load and save authentication and execution settings', () => {
@@ -321,8 +349,43 @@ describe('MCPServerDetailsComponent', () => {
     store.refreshState()
     fixture.detectChanges()
 
+    component.formGroup.patchValue(validServer)
     component.save()
-    expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.saveButtonClicked({ details }))
+    expect(store.dispatch).toHaveBeenCalledWith(
+      MCPServerDetailsActions.saveButtonClicked({
+        details: { ...details, external: true, ...validServer }
+      })
+    )
+  })
+
+  it('should require product and app for internal servers and clear them for external ones', () => {
+    const details = { ...createBaseDetails(), external: false, productName: 'onecx-crm', appId: 'crm-app' }
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details,
+      editMode: true
+    })
+    store.refreshState()
+    fixture.detectChanges()
+
+    const productName = component.formGroup.get('productName')
+    const appId = component.formGroup.get('appId')
+    expect(productName?.value).toBe('onecx-crm')
+    expect(appId?.value).toBe('crm-app')
+
+    appId?.setValue(null)
+    expect(appId?.valid).toBe(false)
+
+    component.formGroup.get('external')?.setValue(true)
+    expect(productName?.value).toBeNull()
+    expect(appId?.value).toBeNull()
+    expect(appId?.valid).toBe(true)
   })
 
   it('should not offer the deprecated allow execution policy', () => {
@@ -332,6 +395,24 @@ describe('MCPServerDetailsComponent', () => {
       ExecutionPolicy.NeverAsk
     ])
     expect(component.executionPolicyOptions).not.toContain(ExecutionPolicy.Allow)
+  })
+
+  it('should load the external flag and default it to true for existing servers without the flag', () => {
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details: { ...createBaseDetails(), external: true }
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    expect(component.formGroup.get('external')?.value).toBe(true)
+
+    store.overrideSelector(selectMCPServerDetailsViewModel, {
+      ...baseMCPServerDetailsViewModel,
+      details: createBaseDetails()
+    })
+    store.refreshState()
+    fixture.detectChanges()
+    expect(component.formGroup.get('external')?.value).toBe(true)
   })
 
   it('cancel clicked should dispatch cancel action', () => {
@@ -386,5 +467,83 @@ describe('MCPServerDetailsComponent', () => {
     jest.spyOn(store, 'dispatch')
     component.toggleApiKeyVisibility()
     expect(store.dispatch).toHaveBeenCalledWith(MCPServerDetailsActions.apiKeyVisibilityToggled())
+  })
+
+  describe('application loading', () => {
+    let httpMock: HttpTestingController
+
+    beforeEach(() => {
+      httpMock = TestBed.inject(HttpTestingController)
+    })
+
+    it('should load applications and build the deduplicated product list', () => {
+      const applications = [
+        { productName: 'onecx-crm', appId: 'crm-app', name: 'CRM' },
+        { productName: 'onecx-crm', appId: 'crm-admin', name: 'CRM Admin' },
+        { productName: 'onecx-portal', appId: 'portal', name: 'Portal' },
+        { productName: undefined, appId: 'orphan', name: 'Orphan' }
+      ]
+      httpMock
+        .match((req) => req.url.endsWith('/applications'))
+        .forEach((req) => {
+          expect(req.request.method).toBe('GET')
+          req.flush(applications)
+        })
+
+      expect(component.applications).toEqual(applications)
+      expect(component.products).toEqual(['onecx-crm', 'onecx-portal'])
+    })
+
+    it('should fall back to empty lists when loading applications fails', () => {
+      httpMock
+        .match((req) => req.url.endsWith('/applications'))
+        .forEach((req) => req.flush('boom', { status: 500, statusText: 'Server Error' }))
+
+      expect(component.applications).toEqual([])
+      expect(component.products).toEqual([])
+    })
+  })
+
+  describe('product and app autocomplete', () => {
+    it('searchProducts filters products by the query', () => {
+      component.products = ['onecx-crm', 'onecx-portal', 'other-product']
+
+      component.searchProducts({ query: 'onecx' } as any)
+
+      expect(component.productSuggestions).toEqual(['onecx-crm', 'onecx-portal'])
+    })
+
+    it('searchProducts falls back to an empty query when query is nullish', () => {
+      component.products = ['onecx-crm', 'other-product']
+
+      component.searchProducts({ query: undefined } as any)
+
+      expect(component.productSuggestions).toEqual(['onecx-crm', 'other-product'])
+    })
+
+    it('searchApps filters all app ids by the query when no product is selected', () => {
+      component.applications = [
+        { productName: 'onecx-crm', appId: 'crm-app' },
+        { productName: 'onecx-portal', appId: 'portal' },
+        { productName: 'onecx-portal', appId: undefined }
+      ]
+
+      component.searchApps({ query: 'crm' } as any)
+
+      expect(component.appSuggestions).toEqual(['crm-app'])
+    })
+
+    it('searchApps restricts app ids to the selected product', () => {
+      component.applications = [
+        { productName: 'onecx-crm', appId: 'crm-app' },
+        { productName: 'onecx-crm', appId: 'crm-admin' },
+        { productName: 'onecx-portal', appId: 'portal' }
+      ]
+      component.formGroup.get('productName')?.setValue('onecx-crm')
+
+      component.searchApps({ query: '' } as any)
+
+      expect(component.appSuggestions).toEqual(['crm-app', 'crm-admin'])
+    })
   })
 })

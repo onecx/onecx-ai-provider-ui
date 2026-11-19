@@ -20,6 +20,9 @@ export interface CreateToolRequest {
     apiKey?: string;
     executionPolicy?: ExecutionPolicy;
     authMode?: AuthMode;
+    external?: boolean;
+    productName?: string;
+    appId?: string;
 }
 
 
