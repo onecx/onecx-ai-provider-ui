@@ -350,8 +350,41 @@ describe('AgentToolRulesComponent', () => {
       component.applyBulkPermission()
 
       expect(row.saving).toBe(false)
+      expect(row.dirty).toBe(false)
+      expect(row.allowed).toBe(ToolPermission.Deny)
       expect(component.bulkSaving).toBe(false)
       expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'TOOL_RULES.ERROR.BULK' })
+    })
+
+    it('reverts each row to its previous allowed value on bulk failure', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      agentService.updateAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      agentService.createAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      const existingRow = {
+        name: 'existing',
+        allowed: ToolPermission.Allow,
+        existingRule: { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      const newRow = {
+        name: 'new-tool',
+        allowed: ToolPermission.Deny,
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      component.selectedRows = [existingRow, newRow]
+      component.bulkPermission = ToolPermission.AlwaysAsk
+
+      component.applyBulkPermission()
+
+      expect(existingRow.allowed).toBe(ToolPermission.Allow)
+      expect(newRow.allowed).toBe(ToolPermission.Deny)
+      expect(existingRow.dirty).toBe(false)
+      expect(newRow.dirty).toBe(false)
     })
   })
 

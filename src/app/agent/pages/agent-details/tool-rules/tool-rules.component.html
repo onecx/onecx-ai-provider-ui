@@ -95,7 +95,7 @@
         </td>
         <td>
           @if (row.requiredPermission) {
-            <code>{{ row.requiredPermission }}</code>
+            <code [title]="row.requiredPermission" class="text-break">{{ row.requiredPermission }}</code>
           } @else {
             <span class="text-color-secondary">{{ 'TOOL_RULES.NO_REQUIRED_PERMISSION' | translate }}</span>
           }

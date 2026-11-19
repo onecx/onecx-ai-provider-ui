@@ -180,6 +180,9 @@ export class AgentToolRulesComponent implements OnChanges {
 
     const selectedPermission = this.bulkPermission
     const rows = [...this.selectedRows]
+    // Capture the previous allowed values so a partial bulk failure can be
+    // reverted and the UI does not show permissions that were never persisted.
+    const oldAllowed = rows.map((r) => r.allowed)
     this.bulkSaving = true
     rows.forEach((row) => {
       row.allowed = selectedPermission
@@ -200,7 +203,11 @@ export class AgentToolRulesComponent implements OnChanges {
           this.refresh()
         },
         error: () => {
-          rows.forEach((row) => (row.saving = false))
+          rows.forEach((row, i) => {
+            row.allowed = oldAllowed[i]
+            row.dirty = false
+            row.saving = false
+          })
           this.messageService.error({ summaryKey: 'TOOL_RULES.ERROR.BULK' })
         }
       })
