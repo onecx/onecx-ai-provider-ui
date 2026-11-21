@@ -29,8 +29,6 @@ describe('ProviderDetailsComponent', () => {
   const origAddEventListener = window.addEventListener
   const origPostMessage = window.postMessage
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  /* eslint-disable @typescript-eslint/no-empty-function */
   let listeners: any[] = []
   window.addEventListener = (_type: any, listener: any) => {
     listeners.push(listener)
@@ -44,13 +42,11 @@ describe('ProviderDetailsComponent', () => {
     for (const listener of listeners) {
       listener({
         data: m,
-        stopImmediatePropagation: () => {},
-        stopPropagation: () => {}
+        stopImmediatePropagation: () => undefined,
+        stopPropagation: () => undefined
       })
     }
   }
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-  /* eslint-enable @typescript-eslint/no-empty-function */
 
   afterAll(() => {
     window.addEventListener = origAddEventListener

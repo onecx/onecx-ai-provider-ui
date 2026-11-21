@@ -40,14 +40,11 @@ describe('MCPServerSearchComponent', () => {
   }
 
   window.postMessage = (m: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     listeners.forEach((l) =>
       l({
         data: m,
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        stopImmediatePropagation: () => {},
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        stopPropagation: () => {}
+        stopImmediatePropagation: () => undefined,
+        stopPropagation: () => undefined
       })
     )
   }

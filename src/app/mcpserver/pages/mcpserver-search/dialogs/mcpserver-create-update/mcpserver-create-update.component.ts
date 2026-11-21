@@ -30,7 +30,6 @@ export class McpserverCreateUpdateComponent
 
   public formGroup: FormGroup
 
-  // eslint-disable-next-line @typescript-eslint/consistent-generic-constructors
   primaryButtonEnabled: EventEmitter<boolean> = new EventEmitter()
   dialogResult: Tool | undefined = undefined
 

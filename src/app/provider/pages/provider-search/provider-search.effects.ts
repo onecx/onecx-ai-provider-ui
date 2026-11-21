@@ -308,7 +308,6 @@ export class ProviderSearchEffects {
     )
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   performSearch(searchCriteria: Record<string, any>) {
     return this.providerService
       .findProviderBySearchCriteria({
