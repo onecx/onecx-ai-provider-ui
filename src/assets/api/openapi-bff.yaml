@@ -441,6 +441,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ToolPageResult'
 
+  /applications:
+    get:
+      x-onecx:
+        permissions:
+          tools:
+            - read
+      tags:
+        - application
+      description: Get the OneCX products and applications that can own the permissions of an internal MCP server
+      operationId: getApplications
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationInfo'
+
   /tools/{toolId}/discovered-tools:
     post:
       x-onecx:
@@ -1475,6 +1495,15 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailResponse'
 components:
   schemas:
+    ApplicationInfo:
+      type: object
+      properties:
+        productName:
+          type: string
+        appId:
+          type: string
+        name:
+          type: string
     AgentFilter:
       type: object
       properties:
@@ -1918,6 +1947,15 @@ components:
           $ref: '#/components/schemas/ExecutionPolicy'
         authMode:
           $ref: '#/components/schemas/AuthMode'
+        external:
+          type: boolean
+          description: True when the MCP server is outside OneCX; such servers have no OneCX permission coverage
+        productName:
+          type: string
+          description: OneCX product that holds the permissions of an internal MCP server; required when external is false
+        appId:
+          type: string
+          description: OneCX application id that holds the permissions of an internal MCP server; required when external is false
     CreateToolRequest:
       type: object
       properties:
@@ -1935,6 +1973,12 @@ components:
           $ref: '#/components/schemas/ExecutionPolicy'
         authMode:
           $ref: '#/components/schemas/AuthMode'
+        external:
+          type: boolean
+        productName:
+          type: string
+        appId:
+          type: string
     UpdateToolRequest:
       type: object
       required:
@@ -1957,6 +2001,12 @@ components:
           $ref: '#/components/schemas/ExecutionPolicy'
         authMode:
           $ref: '#/components/schemas/AuthMode'
+        external:
+          type: boolean
+        productName:
+          type: string
+        appId:
+          type: string
     ToolSearchCriteria:
       type: object
       properties:
@@ -2762,6 +2812,9 @@ components:
           $ref: '#/components/schemas/AgentMcpToolRule'
         orphaned:
           type: boolean
+        requiredPermission:
+          type: string
+          description: OneCX permission the user needs to be allowed to call this tool, as published by the MCP server
     DiscoveredToolInfoList:
       type: object
       properties:

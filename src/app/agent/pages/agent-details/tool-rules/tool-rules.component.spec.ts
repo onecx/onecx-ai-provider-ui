@@ -1,4 +1,4 @@
-import { of, throwError } from 'rxjs'
+import { of, Subject, throwError } from 'rxjs'
 
 import {
   AgentService,
@@ -15,6 +15,9 @@ describe('AgentToolRulesComponent', () => {
   let component: AgentToolRulesComponent
   let toolService: jest.Mocked<ToolService>
   let agentService: jest.Mocked<AgentService>
+  let messageService: { error: jest.Mock; success: jest.Mock }
+  let confirmationService: { confirm: jest.Mock }
+  let translateService: { instant: jest.Mock }
 
   beforeEach(() => {
     toolService = {
@@ -25,7 +28,26 @@ describe('AgentToolRulesComponent', () => {
       updateAgentMcpToolRule: jest.fn(),
       deleteAgentMcpToolRule: jest.fn()
     } as unknown as jest.Mocked<AgentService>
-    component = new AgentToolRulesComponent(toolService, agentService)
+    messageService = {
+      error: jest.fn(),
+      success: jest.fn()
+    }
+    confirmationService = {
+      confirm: jest.fn((options: { accept?: () => void }) => {
+        // Auto-accept by default so the delete proceeds in tests.
+        options.accept?.()
+      })
+    }
+    translateService = {
+      instant: jest.fn((key: string) => key)
+    }
+    component = new AgentToolRulesComponent(
+      toolService,
+      agentService,
+      messageService as any,
+      confirmationService as any,
+      translateService as any
+    )
   })
 
   describe('ngOnChanges', () => {
@@ -82,7 +104,8 @@ describe('AgentToolRulesComponent', () => {
           annotations: { readOnlyHint: true },
           autoDangerLevel: DangerLevel.Safe,
           existingRule: { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow },
-          orphaned: false
+          orphaned: false,
+          requiredPermission: 'onecx:search#mcp-read'
         },
         {
           name: 'delete_all',
@@ -104,11 +127,13 @@ describe('AgentToolRulesComponent', () => {
         allowed: ToolPermission.Allow,
         existingRule: { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow },
         orphaned: false,
+        requiredPermission: 'onecx:search#mcp-read',
         dirty: false,
         saving: false
       })
       expect(component.rows[1].allowed).toBe(ToolPermission.Deny)
       expect(component.rows[1].orphaned).toBe(true)
+      expect(component.rows[1].requiredPermission).toBeUndefined()
       expect(component.discoveryError).toBe(false)
     })
 
@@ -207,6 +232,20 @@ describe('AgentToolRulesComponent', () => {
 
       expect(component.loading).toBe(false)
     })
+
+    it('discards a stale response when toolId changed while request was in flight', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      const subject = new Subject<unknown>()
+      toolService.getDiscoveredTools.mockReturnValue(subject.asObservable() as any)
+
+      component.refresh()
+      // Simulate toolId changing while the request is still pending.
+      component.toolId = 'tool-2'
+      subject.next({ tools: [{ name: 'stale_tool', autoDangerLevel: DangerLevel.Safe, orphaned: false }] })
+
+      expect(component.rows).toHaveLength(0)
+    })
   })
 
   describe('onPermissionChange', () => {
@@ -293,7 +332,7 @@ describe('AgentToolRulesComponent', () => {
       expect(agentService.updateAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
-    it('clears row saving state when a bulk save fails', () => {
+    it('clears row saving state when a bulk save fails and shows a message', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
       agentService.updateAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
@@ -311,7 +350,41 @@ describe('AgentToolRulesComponent', () => {
       component.applyBulkPermission()
 
       expect(row.saving).toBe(false)
+      expect(row.dirty).toBe(false)
+      expect(row.allowed).toBe(ToolPermission.Deny)
       expect(component.bulkSaving).toBe(false)
+      expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'TOOL_RULES.ERROR.BULK' })
+    })
+
+    it('reverts each row to its previous allowed value on bulk failure', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      agentService.updateAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      agentService.createAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
+      const existingRow = {
+        name: 'existing',
+        allowed: ToolPermission.Allow,
+        existingRule: { id: 'rule-1', modificationCount: 0, allowed: ToolPermission.Allow },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      const newRow = {
+        name: 'new-tool',
+        allowed: ToolPermission.Deny,
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+      component.selectedRows = [existingRow, newRow]
+      component.bulkPermission = ToolPermission.AlwaysAsk
+
+      component.applyBulkPermission()
+
+      expect(existingRow.allowed).toBe(ToolPermission.Allow)
+      expect(newRow.allowed).toBe(ToolPermission.Deny)
+      expect(existingRow.dirty).toBe(false)
+      expect(newRow.dirty).toBe(false)
     })
   })
 
@@ -388,7 +461,7 @@ describe('AgentToolRulesComponent', () => {
       expect(row.saving).toBe(false)
     })
 
-    it('updates rule with empty string when existingRule id is undefined', () => {
+    it('skips update when existingRule id is undefined', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
       agentService.updateAgentMcpToolRule.mockReturnValue(of({}) as any)
@@ -406,9 +479,7 @@ describe('AgentToolRulesComponent', () => {
 
       component.save(row)
 
-      expect(agentService.updateAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', [
-        { id: '', modificationCount: 1, allowed: ToolPermission.Allow }
-      ])
+      expect(agentService.updateAgentMcpToolRule).not.toHaveBeenCalled()
     })
 
     it('updates rule with 0 when modificationCount is undefined', () => {
@@ -438,7 +509,7 @@ describe('AgentToolRulesComponent', () => {
       ])
     })
 
-    it('sets saving to false on error', () => {
+    it('sets saving to false on error and shows a message', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
       agentService.createAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
@@ -453,6 +524,7 @@ describe('AgentToolRulesComponent', () => {
       component.save(row)
 
       expect(row.saving).toBe(false)
+      expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'TOOL_RULES.ERROR.SAVE' })
     })
   })
 
@@ -530,11 +602,12 @@ describe('AgentToolRulesComponent', () => {
 
       component.deleteRule(row)
 
+      expect(confirmationService.confirm).toHaveBeenCalled()
       expect(agentService.deleteAgentMcpToolRule).toHaveBeenCalledWith('agent-1', 'tool-1', 'rule-1')
       expect(row.saving).toBe(false)
     })
 
-    it('sets saving to false on error', () => {
+    it('sets saving to false on error and shows a message', () => {
       component.agentId = 'agent-1'
       component.toolId = 'tool-1'
       agentService.deleteAgentMcpToolRule.mockReturnValue(throwError(() => new Error('fail')) as any)
@@ -549,6 +622,29 @@ describe('AgentToolRulesComponent', () => {
 
       component.deleteRule(row)
 
+      expect(row.saving).toBe(false)
+      expect(messageService.error).toHaveBeenCalledWith({ summaryKey: 'TOOL_RULES.ERROR.DELETE' })
+    })
+
+    it('does not delete when confirmation is rejected', () => {
+      component.agentId = 'agent-1'
+      component.toolId = 'tool-1'
+      confirmationService.confirm = jest.fn((options: { accept?: () => void; reject?: () => void }) => {
+        options.reject?.()
+      })
+      agentService.deleteAgentMcpToolRule.mockReturnValue(of(undefined) as any)
+      const row = {
+        name: 'test',
+        allowed: ToolPermission.Deny,
+        existingRule: { id: 'rule-1' },
+        orphaned: false,
+        dirty: false,
+        saving: false
+      }
+
+      component.deleteRule(row)
+
+      expect(agentService.deleteAgentMcpToolRule).not.toHaveBeenCalled()
       expect(row.saving).toBe(false)
     })
   })

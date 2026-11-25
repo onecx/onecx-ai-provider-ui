@@ -610,9 +610,19 @@
     "DENY": "Deny",
     "ALWAYS_ASK": "Always Ask",
     "ORPHANED": "Orphaned",
+    "NO_REQUIRED_PERMISSION": "Not gated",
     "ORPHANED_TOOLTIP": "This tool is no longer exposed by the MCP server",
     "EMPTY": "No tools discovered",
     "DISCOVERY_ERROR": "Tool discovery failed. Check the MCP server connection.",
+    "CONFIRM_DELETE_MESSAGE": "Are you sure you want to delete this tool rule?",
+    "CONFIRM_DELETE_HEADER": "Confirm Deletion",
+    "CONFIRM_DELETE_ACCEPT": "Yes",
+    "CONFIRM_DELETE_REJECT": "No",
+    "ERROR": {
+      "SAVE": "Failed to save the tool rule.",
+      "BULK": "Failed to apply the bulk permission change.",
+      "DELETE": "Failed to delete the tool rule."
+    },
     "BULK": {
       "SELECTED": "{{count}} tools selected",
       "PERMISSION": "Set permission",
@@ -624,6 +634,7 @@
       "DESCRIPTION": "Description",
       "ANNOTATIONS": "Annotations",
       "AUTO_DANGER_LEVEL": "Auto Danger Level",
+      "REQUIRED_PERMISSION": "Required OneCX Permission",
       "ALLOWED": "Permission",
       "DANGER_LEVEL": "Danger Level",
       "ACTIONS": "Actions"
@@ -664,7 +675,12 @@
       "DESCRIPTION": "Description",
       "APIKEY": "API Key",
       "AUTH_MODE": "Authentication mode",
-      "EXECUTION_POLICY": "Execution policy"
+      "EXECUTION_POLICY": "Execution policy",
+      "TYPE": "Server type",
+      "TYPE_INTERNAL": "Internal (OneCX)",
+      "TYPE_EXTERNAL": "External (outside OneCX)",
+      "PRODUCT_NAME": "Product name",
+      "APP_ID": "App ID"
     },
     "CANCEL": {
       "HEADER": "Confirm cancel",

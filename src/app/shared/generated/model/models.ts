@@ -15,6 +15,7 @@ export * from './agentMcpToolRuleList';
 export * from './agentPageResult';
 export * from './agentSearchCriteria';
 export * from './agentStatus';
+export * from './applicationInfo';
 export * from './authMode';
 export * from './chatMessage';
 export * from './chatRequest';

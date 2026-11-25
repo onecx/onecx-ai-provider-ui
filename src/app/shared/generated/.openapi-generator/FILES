@@ -5,6 +5,7 @@ api.module.ts
 api/agent.service.ts
 api/agentGroup.service.ts
 api/api.ts
+api/application.service.ts
 api/dangerPattern.service.ts
 api/dispatch.service.ts
 api/externalAgent.service.ts
@@ -34,6 +35,7 @@ model/agentMcpToolRuleList.ts
 model/agentPageResult.ts
 model/agentSearchCriteria.ts
 model/agentStatus.ts
+model/applicationInfo.ts
 model/authMode.ts
 model/chatMessage.ts
 model/chatRequest.ts

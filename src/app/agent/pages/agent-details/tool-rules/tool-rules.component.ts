@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input, OnChanges } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { TranslateModule } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { finalize, forkJoin, Observable, of, tap } from 'rxjs'
 import { ButtonModule } from 'primeng/button'
 import { CheckboxModule } from 'primeng/checkbox'
+import { ConfirmDialogModule } from 'primeng/confirmdialog'
+import { ConfirmationService } from 'primeng/api'
 import { SelectModule } from 'primeng/select'
 import { TableModule } from 'primeng/table'
 import { TagModule } from 'primeng/tag'
 import { TooltipModule } from 'primeng/tooltip'
+
+import { PortalMessageService } from '@onecx/angular-integration-interface'
 
 import {
   AgentService,
@@ -27,6 +31,7 @@ interface AgentToolRuleRow {
   allowed: ToolPermission
   existingRule?: AgentMcpToolRule
   orphaned: boolean
+  requiredPermission?: string
   dirty: boolean
   saving: boolean
 }
@@ -40,11 +45,13 @@ interface AgentToolRuleRow {
     TranslateModule,
     ButtonModule,
     CheckboxModule,
+    ConfirmDialogModule,
     SelectModule,
     TableModule,
     TagModule,
     TooltipModule
   ],
+  providers: [ConfirmationService],
   templateUrl: './tool-rules.component.html'
 })
 export class AgentToolRulesComponent implements OnChanges {
@@ -66,7 +73,10 @@ export class AgentToolRulesComponent implements OnChanges {
 
   constructor(
     private readonly toolService: ToolService,
-    private readonly agentService: AgentService
+    private readonly agentService: AgentService,
+    private readonly messageService: PortalMessageService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly translateService: TranslateService
   ) {}
 
   ngOnChanges(): void {
@@ -83,11 +93,17 @@ export class AgentToolRulesComponent implements OnChanges {
     this.discoveryError = false
     this.selectedRows = []
     this.bulkPermission = null
+    // Capture the toolId at request time so a stale response from a previous
+    // tool can be discarded if toolId changed while the request was in flight.
+    const requestedToolId = this.toolId
     this.toolService
       .getDiscoveredTools(this.toolId, this.agentId)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (result) => {
+          if (requestedToolId !== this.toolId) {
+            return
+          }
           this.rows = (result.tools ?? []).map((tool) => ({
             name: tool.name ?? '',
             description: tool.description,
@@ -96,11 +112,15 @@ export class AgentToolRulesComponent implements OnChanges {
             allowed: tool.existingRule?.allowed ?? ToolPermission.Deny,
             existingRule: tool.existingRule,
             orphaned: tool.orphaned ?? false,
+            requiredPermission: tool.requiredPermission,
             dirty: false,
             saving: false
           }))
         },
         error: () => {
+          if (requestedToolId !== this.toolId) {
+            return
+          }
           this.discoveryError = true
           this.rows = []
         }
@@ -148,7 +168,7 @@ export class AgentToolRulesComponent implements OnChanges {
           this.refresh()
         },
         error: () => {
-          row.saving = false
+          this.messageService.error({ summaryKey: 'TOOL_RULES.ERROR.SAVE' })
         }
       })
   }
@@ -160,6 +180,9 @@ export class AgentToolRulesComponent implements OnChanges {
 
     const selectedPermission = this.bulkPermission
     const rows = [...this.selectedRows]
+    // Capture the previous allowed values so a partial bulk failure can be
+    // reverted and the UI does not show permissions that were never persisted.
+    const oldAllowed = rows.map((r) => r.allowed)
     this.bulkSaving = true
     rows.forEach((row) => {
       row.allowed = selectedPermission
@@ -180,7 +203,12 @@ export class AgentToolRulesComponent implements OnChanges {
           this.refresh()
         },
         error: () => {
-          rows.forEach((row) => (row.saving = false))
+          rows.forEach((row, i) => {
+            row.allowed = oldAllowed[i]
+            row.dirty = false
+            row.saving = false
+          })
+          this.messageService.error({ summaryKey: 'TOOL_RULES.ERROR.BULK' })
         }
       })
   }
@@ -192,7 +220,7 @@ export class AgentToolRulesComponent implements OnChanges {
 
     const requests: Observable<unknown>[] = []
     const newRows = rows.filter((row) => !row.existingRule)
-    const existingRows = rows.filter((row) => row.existingRule)
+    const existingRows = rows.filter((row) => row.existingRule?.id)
 
     if (newRows.length > 0) {
       requests.push(
@@ -213,7 +241,7 @@ export class AgentToolRulesComponent implements OnChanges {
           this.agentId,
           this.toolId,
           existingRows.map((row) => ({
-            id: row.existingRule?.id ?? '',
+            id: row.existingRule!.id!,
             modificationCount: row.existingRule?.modificationCount ?? 0,
             allowed: row.allowed
           }))
@@ -228,16 +256,29 @@ export class AgentToolRulesComponent implements OnChanges {
     if (!this.agentId || !this.toolId || !row.existingRule?.id) {
       return
     }
-    row.saving = true
-    this.agentService
-      .deleteAgentMcpToolRule(this.agentId, this.toolId, row.existingRule.id)
-      .pipe(finalize(() => (row.saving = false)))
-      .subscribe({
-        next: () => this.refresh(),
-        error: () => {
-          row.saving = false
-        }
-      })
+    const agentId = this.agentId
+    const toolId = this.toolId
+    const ruleId = row.existingRule.id
+    this.confirmationService.confirm({
+      message: this.translateService.instant('TOOL_RULES.CONFIRM_DELETE_MESSAGE'),
+      header: this.translateService.instant('TOOL_RULES.CONFIRM_DELETE_HEADER'),
+      acceptLabel: this.translateService.instant('TOOL_RULES.CONFIRM_DELETE_ACCEPT'),
+      rejectLabel: this.translateService.instant('TOOL_RULES.CONFIRM_DELETE_REJECT'),
+      icon: 'pi pi-exclamation-triangle',
+      key: 'confirmDeleteRule',
+      accept: () => {
+        row.saving = true
+        this.agentService
+          .deleteAgentMcpToolRule(agentId, toolId, ruleId)
+          .pipe(finalize(() => (row.saving = false)))
+          .subscribe({
+            next: () => this.refresh(),
+            error: () => {
+              this.messageService.error({ summaryKey: 'TOOL_RULES.ERROR.DELETE' })
+            }
+          })
+      }
+    })
   }
 
   dangerSeverity(level?: DangerLevel): 'success' | 'warn' | 'danger' | 'secondary' {
